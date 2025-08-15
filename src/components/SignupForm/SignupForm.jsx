@@ -20,8 +20,27 @@ export default function SignupForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try{
+      const response = await fetch('http://localhost:8080/auth/dealers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log("Signup successful:", data);
+
+
+    }
+    catch (error) {
+      console.error("Error submitting form:", error);
+    }
     console.log("Form Submitted", formData);
     // TODO: API call here
   };
