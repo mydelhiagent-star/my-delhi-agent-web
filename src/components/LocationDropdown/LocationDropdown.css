@@ -1,0 +1,55 @@
+/* src/components/LocationDropdown/LocationDropdown.css */
+.location-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  padding: 10px 15px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  width: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.main-location {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.main-title {
+  padding: 10px;
+  font-weight: bold;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+.main-title:hover {
+  background: #f3f4f6;
+}
+
+.sub-location-list {
+  list-style: none;
+  padding-left: 15px;
+  margin: 0;
+}
+
+.sub-location-list li {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.sub-location-list li:hover {
+  background: #f0f9ff;
+}
