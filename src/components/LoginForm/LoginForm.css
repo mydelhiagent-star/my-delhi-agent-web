@@ -1,0 +1,42 @@
+.mda-login {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  width: 100%;
+}
+.mda-login-title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827; /* gray-900 */
+}
+.mda-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mda-login-form input {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 8px;
+  font-size: 14px;
+}
+.mda-login-form button {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #2563eb; /* blue-600 */
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mda-forgot {
+  text-align: center;
+  font-size: 13px;
+  color: #2563eb;
+  text-decoration: none;
+}
+.mda-forgot:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,35 @@
+.mda-faq {
+  background: #fff;
+  padding: 40px 20px;
+}
+
+.mda-faq-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.mda-faq h2 {
+  font-size: clamp(20px, 2vw, 28px);
+  margin: 0 0 14px 0;
+  color: #111827;
+}
+
+.mda-faq details {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 10px 0;
+  background: #fafafa;
+}
+
+.mda-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #111827;
+}
+
+.mda-faq p {
+  margin: 10px 0 0 0;
+  color: #374151;
+}

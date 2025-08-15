@@ -1,0 +1,44 @@
+.mda-hero {
+  background: #f9fafb;
+  min-height: 100vh; /* full screen height */
+  display: flex;
+  align-items: center;
+}
+
+.mda-hero-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  width: 100%;
+  padding: 20px;
+}
+
+@media (min-width: 900px) {
+  .mda-hero-inner {
+    grid-template-columns: 1fr 360px; /* left content, right login */
+    align-items: center;
+  }
+}
+
+.mda-hero-left {
+  padding: 20px;
+}
+
+.mda-hero-left h2 {
+  margin: 8px 0 10px;
+  font-size: clamp(24px, 2.5vw, 36px);
+  line-height: 1.2;
+  color: #111827;
+}
+
+.mda-hero-left p {
+  color: #4b5563;
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+}
+
+.mda-hero-right {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* vertical centering */
+}

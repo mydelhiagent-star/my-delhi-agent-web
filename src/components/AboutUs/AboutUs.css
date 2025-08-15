@@ -1,0 +1,12 @@
+.mda-about h3 {
+  margin: 16px 0 8px;
+  font-size: 18px;
+  color: #111827;
+}
+.mda-about ul {
+  padding-left: 18px;
+  color: #374151; /* gray-700 */
+}
+.mda-about li {
+  margin: 6px 0;
+}
