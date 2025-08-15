@@ -29,7 +29,7 @@ export default function LoginForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/auth/login", {
+      const response = await fetch("http://localhost:8080/auth/dealers/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
