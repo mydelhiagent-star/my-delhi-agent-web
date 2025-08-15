@@ -13,10 +13,47 @@ export default function LoginForm() {
     setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
-    // TODO: API call
+
+    const { phone, password } = formData;
+
+    if (!phone || phone.length !== 10) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    if (!password) {
+      alert("Password is required.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.error || "Login failed");
+        return;
+      }
+
+      console.log("Login successful:", result);
+
+      // Save token and optionally redirect
+      localStorage.setItem("token", result.token);
+      alert("Login successful!");
+      // window.location.href = "/dashboard"; // optional redirect
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
