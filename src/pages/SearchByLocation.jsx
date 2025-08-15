@@ -1,6 +1,9 @@
 import { useState } from "react";
 import LocationDropdown from "../components/LocationDropdown/LocationDropdown";
 import { dealers } from "../constants/dealers";
+import { properties } from "../constants/properties";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 export default function SearchByLocation() {
   const [selected, setSelected] = useState({ location: "", sub_location: "" });
@@ -11,18 +14,27 @@ export default function SearchByLocation() {
       dealer.sub_location === selected.sub_location
   );
 
+  const filteredProperties = properties.filter(
+    (property) =>
+      property.location === selected.location &&
+      property.sub_location === selected.sub_location
+  );
+
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Search Dealers by Location</h2>
+      <h2>Search Dealers & Properties</h2>
       <LocationDropdown onSelect={(sel) => setSelected(sel)} />
 
+      {/* Dealers */}
       {selected.location && selected.sub_location && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>
-            Showing Dealers in {selected.location} - {selected.sub_location}
-          </h3>
+        <>
+          <h3 style={{ marginTop: "20px" }}>Dealers</h3>
           {filteredDealers.length > 0 ? (
-            <table border="1" cellPadding="8">
+            <table
+              border="1"
+              cellPadding="8"
+              style={{ width: "100%", marginBottom: "30px" }}
+            >
               <thead>
                 <tr>
                   <th>Name</th>
@@ -49,9 +61,76 @@ export default function SearchByLocation() {
               </tbody>
             </table>
           ) : (
-            <p>No dealers found for this location.</p>
+            <p>No dealers found.</p>
           )}
-        </div>
+
+          {/* Properties */}
+          <h3>Properties</h3>
+          {filteredProperties.length > 0 ? (
+            filteredProperties.map((property, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: "block",
+                  margin: "0 auto",
+                  width: "50%",
+                  border: "1px solid #ccc",
+                  padding: "15px",
+                  marginBottom: "20px",
+                  borderRadius: "8px",
+                }}
+              >
+                <h4>{property.title}</h4>
+                <p>{property.description}</p>
+                <p>
+                  <b>Address:</b> {property.address}
+                </p>
+                <p>
+                  <b>Price:</b> ₹{property.price.toLocaleString()}
+                </p>
+                <p>
+                  <b>Owner:</b> {property.owner_name} ({property.owner_phone})
+                </p>
+                <p>
+                  <b>Nearest Landmark:</b> {property.nearest_landmark}
+                </p>
+
+                {/* Photos */}
+                {property.photos.length > 0 && (
+                  <Carousel showThumbs={false} dynamicHeight={false}>
+                    {property.photos.map((photo, photoIdx) => (
+                      <div
+                        key={photoIdx}
+                        style={{
+                          width: "75%",
+
+                          margin: "10px auto 10px",
+                        }}
+                      >
+                        <img src={photo} alt={`Property ${photoIdx}`} />
+                      </div>
+                    ))}
+                  </Carousel>
+                )}
+
+                {/* Videos */}
+                {property.videos.length > 0 && (
+                  <Carousel showThumbs={false} dynamicHeight={false}>
+                    {property.videos.map((video, vidIdx) => (
+                      <div key={vidIdx}>
+                        <video controls width="75%">
+                          <source src={video} type="video/mp4" />
+                        </video>
+                      </div>
+                    ))}
+                  </Carousel>
+                )}
+              </div>
+            ))
+          ) : (
+            <p>No properties found.</p>
+          )}
+        </>
       )}
     </div>
   );

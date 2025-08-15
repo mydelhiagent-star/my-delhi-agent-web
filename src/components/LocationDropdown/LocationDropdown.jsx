@@ -1,56 +1,50 @@
 import { useState } from "react";
-import { locations } from "../../constants/locations";
-import "./LocationDropdown.css";
+
+const locationData = {
+  Noida: ["Sector 62", "Sector 61", "Sector 52"],
+  "Mayur Vihar": ["Extension", "Pocket-I"],
+  Delhi: ["Laxmi Nagar", "Preet Vihar"],
+};
 
 export default function LocationDropdown({ onSelect }) {
-  const [activeLocation, setActiveLocation] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [location, setLocation] = useState("");
+  const [subLocation, setSubLocation] = useState("");
+
+  const handleLocationChange = (e) => {
+    setLocation(e.target.value);
+    setSubLocation("");
+    onSelect({ location: e.target.value, sub_location: "" });
+  };
+
+  const handleSubLocationChange = (e) => {
+    setSubLocation(e.target.value);
+    onSelect({ location, sub_location: e.target.value });
+  };
 
   return (
-    <div className="location-dropdown">
-      <button
-        className="dropdown-toggle"
-        onClick={() => setShowDropdown(!showDropdown)}
-      >
-        Select Location
-      </button>
+    <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+      <select value={location} onChange={handleLocationChange}>
+        <option value="">Select Location</option>
+        {Object.keys(locationData).map((loc, idx) => (
+          <option key={idx} value={loc}>
+            {loc}
+          </option>
+        ))}
+      </select>
 
-      {showDropdown && (
-        <div className="dropdown-menu">
-          {locations.map((loc, idx) => (
-            <div key={idx} className="main-location">
-              <div
-                className="main-title"
-                onClick={() =>
-                  setActiveLocation(
-                    activeLocation === loc.location ? null : loc.location
-                  )
-                }
-              >
-                {loc.location}
-              </div>
-              {activeLocation === loc.location && (
-                <ul className="sub-location-list">
-                  {loc.subLocation.map((subloc, subIdx) => (
-                    <li
-                      key={subIdx}
-                      onClick={() => {
-                        onSelect({
-                          location: loc.location,
-                          sub_location: subloc,
-                        });
-                        setShowDropdown(false);
-                      }}
-                    >
-                      {subloc}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+      <select
+        value={subLocation}
+        onChange={handleSubLocationChange}
+        disabled={!location}
+      >
+        <option value="">Select Sub Location</option>
+        {location &&
+          locationData[location].map((sub, idx) => (
+            <option key={idx} value={sub}>
+              {sub}
+            </option>
           ))}
-        </div>
-      )}
+      </select>
     </div>
   );
 }
