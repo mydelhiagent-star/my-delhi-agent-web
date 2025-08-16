@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import LocationDropdown from "../components/LocationDropdown/LocationDropdown";
-import { dealers } from "../constants/dealers";
-import { properties } from "../constants/properties";
+import { properties } from "../constants/properties"; // keep using static for now
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 export default function SearchByLocation() {
   const [selected, setSelected] = useState({ location: "", sub_location: "" });
   const [locations, setLocations] = useState([]);
+  const [dealers, setDealers] = useState([]); // dealers from API
 
   // 🔹 Fetch location → sub_location mapping from API
   useEffect(() => {
@@ -26,11 +26,27 @@ export default function SearchByLocation() {
     loadLocations();
   }, []);
 
-  const filteredDealers = dealers.filter(
-    (dealer) =>
-      dealer.location === selected.location &&
-      dealer.sub_location === selected.sub_location
-  );
+  // 🔹 Fetch dealers when sub_location changes
+  useEffect(() => {
+    const fetchDealers = async () => {
+      if (selected.sub_location) {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/admin/dealers/by-sublocation?subLocation=${selected.sub_location}`
+          );
+          const data = await res.json();
+          setDealers(data); // response from your Go API
+        } catch (err) {
+          console.error("Error fetching dealers:", err);
+          setDealers([]);
+        }
+      } else {
+        setDealers([]);
+      }
+    };
+
+    fetchDealers();
+  }, [selected.sub_location]);
 
   const filteredProperties = properties.filter(
     (property) =>
@@ -41,6 +57,7 @@ export default function SearchByLocation() {
   return (
     <div style={{ padding: "20px" }}>
       <h2>Search Dealers & Properties</h2>
+
       {/* 🔹 Pass API data into dropdown */}
       <LocationDropdown
         locations={locations}
@@ -51,7 +68,7 @@ export default function SearchByLocation() {
       {selected.location && selected.sub_location && (
         <>
           <h3 style={{ marginTop: "20px" }}>Dealers</h3>
-          {filteredDealers.length > 0 ? (
+          {dealers.length > 0 ? (
             <table
               border="1"
               cellPadding="8"
@@ -69,7 +86,7 @@ export default function SearchByLocation() {
                 </tr>
               </thead>
               <tbody>
-                {filteredDealers.map((dealer, idx) => (
+                {dealers.map((dealer, idx) => (
                   <tr key={idx}>
                     <td>{dealer.name}</td>
                     <td>{dealer.phone}</td>
