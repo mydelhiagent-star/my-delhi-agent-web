@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LocationDropdown from "../components/LocationDropdown/LocationDropdown";
 import { dealers } from "../constants/dealers";
 import { properties } from "../constants/properties";
@@ -7,6 +7,24 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 export default function SearchByLocation() {
   const [selected, setSelected] = useState({ location: "", sub_location: "" });
+  const [locations, setLocations] = useState([]);
+
+  // 🔹 Fetch location → sub_location mapping from API
+  useEffect(() => {
+    const loadLocations = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:8080/admin/dealers/locations/sublocations"
+        );
+        const data = await res.json();
+        setLocations(data); // [{location: "...", sub_location: ["..",".."]}]
+      } catch (err) {
+        console.error("Error fetching locations:", err);
+      }
+    };
+
+    loadLocations();
+  }, []);
 
   const filteredDealers = dealers.filter(
     (dealer) =>
@@ -23,7 +41,11 @@ export default function SearchByLocation() {
   return (
     <div style={{ padding: "20px" }}>
       <h2>Search Dealers & Properties</h2>
-      <LocationDropdown onSelect={(sel) => setSelected(sel)} />
+      {/* 🔹 Pass API data into dropdown */}
+      <LocationDropdown
+        locations={locations}
+        onSelect={(sel) => setSelected(sel)}
+      />
 
       {/* Dealers */}
       {selected.location && selected.sub_location && (
@@ -103,7 +125,6 @@ export default function SearchByLocation() {
                         key={photoIdx}
                         style={{
                           width: "75%",
-
                           margin: "10px auto 10px",
                         }}
                       >
