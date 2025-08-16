@@ -7,33 +7,36 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === "mydelhiagent@gmail.com" && password === "anygroup") {
+    setError("");
+
+    try {
+      const res = await fetch("http://localhost:8080/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ email, password }).toString(),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        setError(err.error || "Login failed");
+        return;
+      }
+
+      const data = await res.json();
+      localStorage.setItem("token", data.token); // save JWT
       navigate("/admin/dashboard");
-    } else {
-      setError("Invalid credentials");
+    } catch (err) {
+      setError("Something went wrong. Try again!");
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
       <form
         onSubmit={handleLogin}
-        style={{
-          border: "1px solid #ccc",
-          padding: "20px",
-          borderRadius: "10px",
-          width: "300px",
-          textAlign: "center",
-        }}
+        style={{ border: "1px solid #ccc", padding: "20px", borderRadius: "10px", width: "300px", textAlign: "center" }}
       >
         <h2>Admin Login</h2>
         {error && <p style={{ color: "red" }}>{error}</p>}
@@ -53,13 +56,7 @@ export default function AdminLogin() {
         />
         <button
           type="submit"
-          style={{
-            padding: "8px 20px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-          }}
+          style={{ padding: "8px 20px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "5px" }}
         >
           Login
         </button>
