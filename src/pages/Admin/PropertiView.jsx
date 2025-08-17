@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Dummy properties (you can later fetch from backend or use properties.js)
 const dummyProperties = [
@@ -53,8 +53,35 @@ const dummyProperties = [
 ];
 
 export default function SearchProperty() {
-  const [properties] = useState(dummyProperties);
+  const [properties, setProperties] = useState(dummyProperties);
   const [showOwner, setShowOwner] = useState({});
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const token = localStorage.getItem("token"); // assuming JWT is stored here
+        const response = await fetch(
+          "http://localhost:8080/properties/dealer/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch properties");
+        }
+
+        const data = await response.json();
+        setProperties(data);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   const toggleOwner = (index) => {
     setShowOwner((prev) => ({ ...prev, [index]: !prev[index] }));

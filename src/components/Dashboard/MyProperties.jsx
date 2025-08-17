@@ -1,13 +1,40 @@
 import React, { useState, useEffect } from "react";
 
+
 export default function MyProperties() {
   const [properties, setProperties] = useState([]);
   const [editingProperty, setEditingProperty] = useState(null);
-  const [soldOptions, setSoldOptions] = useState(null); // track property ID for sold buttons
+  const [soldOptions, setSoldOptions] = useState(null);
+  
+
+ 
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("myProperties")) || [];
-    setProperties(saved);
+    const token = localStorage.getItem("token");
+    if (!token) return; // no token means no properties to fetch
+
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/properties/",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch properties");
+        }
+
+        const data = await response.json();
+  
+        setProperties(data);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      }
+    };
+    fetchProperties();
   }, []);
 
   const saveProperties = (updated) => {

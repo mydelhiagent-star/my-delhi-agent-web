@@ -27,26 +27,43 @@ export default function SearchByLocation() {
     loadLocations();
   }, []);
 
-  // 🔹 Fetch dealers when sub_location changes
+  // 🔹 Fetch dealers AND their properties when sub_location changes
   useEffect(() => {
-    const fetchDealers = async () => {
-      if (selected.sub_location) {
-        try {
-          const res = await fetch(
-            `http://localhost:8080/admin/dealers/by-sublocation?subLocation=${selected.sub_location}`
-          );
-          const data = await res.json();
-          setDealers(data); // response from your Go API
-        } catch (err) {
-          console.error("Error fetching dealers:", err);
-          setDealers([]);
+    const fetchDealersAndProperties = async () => {
+      if (!selected.sub_location) return;
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const res = await fetch(
+          `http://localhost:8080/admin/dealers/with-properties?subLocation=${selected.sub_location}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (!res.ok) {
+          // Handle error response
+          const errData = await res.json();
+          console.error("Backend error:", errData.error || "Unknown error");
+          setDealers([]); // ensure dealers is always an array
+          return;
         }
-      } else {
+
+        const dealersData = await res.json();
+
+        if (Array.isArray(dealersData)) {
+          setDealers(dealersData);
+        } else {
+          setDealers([]); // fallback safeguard
+        }
+      } catch (err) {
+        console.error("Error fetching dealers:", err);
         setDealers([]);
       }
     };
 
-    fetchDealers();
+    fetchDealersAndProperties();
   }, [selected.sub_location]);
 
   return (
@@ -99,7 +116,16 @@ export default function SearchByLocation() {
           )}
 
           {/* Properties */}
-          <SearchProperties />
+          {dealers.map((dealer) => (
+            <div key={dealer.id} style={{ marginBottom: "40px" }}>
+              <h3>{dealer.name} – Properties</h3>
+              <SearchProperties
+                properties={
+                  Array.isArray(dealer.properties) ? dealer.properties : []
+                }
+              />
+            </div>
+          ))}
         </>
       )}
     </div>
