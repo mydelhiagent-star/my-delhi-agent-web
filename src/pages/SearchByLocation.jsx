@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import LocationDropdown from "../components/LocationDropdown/LocationDropdown";
-import { properties } from "../constants/properties"; // keep using static for now
+// keep using static for now
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import SearchProperties from "../components/Admin/SearchProperty"; // import your SearchProperty component
 
 export default function SearchByLocation() {
   const [selected, setSelected] = useState({ location: "", sub_location: "" });
@@ -47,12 +48,6 @@ export default function SearchByLocation() {
 
     fetchDealers();
   }, [selected.sub_location]);
-
-  const filteredProperties = properties.filter(
-    (property) =>
-      property.location === selected.location &&
-      property.sub_location === selected.sub_location
-  );
 
   return (
     <div style={{ padding: "20px" }}>
@@ -104,70 +99,7 @@ export default function SearchByLocation() {
           )}
 
           {/* Properties */}
-          <h3>Properties</h3>
-          {filteredProperties.length > 0 ? (
-            filteredProperties.map((property, idx) => (
-              <div
-                key={idx}
-                style={{
-                  display: "block",
-                  margin: "0 auto",
-                  width: "50%",
-                  border: "1px solid #ccc",
-                  padding: "15px",
-                  marginBottom: "20px",
-                  borderRadius: "8px",
-                }}
-              >
-                <h4>{property.title}</h4>
-                <p>{property.description}</p>
-                <p>
-                  <b>Address:</b> {property.address}
-                </p>
-                <p>
-                  <b>Price:</b> ₹{property.price.toLocaleString()}
-                </p>
-                <p>
-                  <b>Owner:</b> {property.owner_name} ({property.owner_phone})
-                </p>
-                <p>
-                  <b>Nearest Landmark:</b> {property.nearest_landmark}
-                </p>
-
-                {/* Photos */}
-                {property.photos.length > 0 && (
-                  <Carousel showThumbs={false} dynamicHeight={false}>
-                    {property.photos.map((photo, photoIdx) => (
-                      <div
-                        key={photoIdx}
-                        style={{
-                          width: "75%",
-                          margin: "10px auto 10px",
-                        }}
-                      >
-                        <img src={photo} alt={`Property ${photoIdx}`} />
-                      </div>
-                    ))}
-                  </Carousel>
-                )}
-
-                {/* Videos */}
-                {property.videos.length > 0 && (
-                  <Carousel showThumbs={false} dynamicHeight={false}>
-                    {property.videos.map((video, vidIdx) => (
-                      <div key={vidIdx}>
-                        <video controls width="75%">
-                          <source src={video} type="video/mp4" />
-                        </video>
-                      </div>
-                    ))}
-                  </Carousel>
-                )}
-              </div>
-            ))
-          ) : (
-            <p>No properties found.</p>
-          )}
+          <SearchProperties />
         </>
       )}
     </div>
