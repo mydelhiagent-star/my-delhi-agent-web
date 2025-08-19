@@ -24,9 +24,20 @@ export default function MyProperties() {
         }
 
         const data = await response.json();
-        setProperties(data);
+        const apiProperties = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.results)
+          ? data.results
+          : Array.isArray(data?.properties)
+          ? data.properties
+          : [];
+        setProperties(apiProperties);
       } catch (error) {
         console.error("Error fetching properties:", error);
+        try {
+          const cached = JSON.parse(localStorage.getItem("myProperties") || "[]");
+          setProperties(Array.isArray(cached) ? cached : []);
+        } catch {}
       }
     };
     fetchProperties();
@@ -79,7 +90,7 @@ export default function MyProperties() {
     <div className="my-properties-container">
       <h3 className="my-properties-title">My Properties</h3>
       <div className="properties-grid">
-        {properties.map((prop) => (
+        {(properties ?? []).map((prop) => (
           <div key={prop.id} className="property-card">
             {/* Carousel */}
             <div className="property-carousel">
