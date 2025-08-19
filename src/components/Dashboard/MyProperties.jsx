@@ -6,9 +6,19 @@ export default function MyProperties() {
   const [editingProperty, setEditingProperty] = useState(null);
   const [soldOptions, setSoldOptions] = useState(null);
   
+  // Load any locally saved properties immediately so the UI shows new posts
+  useEffect(() => {
+    try {
+      const cached = JSON.parse(localStorage.getItem("myProperties") || "[]");
+      if (Array.isArray(cached)) {
+        setProperties(cached);
+      }
+    } catch {}
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return; // no token means no properties to fetch
+    if (!token) return; // no token means rely on local cached properties only
 
     const fetchProperties = async () => {
       try {
@@ -31,7 +41,23 @@ export default function MyProperties() {
           : Array.isArray(data?.properties)
           ? data.properties
           : [];
-        setProperties(apiProperties);
+        // Merge with locally saved properties (from PostProperty form)
+        let cached = [];
+        try {
+          cached = JSON.parse(localStorage.getItem("myProperties") || "[]");
+        } catch {}
+        const cachedArray = Array.isArray(cached) ? cached : [];
+
+        // Deduplicate by `id` when present; otherwise by a simple composite key
+        const map = new Map();
+        const addToMap = (item) => {
+          const key = item?.id ?? `${item?.title}|${item?.address}|${item?.price}`;
+          if (!map.has(key)) map.set(key, item);
+        };
+        apiProperties.forEach(addToMap);
+        cachedArray.forEach(addToMap);
+
+        setProperties(Array.from(map.values()));
       } catch (error) {
         console.error("Error fetching properties:", error);
         try {

@@ -21,17 +21,30 @@ export default function PostProperty() {
   };
 
   const handleFileChange = (e, type) => {
-    const files = Array.from(e.target.files).map((file) =>
-      URL.createObjectURL(file)
-    );
-    setProperty({ ...property, [type]: files });
+    const files = Array.from(e.target.files);
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+          })
+      )
+    ).then((base64Files) => {
+      setProperty({ ...property, [type]: base64Files });
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let properties = JSON.parse(localStorage.getItem("myProperties")) || [];
-    properties.push({ ...property, id: Date.now() });
-    localStorage.setItem("myProperties", JSON.stringify(properties));
+    let properties = [];
+    try {
+      properties = JSON.parse(localStorage.getItem("myProperties")) || [];
+    } catch {}
+    const newItem = { ...property, id: Date.now() };
+    const updated = Array.isArray(properties) ? [...properties, newItem] : [newItem];
+    localStorage.setItem("myProperties", JSON.stringify(updated));
 
     alert("Property posted successfully!");
     setProperty({
