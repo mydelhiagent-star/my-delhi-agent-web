@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./AdminLogin.css";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -33,31 +34,25 @@ export default function AdminLogin() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <form
-        onSubmit={handleLogin}
-        style={{ border: "1px solid #ccc", padding: "20px", borderRadius: "10px", width: "300px", textAlign: "center" }}
-      >
-        <h2>Admin Login</h2>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="admin-login-container">
+      <form onSubmit={handleLogin} className="admin-login-form">
+        <h2 className="admin-login-title">Admin Login</h2>
+        {error && <p className="admin-login-error">{error}</p>}
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
+          className="admin-login-input"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ width: "100%", marginBottom: "10px", padding: "8px" }}
+          className="admin-login-input"
         />
-        <button
-          type="submit"
-          style={{ padding: "8px 20px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "5px" }}
-        >
+        <button type="submit" className="admin-login-btn">
           Login
         </button>
       </form>

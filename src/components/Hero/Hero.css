@@ -1,44 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .mda-hero {
-  background: #f9fafb;
-  min-height: 100vh; /* full screen height */
+  background: linear-gradient(rgba(13, 26, 38, 0.8), rgba(13, 26, 38, 0.9)), 
+              url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%230d1a26" width="1200" height="800"/><circle cx="200" cy="200" r="50" fill="%2300bcd4" opacity="0.1"/><circle cx="1000" cy="600" r="80" fill="%2300bcd4" opacity="0.1"/><circle cx="800" cy="200" r="30" fill="%2300bcd4" opacity="0.1"/></svg>');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
   display: flex;
   align-items: center;
+  justify-content: center;
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+}
+
+.mda-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 26, 38, 0.7);
+  z-index: 1;
 }
 
 .mda-hero-inner {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  width: 100%;
-  padding: 20px;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+  padding: 0 20px;
 }
 
-@media (min-width: 900px) {
-  .mda-hero-inner {
-    grid-template-columns: 1fr 360px; /* left content, right login */
-    align-items: center;
+.mda-hero-content {
+  animation: fadeInUp 1s ease-out;
+}
+
+.mda-hero-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mda-hero-subtitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  color: #e2e8f0;
+  margin: 0 0 3rem 0;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.9;
+}
+
+.mda-hero-cta {
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
+  color: #ffffff;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 188, 212, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mda-hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 188, 212, 0.4);
+  background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+}
+
+.mda-hero-cta:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.mda-hero-left {
-  padding: 20px;
-}
-
-.mda-hero-left h2 {
-  margin: 8px 0 10px;
-  font-size: clamp(24px, 2.5vw, 36px);
-  line-height: 1.2;
-  color: #111827;
-}
-
-.mda-hero-left p {
-  color: #4b5563;
-  margin: 0 0 8px 0;
-  font-size: 1rem;
-}
-
-.mda-hero-right {
-  display: flex;
-  justify-content: center;
-  align-items: center; /* vertical centering */
+@media (max-width: 768px) {
+  .mda-hero-title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+  }
+  
+  .mda-hero-subtitle {
+    font-size: clamp(1rem, 4vw, 1.3rem);
+    margin-bottom: 2.5rem;
+  }
+  
+  .mda-hero-cta {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+  }
 }

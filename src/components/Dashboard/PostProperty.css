@@ -1,26 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-.signup-form {
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 2.5rem;
+.post-property-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
   background: rgba(13, 26, 38, 0.95);
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 188, 212, 0.2);
   border-radius: 16px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 188, 212, 0.2);
   font-family: 'Poppins', sans-serif;
 }
 
-.signup-form h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #ffffff;
-  font-size: 1.75rem;
-  font-weight: 600;
-}
-
-.signup-form input {
+.post-property-form input,
+.post-property-form textarea {
   width: 100%;
   padding: 0.875rem;
   margin-bottom: 1rem;
@@ -32,17 +25,45 @@
   transition: all 0.3s ease;
 }
 
-.signup-form input:focus {
+.post-property-form input:focus,
+.post-property-form textarea:focus {
   outline: none;
   border-color: #00bcd4;
   box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
 }
 
-.signup-form input::placeholder {
+.post-property-form input::placeholder,
+.post-property-form textarea::placeholder {
   color: #b0bec5;
 }
 
-.signup-form button {
+.post-property-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.post-property-form label {
+  display: block;
+  color: #ffffff;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.post-property-form input[type="file"] {
+  background: rgba(0, 188, 212, 0.1);
+  border: 1px dashed rgba(0, 188, 212, 0.4);
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.post-property-form input[type="file"]:hover {
+  background: rgba(0, 188, 212, 0.15);
+  border-color: rgba(0, 188, 212, 0.6);
+}
+
+.post-property-form button[type="submit"] {
   width: 100%;
   padding: 1rem;
   background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
@@ -58,24 +79,19 @@
   letter-spacing: 0.5px;
 }
 
-.signup-form button:hover {
+.post-property-form button[type="submit"]:hover {
   background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
   transform: translateY(-1px);
   box-shadow: 0 8px 25px rgba(0, 188, 212, 0.3);
 }
 
-.signup-form button:active {
+.post-property-form button[type="submit"]:active {
   transform: translateY(0);
 }
 
 @media (max-width: 768px) {
-  .signup-form {
+  .post-property-form {
     margin: 1rem;
-    padding: 2rem 1.5rem;
-  }
-  
-  .signup-form h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1.5rem;
   }
 }

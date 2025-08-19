@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./AddClient.css";
 
 export default function AddClient() {
   const [formData, setFormData] = useState({
@@ -38,17 +39,9 @@ export default function AddClient() {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "0 auto" }}>
-      <h3>Add Client</h3>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          marginTop: "15px",
-        }}
-      >
+    <div className="add-client-container">
+      <h3 className="add-client-title">Add Client</h3>
+      <form onSubmit={handleSubmit} className="add-client-form">
         <input
           type="text"
           name="name"
@@ -99,17 +92,7 @@ export default function AddClient() {
           onChange={handleChange}
         />
 
-        <button
-          type="submit"
-          style={{
-            padding: "10px",
-            background: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
+        <button type="submit" className="add-client-submit-btn">
           Submit
         </button>
       </form>

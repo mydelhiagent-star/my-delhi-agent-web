@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0d1a26;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d1a26;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00bcd4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00acc1;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(0, 188, 212, 0.3);
+  color: #ffffff;
+}
+
+/* Focus styles */
+*:focus {
+  outline: 2px solid #00bcd4;
+  outline-offset: 2px;
+}
+
+/* Button reset */
+button {
+  font-family: inherit;
+}
+
+/* Link styles */
+a {
+  color: #00bcd4;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #00acc1;
+}

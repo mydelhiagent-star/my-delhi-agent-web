@@ -1,70 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .login-form {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: rgba(13, 26, 38, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 188, 212, 0.2);
+  max-width: 400px;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
 }
 
 .login-form h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .phone-input-wrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid rgba(0, 188, 212, 0.3);
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.phone-input-wrapper:focus-within {
+  border-color: #00bcd4;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
 }
 
 .phone-prefix {
-  background: #f3f4f6;
-  padding: 10px 14px;
+  background: rgba(0, 188, 212, 0.1);
+  padding: 0.75rem 1rem;
   font-weight: 500;
-  border-right: 1px solid #ddd;
+  color: #00bcd4;
+  border-right: 1px solid rgba(0, 188, 212, 0.3);
+  font-size: 0.9rem;
 }
 
 .phone-input-wrapper input {
   border: none;
   outline: none;
-  padding: 10px;
-  margin: 10px;
+  padding: 0.75rem;
   flex: 1;
+  background: transparent;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.phone-input-wrapper input::placeholder {
+  color: #b0bec5;
 }
 
 .login-form input {
-  width: 92%;
-  padding: 10px;
-  margin-bottom: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(0, 188, 212, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #00bcd4;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+}
+
+.login-form input::placeholder {
+  color: #b0bec5;
 }
 
 .login-form button {
   width: 100%;
-  padding: 12px;
-  background: #2563eb;
+  padding: 0.875rem;
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
   color: white;
   font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .login-form button:hover {
-  background: #1e40af;
+  background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 188, 212, 0.3);
+}
+
+.login-form button:active {
+  transform: translateY(0);
 }
 
 .forgot-link {
   display: block;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 1rem;
   font-size: 0.9rem;
-  color: #2563eb;
+  color: #00bcd4;
   text-decoration: none;
+  transition: color 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
+
 .forgot-link:hover {
+  color: #00acc1;
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .login-form {
+    padding: 2rem 1.5rem;
+    margin: 0 1rem;
+  }
+  
+  .login-form h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
 }

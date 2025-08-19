@@ -22,23 +22,25 @@ export default function SignupForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-      const response = await fetch('http://localhost:8080/auth/dealers/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    try {
+      const response = await fetch(
+        "http://localhost:8080/auth/dealers/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
       console.log("Signup successful:", data);
-
-
-    }
-    catch (error) {
+      alert("Signup successful!");
+      window.location.href = "/";
+    } catch (error) {
       console.error("Error submitting form:", error);
     }
     console.log("Form Submitted", formData);

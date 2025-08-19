@@ -1,8 +1,9 @@
 import SignupForm from "../components/SignupForm/SignupForm";
+import "./Signup.css";
 
 export default function Signup() {
   return (
-    <div style={{ minHeight: "100vh", background: "#f9fafb", padding: "20px" }}>
+    <div className="signup-page">
       <SignupForm />
     </div>
   );

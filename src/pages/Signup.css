@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.signup-page {
+  min-height: 100vh;
+  background: #0d1a26;
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+@media (max-width: 768px) {
+  .signup-page {
+    padding: 1rem;
+  }
+}

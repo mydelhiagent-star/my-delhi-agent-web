@@ -1,5 +1,6 @@
 // src/components/Dashboard/PostProperty.jsx
 import React, { useState } from "react";
+import "./PostProperty.css";
 
 export default function PostProperty() {
   const [property, setProperty] = useState({
@@ -47,17 +48,7 @@ export default function PostProperty() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        maxWidth: "600px",
-        margin: "0 auto",
-        padding: "20px",
-        background: "#fff",
-        border: "1px solid #ddd",
-        borderRadius: "10px",
-      }}
-    >
+    <form onSubmit={handleSubmit} className="post-property-form">
       <input
         type="text"
         name="title"
@@ -65,7 +56,6 @@ export default function PostProperty() {
         value={property.title}
         onChange={handleChange}
         required
-        style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
       />
 
       <textarea
@@ -74,7 +64,6 @@ export default function PostProperty() {
         value={property.description}
         onChange={handleChange}
         required
-        style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
       />
 
       <input
@@ -84,7 +73,6 @@ export default function PostProperty() {
         value={property.address}
         onChange={handleChange}
         required
-        style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
       />
 
       <input
@@ -94,7 +82,6 @@ export default function PostProperty() {
         value={property.price}
         onChange={handleChange}
         required
-        style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
       />
 
       <input
@@ -103,7 +90,6 @@ export default function PostProperty() {
         placeholder="Owner Name"
         value={property.owner_name}
         onChange={handleChange}
-        style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
       />
 
       <input
@@ -112,7 +98,6 @@ export default function PostProperty() {
         placeholder="Owner Phone"
         value={property.owner_phone}
         onChange={handleChange}
-        style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
       />
 
       <input
@@ -121,7 +106,6 @@ export default function PostProperty() {
         placeholder="Nearest Landmark"
         value={property.nearest_landmark}
         onChange={handleChange}
-        style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
       />
 
       <label>Upload Photos:</label>
@@ -130,7 +114,6 @@ export default function PostProperty() {
         multiple
         accept="image/*"
         onChange={(e) => handleFileChange(e, "photos")}
-        style={{ display: "block", marginBottom: "10px" }}
       />
 
       <label>Upload Videos:</label>
@@ -139,21 +122,9 @@ export default function PostProperty() {
         multiple
         accept="video/*"
         onChange={(e) => handleFileChange(e, "videos")}
-        style={{ display: "block", marginBottom: "10px" }}
       />
 
-      <button
-        type="submit"
-        style={{
-          width: "100%",
-          padding: "10px",
-          background: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
+      <button type="submit">
         Post Property
       </button>
     </form>

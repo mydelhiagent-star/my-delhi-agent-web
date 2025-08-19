@@ -1,55 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /* src/components/LocationDropdown/LocationDropdown.css */
 .location-dropdown {
   position: relative;
   display: inline-block;
+  font-family: 'Poppins', sans-serif;
 }
 
 .dropdown-toggle {
-  padding: 10px 15px;
-  background: #2563eb;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3);
 }
 
 .dropdown-menu {
   position: absolute;
-  background: white;
-  border: 1px solid #ddd;
+  background: #0d1a26;
+  border: 1px solid rgba(0, 188, 212, 0.3);
   width: 250px;
   max-height: 400px;
   overflow-y: auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   z-index: 10;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
 }
 
 .main-location {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(0, 188, 212, 0.2);
 }
 
 .main-title {
-  padding: 10px;
-  font-weight: bold;
-  background: #f9fafb;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  background: rgba(0, 188, 212, 0.1);
   cursor: pointer;
+  color: #ffffff;
+  transition: all 0.3s ease;
 }
 
 .main-title:hover {
-  background: #f3f4f6;
+  background: rgba(0, 188, 212, 0.15);
+  color: #00bcd4;
 }
 
 .sub-location-list {
   list-style: none;
-  padding-left: 15px;
+  padding-left: 1rem;
   margin: 0;
 }
 
 .sub-location-list li {
-  padding: 8px 10px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
+  color: #b0bec5;
+  transition: all 0.3s ease;
 }
 
 .sub-location-list li:hover {
-  background: #f0f9ff;
+  background: rgba(0, 188, 212, 0.1);
+  color: #00bcd4;
+}
+
+/* Custom scrollbar for dropdown */
+.dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: #00bcd4;
+  border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: #00acc1;
 }

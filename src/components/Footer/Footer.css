@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.mda-footer {
+  background: #0d1a26;
+  border-top: 1px solid rgba(0, 188, 212, 0.1);
+  padding: 2rem 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.mda-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.mda-footer-text {
+  color: #b0bec5;
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .mda-footer {
+    padding: 1.5rem 0;
+  }
+  
+  .mda-footer-container {
+    padding: 0 1rem;
+  }
+}

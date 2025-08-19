@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-
+import "./MyProperties.css";
 
 export default function MyProperties() {
   const [properties, setProperties] = useState([]);
   const [editingProperty, setEditingProperty] = useState(null);
   const [soldOptions, setSoldOptions] = useState(null);
   
-
- 
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return; // no token means no properties to fetch
@@ -22,13 +19,11 @@ export default function MyProperties() {
           }
         );
         
-
         if (!response.ok) {
           throw new Error("Failed to fetch properties");
         }
 
         const data = await response.json();
-  
         setProperties(data);
       } catch (error) {
         console.error("Error fetching properties:", error);
@@ -81,95 +76,51 @@ export default function MyProperties() {
   };
 
   return (
-    <div>
-      <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
-        My Properties
-      </h3>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "20px",
-          justifyContent: "center",
-        }}
-      >
+    <div className="my-properties-container">
+      <h3 className="my-properties-title">My Properties</h3>
+      <div className="properties-grid">
         {properties.map((prop) => (
-          <div
-            key={prop.id}
-            style={{
-              width: "320px",
-              background: "#fff",
-              padding: "15px",
-              borderRadius: "10px",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-              position: "relative",
-            }}
-          >
+          <div key={prop.id} className="property-card">
             {/* Carousel */}
-            <div
-              style={{
-                position: "relative",
-                height: "180px",
-                marginBottom: "10px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  overflowX: "auto",
-                  scrollSnapType: "x mandatory",
-                  height: "100%",
-                }}
-              >
+            <div className="property-carousel">
+              <div className="property-carousel-content">
                 {prop.photos &&
                   prop.photos.map((photo, i) => (
                     <img
                       key={i}
                       src={photo}
                       alt={`Property ${i}`}
-                      style={{
-                        minWidth: "100%",
-                        objectFit: "cover",
-                        scrollSnapAlign: "center",
-                      }}
                     />
                   ))}
                 {prop.videos &&
                   prop.videos.map((video, i) => (
-                    <video
-                      key={i}
-                      controls
-                      style={{
-                        minWidth: "100%",
-                        objectFit: "cover",
-                        scrollSnapAlign: "center",
-                      }}
-                    >
+                    <video key={i} controls>
                       <source src={video} type="video/mp4" />
                     </video>
                   ))}
               </div>
             </div>
 
-            <h4>{prop.title}</h4>
-            <p>{prop.description}</p>
-            <p>
+            <h4 className="property-title">{prop.title}</h4>
+            <p className="property-description">{prop.description}</p>
+            <p className="property-detail">
               <b>Address:</b> {prop.address}
             </p>
-            <p>
+            <p className="property-detail">
               <b>Price:</b> ₹{prop.price}
             </p>
-            <p>
+            <p className="property-detail">
               <b>Nearest Landmark:</b> {prop.nearest_landmark}
             </p>
             {prop.status && (
-              <p style={{ color: "green", fontWeight: "bold" }}>
+              <p className="property-status">
                 Status: {prop.status}
               </p>
             )}
 
-            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <div className="property-actions">
               <button
+                className="property-btn property-btn-edit"
                 onClick={() =>
                   setEditingProperty({
                     ...prop,
@@ -177,28 +128,12 @@ export default function MyProperties() {
                     videosInput: prop.videos?.join(",") || "",
                   })
                 }
-                style={{
-                  flex: 1,
-                  background: "#ffc107",
-                  border: "none",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
               >
                 Edit
               </button>
               <button
+                className="property-btn property-btn-delete"
                 onClick={() => handleDelete(prop.id)}
-                style={{
-                  flex: 1,
-                  background: "#dc3545",
-                  border: "none",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  color: "#fff",
-                }}
               >
                 Delete
               </button>
@@ -206,65 +141,30 @@ export default function MyProperties() {
 
             {/* Sold Flow */}
             {soldOptions === prop.id ? (
-              <div style={{ marginTop: "10px" }}>
+              <div className="sold-options">
                 <button
+                  className="sold-btn sold-btn-me"
                   onClick={() => handleSold(prop.id, "Me")}
-                  style={{
-                    width: "100%",
-                    background: "#28a745",
-                    border: "none",
-                    padding: "8px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    color: "#fff",
-                    marginBottom: "5px",
-                  }}
                 >
                   Sold by Me
                 </button>
                 <button
+                  className="sold-btn sold-btn-mda"
                   onClick={() => handleSold(prop.id, "My Delhi Agent")}
-                  style={{
-                    width: "100%",
-                    background: "#17a2b8",
-                    border: "none",
-                    padding: "8px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    color: "#fff",
-                    marginBottom: "5px",
-                  }}
                 >
                   Sold by My Delhi Agent
                 </button>
                 <button
+                  className="sold-btn sold-btn-other"
                   onClick={() => handleSold(prop.id, "Other")}
-                  style={{
-                    width: "100%",
-                    background: "#6c757d",
-                    border: "none",
-                    padding: "8px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    color: "#fff",
-                  }}
                 >
                   Sold by Other
                 </button>
               </div>
             ) : (
               <button
+                className="property-btn-sold"
                 onClick={() => setSoldOptions(prop.id)}
-                style={{
-                  marginTop: "10px",
-                  width: "100%",
-                  background: "#007bff",
-                  border: "none",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  color: "#fff",
-                }}
               >
                 Mark as Sold
               </button>
@@ -275,35 +175,13 @@ export default function MyProperties() {
 
       {/* Edit Modal */}
       {editingProperty && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.6)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-        >
-          <form
-            onSubmit={handleEditSave}
-            style={{
-              background: "#fff",
-              padding: "20px",
-              borderRadius: "10px",
-              width: "400px",
-              maxHeight: "80vh",
-              overflowY: "auto",
-            }}
-          >
-            <h3>Edit Property</h3>
+        <div className="edit-modal-overlay">
+          <form onSubmit={handleEditSave} className="edit-modal-content">
+            <h3 className="edit-modal-title">Edit Property</h3>
             <input
               type="text"
               name="title"
+              className="edit-modal-input"
               value={editingProperty.title}
               onChange={(e) =>
                 setEditingProperty({
@@ -311,10 +189,10 @@ export default function MyProperties() {
                   title: e.target.value,
                 })
               }
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
             />
             <textarea
               name="description"
+              className="edit-modal-textarea"
               value={editingProperty.description}
               onChange={(e) =>
                 setEditingProperty({
@@ -322,11 +200,11 @@ export default function MyProperties() {
                   description: e.target.value,
                 })
               }
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
             />
             <input
               type="text"
               name="address"
+              className="edit-modal-input"
               value={editingProperty.address}
               onChange={(e) =>
                 setEditingProperty({
@@ -334,11 +212,11 @@ export default function MyProperties() {
                   address: e.target.value,
                 })
               }
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
             />
             <input
               type="number"
               name="price"
+              className="edit-modal-input"
               value={editingProperty.price}
               onChange={(e) =>
                 setEditingProperty({
@@ -346,11 +224,11 @@ export default function MyProperties() {
                   price: e.target.value,
                 })
               }
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
             />
             <input
               type="text"
               name="nearest_landmark"
+              className="edit-modal-input"
               value={editingProperty.nearest_landmark}
               onChange={(e) =>
                 setEditingProperty({
@@ -358,37 +236,24 @@ export default function MyProperties() {
                   nearest_landmark: e.target.value,
                 })
               }
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
             />
 
             {/* Photos */}
             <div style={{ marginBottom: "15px" }}>
-              <label>
+              <label className="edit-modal-label">
                 <b>Photos</b>
               </label>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "10px",
-                  margin: "10px 0",
-                }}
-              >
+              <div className="media-grid">
                 {editingProperty.photos &&
                   editingProperty.photos.map((photo, i) => (
-                    <div key={i} style={{ position: "relative" }}>
+                    <div key={i} className="media-item">
                       <img
                         src={photo}
                         alt={`photo-${i}`}
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          objectFit: "cover",
-                          borderRadius: "5px",
-                        }}
                       />
                       <button
                         type="button"
+                        className="media-remove-btn"
                         onClick={() =>
                           setEditingProperty({
                             ...editingProperty,
@@ -397,18 +262,6 @@ export default function MyProperties() {
                             ),
                           })
                         }
-                        style={{
-                          position: "absolute",
-                          top: "-5px",
-                          right: "-5px",
-                          background: "red",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: "20px",
-                          height: "20px",
-                          cursor: "pointer",
-                        }}
                       >
                         ✕
                       </button>
@@ -442,31 +295,19 @@ export default function MyProperties() {
 
             {/* Videos */}
             <div style={{ marginBottom: "15px" }}>
-              <label>
+              <label className="edit-modal-label">
                 <b>Videos</b>
               </label>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "10px",
-                  margin: "10px 0",
-                }}
-              >
+              <div className="media-grid">
                 {editingProperty.videos &&
                   editingProperty.videos.map((video, i) => (
-                    <div key={i} style={{ position: "relative" }}>
-                      <video
-                        src={video}
-                        controls
-                        style={{
-                          width: "100px",
-                          height: "80px",
-                          borderRadius: "5px",
-                        }}
-                      />
+                    <div key={i} className="media-item">
+                      <video controls>
+                        <source src={video} type="video/mp4" />
+                      </video>
                       <button
                         type="button"
+                        className="media-remove-btn"
                         onClick={() =>
                           setEditingProperty({
                             ...editingProperty,
@@ -475,18 +316,6 @@ export default function MyProperties() {
                             ),
                           })
                         }
-                        style={{
-                          position: "absolute",
-                          top: "-5px",
-                          right: "-5px",
-                          background: "red",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: "20px",
-                          height: "20px",
-                          cursor: "pointer",
-                        }}
                       >
                         ✕
                       </button>
@@ -518,33 +347,14 @@ export default function MyProperties() {
               />
             </div>
 
-            <div style={{ display: "flex", gap: "10px" }}>
-              <button
-                type="submit"
-                style={{
-                  flex: 1,
-                  background: "#007bff",
-                  border: "none",
-                  padding: "10px",
-                  color: "#fff",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
+            <div className="edit-modal-actions">
+              <button type="submit" className="edit-modal-btn edit-modal-btn-save">
                 Save
               </button>
               <button
                 type="button"
+                className="edit-modal-btn edit-modal-btn-cancel"
                 onClick={() => setEditingProperty(null)}
-                style={{
-                  flex: 1,
-                  background: "#6c757d",
-                  border: "none",
-                  padding: "10px",
-                  color: "#fff",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
               >
                 Cancel
               </button>

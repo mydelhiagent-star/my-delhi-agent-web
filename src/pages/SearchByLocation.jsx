@@ -4,6 +4,7 @@ import LocationDropdown from "../components/LocationDropdown/LocationDropdown";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import SearchProperties from "../components/Admin/SearchProperty"; // import your SearchProperty component
+import "./SearchByLocation.css";
 
 export default function SearchByLocation() {
   const [selected, setSelected] = useState({ location: "", sub_location: "" });
@@ -67,8 +68,8 @@ export default function SearchByLocation() {
   }, [selected.sub_location]);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Search Dealers & Properties</h2>
+    <div className="search-location-container">
+      <h2 className="search-location-title">Search Dealers & Properties</h2>
 
       {/* 🔹 Pass API data into dropdown */}
       <LocationDropdown
@@ -79,13 +80,9 @@ export default function SearchByLocation() {
       {/* Dealers */}
       {selected.location && selected.sub_location && (
         <>
-          <h3 style={{ marginTop: "20px" }}>Dealers</h3>
+          <h3 className="search-location-dealers-title">Dealers</h3>
           {dealers.length > 0 ? (
-            <table
-              border="1"
-              cellPadding="8"
-              style={{ width: "100%", marginBottom: "30px" }}
-            >
+            <table className="search-location-table">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -112,13 +109,13 @@ export default function SearchByLocation() {
               </tbody>
             </table>
           ) : (
-            <p>No dealers found.</p>
+            <p className="search-location-no-dealers">No dealers found.</p>
           )}
 
           {/* Properties */}
           {dealers.map((dealer) => (
-            <div key={dealer.id} style={{ marginBottom: "40px" }}>
-              <h3>{dealer.name} – Properties</h3>
+            <div key={dealer.id} className="search-location-dealer-section">
+              <h3 className="search-location-dealer-properties-title">{dealer.name} – Properties</h3>
               <SearchProperties
                 properties={
                   Array.isArray(dealer.properties) ? dealer.properties : []

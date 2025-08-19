@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./PropertiView.css";
 
 // Dummy properties (you can later fetch from backend or use properties.js)
 const dummyProperties = [
@@ -88,64 +89,26 @@ export default function SearchProperty() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+    <div className="property-view-container">
+      <h2 className="property-view-title">
         Property Listings
       </h2>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: "20px",
-        }}
-      >
+      <div className="property-view-grid">
         {properties.map((prop, index) => (
-          <div
-            key={index}
-            style={{
-              width: "320px",
-              background: "#fff",
-              borderRadius: "10px",
-              boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+          <div key={index} className="property-view-card">
             {/* Carousel */}
-            <div style={{ position: "relative", height: "200px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  overflowX: "auto",
-                  scrollSnapType: "x mandatory",
-                  height: "100%",
-                }}
-              >
+            <div className="property-view-carousel">
+              <div className="property-view-carousel-content">
                 {prop.photos.map((photo, i) => (
                   <img
                     key={i}
                     src={photo}
                     alt={`Property ${i}`}
-                    style={{
-                      minWidth: "100%",
-                      objectFit: "cover",
-                      scrollSnapAlign: "center",
-                    }}
                   />
                 ))}
                 {prop.videos.map((video, i) => (
-                  <video
-                    key={i}
-                    controls
-                    style={{
-                      minWidth: "100%",
-                      objectFit: "cover",
-                      scrollSnapAlign: "center",
-                    }}
-                  >
+                  <video key={i} controls>
                     <source src={video} type="video/mp4" />
                   </video>
                 ))}
@@ -153,36 +116,22 @@ export default function SearchProperty() {
             </div>
 
             {/* Property Details */}
-            <div style={{ padding: "15px" }}>
-              <h3>{prop.title}</h3>
-              <p style={{ color: "#555" }}>{prop.description}</p>
-              <p>
+            <div className="property-view-details">
+              <h3 className="property-view-card-title">{prop.title}</h3>
+              <p className="property-view-description">{prop.description}</p>
+              <p className="property-view-info">
                 <b>Address:</b> {prop.address}
               </p>
-              <p>
+              <p className="property-view-info">
                 <b>Nearest Landmark:</b> {prop.nearest_landmark}
               </p>
-              <p
-                style={{
-                  fontSize: "18px",
-                  color: "#007bff",
-                  fontWeight: "bold",
-                }}
-              >
+              <p className="property-view-price">
                 ₹{prop.price.toLocaleString()}
               </p>
 
               {/* Owner Details */}
               {showOwner[index] ? (
-                <div
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
-                    background: "#f9f9f9",
-                  }}
-                >
+                <div className="property-view-owner">
                   <p>
                     <b>Owner:</b> {prop.owner_name}
                   </p>
@@ -193,17 +142,8 @@ export default function SearchProperty() {
               ) : null}
 
               <button
+                className="property-view-toggle-btn"
                 onClick={() => toggleOwner(index)}
-                style={{
-                  marginTop: "10px",
-                  padding: "8px 12px",
-                  border: "none",
-                  borderRadius: "5px",
-                  background: "#28a745",
-                  color: "#fff",
-                  cursor: "pointer",
-                  width: "100%",
-                }}
               >
                 {showOwner[index] ? "Hide Details" : "Show Owner Details"}
               </button>
