@@ -176,6 +176,44 @@
   transform: translateY(0);
 }
 
+/* Error states */
+.mda-input-error {
+  border-color: #ff6b6b !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
+}
+
+.mda-error-text {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  font-weight: 400;
+}
+
+.mda-general-error {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Loading state */
+.mda-signin-btn:disabled {
+  background: linear-gradient(135deg, #666 0%, #555 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.mda-signin-btn:disabled:hover {
+  background: linear-gradient(135deg, #666 0%, #555 100%);
+  transform: none;
+  box-shadow: none;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
