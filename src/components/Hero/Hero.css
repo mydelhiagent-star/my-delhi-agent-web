@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .mda-hero {
-  background: linear-gradient(rgba(13, 26, 38, 0.8), rgba(13, 26, 38, 0.9)), 
-              url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%230d1a26" width="1200" height="800"/><circle cx="200" cy="200" r="50" fill="%2300bcd4" opacity="0.1"/><circle cx="1000" cy="600" r="80" fill="%2300bcd4" opacity="0.1"/><circle cx="800" cy="200" r="30" fill="%2300bcd4" opacity="0.1"/></svg>');
+  background: linear-gradient(rgba(13, 26, 38, 0.35), rgba(13, 26, 38, 0.55)), url('../../assets/bgimage.png');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -19,7 +19,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(13, 26, 38, 0.7);
+  background: rgba(13, 26, 38, 0.25);
   z-index: 1;
 }
 

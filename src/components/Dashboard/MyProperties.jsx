@@ -16,6 +16,22 @@ export default function MyProperties() {
     } catch {}
   }, []);
 
+  // Debug: Log image URLs whenever properties change
+  useEffect(() => {
+    if (!Array.isArray(properties)) return;
+    properties.forEach((property) => {
+      if (Array.isArray(property?.photos)) {
+        property.photos.forEach((photoUrl, index) => {
+          // Logs data URLs or remote URLs depending on how they were provided
+          console.log(
+            `[MyProperties] propertyId=${property?.id ?? "unknown"} title="${property?.title ?? ""}" photo[${index}] url:`,
+            photoUrl
+          );
+        });
+      }
+    });
+  }, [properties]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return; // no token means rely on local cached properties only

@@ -3,6 +3,7 @@ import Hero from "../components/Hero/Hero";
 import WhyJoinUs from "../components/WhyJoinUs/WhyJoinUs";
 import FAQ from "../components/FAQ/FAQ";
 import Footer from "../components/Footer/Footer";
+import WhatsAppButton from "../components/WhatsAppButton/WhatsAppButton";
 
 export default function LandingPage() {
   return (
@@ -12,6 +13,7 @@ export default function LandingPage() {
       <WhyJoinUs />
       <FAQ />
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }
