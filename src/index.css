@@ -45,11 +45,11 @@ html {
   color: #ffffff;
 }
 
-/* Focus styles */
-*:focus {
-  outline: 2px solid #00bcd4;
-  outline-offset: 2px;
-}
+Focus styles */
+/* *:focus {
+  /* outline: 2px solid #00bcd4; */
+  /* outline-offset: 2px; */
+/* } */
 
 /* Button reset */
 button {
