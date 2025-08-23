@@ -5,39 +5,18 @@ export default function MyProperties() {
   const [properties, setProperties] = useState([]);
   const [editingProperty, setEditingProperty] = useState(null);
   const [soldOptions, setSoldOptions] = useState(null);
-  
-  // Load any locally saved properties immediately so the UI shows new posts
-  useEffect(() => {
-    try {
-      const cached = JSON.parse(localStorage.getItem("myProperties") || "[]");
-      if (Array.isArray(cached)) {
-        setProperties(cached);
-      }
-    } catch {}
-  }, []);
-
-  // Debug: Log image URLs whenever properties change
-  useEffect(() => {
-    if (!Array.isArray(properties)) return;
-    properties.forEach((property) => {
-      if (Array.isArray(property?.photos)) {
-        property.photos.forEach((photoUrl, index) => {
-          // Logs data URLs or remote URLs depending on how they were provided
-          console.log(
-            `[MyProperties] propertyId=${property?.id ?? "unknown"} title="${property?.title ?? ""}" photo[${index}] url:`,
-            photoUrl
-          );
-        });
-      }
-    });
-  }, [properties]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return; // no token means rely on local cached properties only
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
     const fetchProperties = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
           "http://localhost:8080/properties/",
           {
@@ -57,43 +36,23 @@ export default function MyProperties() {
           : Array.isArray(data?.properties)
           ? data.properties
           : [];
-        // Merge with locally saved properties (from PostProperty form)
-        let cached = [];
-        try {
-          cached = JSON.parse(localStorage.getItem("myProperties") || "[]");
-        } catch {}
-        const cachedArray = Array.isArray(cached) ? cached : [];
 
-        // Deduplicate by `id` when present; otherwise by a simple composite key
-        const map = new Map();
-        const addToMap = (item) => {
-          const key = item?.id ?? `${item?.title}|${item?.address}|${item?.price}`;
-          if (!map.has(key)) map.set(key, item);
-        };
-        apiProperties.forEach(addToMap);
-        cachedArray.forEach(addToMap);
-
-        setProperties(Array.from(map.values()));
+        setProperties(apiProperties);
       } catch (error) {
         console.error("Error fetching properties:", error);
-        try {
-          const cached = JSON.parse(localStorage.getItem("myProperties") || "[]");
-          setProperties(Array.isArray(cached) ? cached : []);
-        } catch {}
+        setProperties([]);
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchProperties();
   }, []);
-
-  const saveProperties = (updated) => {
-    setProperties(updated);
-    localStorage.setItem("myProperties", JSON.stringify(updated));
-  };
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this property?")) {
       const updated = properties.filter((p) => p.id !== id);
-      saveProperties(updated);
+      setProperties(updated);
     }
   };
 
@@ -101,7 +60,7 @@ export default function MyProperties() {
     const updated = properties.map((p) =>
       p.id === id ? { ...p, status: `Sold by ${soldBy}` } : p
     );
-    saveProperties(updated);
+    setProperties(updated);
     setSoldOptions(null);
     alert(`Property marked as Sold by ${soldBy}`);
   };
@@ -123,10 +82,14 @@ export default function MyProperties() {
     const updated = properties.map((p) =>
       p.id === editingProperty.id ? updatedProperty : p
     );
-    saveProperties(updated);
+    setProperties(updated);
     setEditingProperty(null);
     alert("Property updated successfully!");
   };
+
+  if (loading) {
+    return <div>Loading properties...</div>;
+  }
 
   return (
     <div className="my-properties-container">
@@ -186,7 +149,7 @@ export default function MyProperties() {
               </button>
               <button
                 className="property-btn property-btn-delete"
-                onClick={() => handleDelete(prop.id)}
+                onClick={() => handleDelete(id)}
               >
                 Delete
               </button>
