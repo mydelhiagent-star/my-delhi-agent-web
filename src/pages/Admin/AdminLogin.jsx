@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/admin/login", {
+      const res = await fetch(API_ENDPOINTS.ADMIN_LOGIN, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, password }).toString(),

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginModal.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function LoginModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -58,7 +59,7 @@ export default function LoginModal({ isOpen, onClose }) {
     setErrors({ phone: "", password: "", general: "" });
 
     try {
-      const response = await fetch("http://localhost:8080/auth/dealers/login", {
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 // src/components/Dashboard/PostProperty.jsx
 import React, { useState } from "react";
 import "./PostProperty.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function PostProperty() {
   const [property, setProperty] = useState({
@@ -50,7 +51,7 @@ export default function PostProperty() {
       
       if (totalFiles > 0) {
         // Simple API call: Just request number of presigned URLs
-        const response = await fetch("http://localhost:8080/cloudfare/presigned-urls", {
+        const response = await fetch(API_ENDPOINTS.PRESIGNED_URLS, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -80,7 +81,7 @@ export default function PostProperty() {
             body: file,
             headers: { "Content-Type": file.type }
           });
-          console.log(uploadResponse);
+         
           
           if (!uploadResponse.ok) {
             throw new Error(`Failed to upload ${file.name}`);
@@ -137,7 +138,7 @@ export default function PostProperty() {
       console.log(propertyWithFileKeys);
       
       // Send property to backend to add in database
-      const propertyResponse = await fetch("http://localhost:8080/properties/dealer/", {
+      const propertyResponse = await fetch(API_ENDPOINTS.PROPERTIES_DEALER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

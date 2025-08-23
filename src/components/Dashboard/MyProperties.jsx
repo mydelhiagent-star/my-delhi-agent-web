@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./MyProperties.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function MyProperties() {
   const [properties, setProperties] = useState([]);
@@ -18,7 +19,7 @@ export default function MyProperties() {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://localhost:8080/properties/",
+          API_ENDPOINTS.PROPERTIES,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

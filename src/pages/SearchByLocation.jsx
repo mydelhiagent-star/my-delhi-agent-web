@@ -5,6 +5,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import SearchProperties from "../components/Admin/SearchProperty"; // import your SearchProperty component
 import "./SearchByLocation.css";
+import { API_ENDPOINTS } from "../config/api";
 
 export default function SearchByLocation() {
   const [selected, setSelected] = useState({ location: "", sub_location: "" });
@@ -16,7 +17,7 @@ export default function SearchByLocation() {
     const loadLocations = async () => {
       try {
         const res = await fetch(
-          "http://localhost:8080/admin/dealers/locations/sublocations"
+          API_ENDPOINTS.ADMIN_DEALERS_LOCATIONS
         );
         const data = await res.json();
         setLocations(data); // [{location: "...", sub_location: ["..",".."]}]
@@ -37,7 +38,7 @@ export default function SearchByLocation() {
 
       try {
         const res = await fetch(
-          `http://localhost:8080/admin/dealers/with-properties?subLocation=${selected.sub_location}`,
+          `${API_ENDPOINTS.ADMIN_DEALERS_WITH_PROPERTIES}?subLocation=${selected.sub_location}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

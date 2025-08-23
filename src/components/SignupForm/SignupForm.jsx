@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./SignupForm.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function SignupForm() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ export default function SignupForm() {
     e.preventDefault();
     try {
       const response = await fetch(
-        "http://localhost:8080/auth/dealers/register",
+        API_ENDPOINTS.REGISTER,
         {
           method: "POST",
           headers: {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./LoginForm.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ export default function LoginForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/auth/dealers/login", {
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
