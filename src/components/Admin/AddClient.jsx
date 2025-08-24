@@ -1,32 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useState } from "react";
 import "./AddClient.css";
 
 export default function AddClient() {
-  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     requirement: "",
-    status: "",
     aadhar_number: "",
     aadhar_photo: "",
   });
-
-  // ← GET property_id and dealer_id from URL query params
-  useEffect(() => {
-    const propertyId = searchParams.get("property_id");
-    const dealerId = searchParams.get("dealer_id");
-    
-    // Store in formData for submission (hidden from user)
-    if (propertyId && dealerId) {
-      setFormData(prev => ({
-        ...prev,
-        property_id: propertyId,
-        dealer_id: dealerId,
-      }));
-    }
-  }, [searchParams]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -46,23 +28,11 @@ export default function AddClient() {
       return;
     }
 
-    // Check if we have property info
-    if (!formData.property_id || !formData.dealer_id) {
-      alert("Property information is missing!");
-      return;
-    }
-
-    // ← TRANSFORM data to match your backend Lead model
+    // Create lead data without status field
     const leadData = {
       name: formData.name,
       phone: formData.phone,
-      properties: [
-        {
-          property_id: formData.property_id,
-          dealer_id: formData.dealer_id,
-          status: formData.status,
-        }
-      ],
+      requirement: formData.requirement,
       aadhar_number: formData.aadhar_number,
       aadhar_photo: formData.aadhar_photo,
     };
@@ -86,7 +56,6 @@ export default function AddClient() {
           name: "",
           phone: "",
           requirement: "",
-          status: "",
           aadhar_number: "",
           aadhar_photo: "",
         });
@@ -103,13 +72,6 @@ export default function AddClient() {
   return (
     <div className="add-client-container">
       <h3 className="add-client-title">Add Client</h3>
-      
-      {/* ← SHOW property info if from URL (optional) */}
-      {searchParams.get("property_id") && (
-        <div className="property-info">
-          <p>Creating lead for Property ID: {searchParams.get("property_id")}</p>
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="add-client-form">
         <input
@@ -137,20 +99,6 @@ export default function AddClient() {
           value={formData.requirement}
           onChange={handleChange}
         />
-
-        <select
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-          required
-          className="status-dropdown"
-        >
-          <option value="">Select Status</option>
-          <option value="viewed">Viewed</option>
-          <option value="processing">Processing</option>
-          <option value="purchased">Purchased</option>
-          <option value="not_interested">Not Interested</option>
-        </select>
 
         <input
           type="text"

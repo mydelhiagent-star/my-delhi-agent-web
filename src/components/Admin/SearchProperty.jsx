@@ -11,10 +11,36 @@ export default function SearchProperty({ properties = [] }) {
     }));
   };
 
-  // Placeholder for Add Client action
-  const handleAddClient = (prop) => {
-    console.log("Add client for property:", prop.id);
-    // 👉 You can replace this with opening a modal or calling a parent function
+  const handleAddClient = async (prop) => {
+    try {
+     
+      
+      // ← CORRECT: Send only PropertyInterest data
+      const propertyInterest = {
+        property_id: prop._id,
+        dealer_id: prop.dealer_id,
+      };
+  
+      const response = await fetch("http://localhost:8080/leads/admin/68ab92a05a06fc1c3b418012/properties", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(propertyInterest), // ← Only PropertyInterest
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message || "Property added successfully");
+      } else {
+        const error = await response.json();
+        alert("Failed to add property");
+      }
+    } catch (error) {
+      console.error("Error creating lead:", error);
+      alert("Failed to add property. Please try again.");
+    } 
   };
 
   return (
