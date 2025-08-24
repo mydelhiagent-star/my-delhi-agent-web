@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./SearchProperty.css";
 
 export default function SearchProperty({ properties = [] }) {
-  
   const [showDetails, setShowDetails] = useState({});
 
   const toggleDetails = (id) => {
@@ -12,11 +11,15 @@ export default function SearchProperty({ properties = [] }) {
     }));
   };
 
+  // Placeholder for Add Client action
+  const handleAddClient = (prop) => {
+    console.log("Add client for property:", prop.id);
+    // 👉 You can replace this with opening a modal or calling a parent function
+  };
+
   return (
     <div className="search-property-container">
-      <h2 className="search-property-title">
-        Property Listings
-      </h2>
+      <h2 className="search-property-title">Property Listings</h2>
 
       {properties.length === 0 ? (
         <p className="search-property-empty">No properties found.</p>
@@ -74,6 +77,7 @@ export default function SearchProperty({ properties = [] }) {
                   </div>
                 )}
 
+                {/* Toggle Button */}
                 <button
                   className="search-property-toggle-btn"
                   onClick={() => toggleDetails(prop.id)}
@@ -81,6 +85,14 @@ export default function SearchProperty({ properties = [] }) {
                   {showDetails[prop.id]
                     ? "Hide Details"
                     : "Show Price & Owner"}
+                </button>
+
+                {/* Add Client Button */}
+                <button
+                  className="search-property-add-client-btn"
+                  onClick={() => handleAddClient(prop)}
+                >
+                  Add Client
                 </button>
               </div>
             </div>
