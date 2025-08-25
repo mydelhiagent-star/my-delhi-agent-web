@@ -14,6 +14,37 @@
   text-align: center;
 }
 
+.contact-section {
+  margin-bottom: 2rem;
+}
+
+.contact-section h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.contact-details {
+  color: #b0bec5;
+  line-height: 1.8;
+}
+
+.contact-label {
+  color: #ffffff;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.contact-details a {
+  color: #00bcd4;
+  text-decoration: none;
+}
+
+.contact-details a:hover {
+  text-decoration: underline;
+}
+
 .social-media-section {
   margin-bottom: 2rem;
 }
@@ -151,6 +182,10 @@
   
   .mda-footer-container {
     padding: 0 1rem;
+  }
+  
+  .contact-details {
+    font-size: 0.95rem;
   }
   
   .social-media-section h3 {

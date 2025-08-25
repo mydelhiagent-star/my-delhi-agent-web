@@ -3,6 +3,7 @@
 .mda-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 1rem 2rem;
   background: rgba(13, 26, 38, 0.95);
   backdrop-filter: blur(10px);
@@ -37,12 +38,35 @@
   letter-spacing: -0.02em;
 }
 
+.mda-header-actions .contact-btn {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mda-header-actions .contact-btn:hover {
+  background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 188, 212, 0.3);
+}
+
 @media (max-width: 768px) {
   .mda-header {
     padding: 0.75rem 1rem;
+    gap: 0.5rem;
   }
   
   .mda-brand {
     font-size: 1.25rem;
+  }
+  
+  .mda-header-actions .contact-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
   }
 }

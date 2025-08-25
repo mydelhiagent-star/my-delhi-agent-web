@@ -66,3 +66,15 @@ a {
 a:hover {
   color: #00acc1;
 }
+
+/* Responsive helpers */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+h1 { font-size: clamp(1.75rem, 5vw, 2.25rem); }
+h2 { font-size: clamp(1.35rem, 4vw, 1.9rem); }
+h3 { font-size: clamp(1.15rem, 3vw, 1.5rem); }
+p, li, input, button, label { font-size: clamp(0.95rem, 2.6vw, 1rem); }

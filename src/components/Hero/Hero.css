@@ -5,7 +5,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,5 +107,8 @@
   .mda-hero-cta {
     padding: 0.9rem 2rem;
     font-size: 1rem;
+  }
+  .mda-hero-inner {
+    padding: 0 16px;
   }
 }

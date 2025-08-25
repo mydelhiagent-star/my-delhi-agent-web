@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Reviews.css";
 
 export default function Reviews() {
@@ -48,17 +48,38 @@ export default function Reviews() {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerSlide, setItemsPerSlide] = useState(3);
+
+  // Adjust items per slide based on viewport (mobile: 1, tablet: 2, desktop: 3)
+  useEffect(() => {
+    const computeItemsPerSlide = () => {
+      if (window.innerWidth <= 768) return 1;
+      if (window.innerWidth <= 1024) return 2;
+      return 3;
+    };
+    const update = () => setItemsPerSlide(computeItemsPerSlide());
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex + 3 >= reviews.length ? 0 : prevIndex + 3
-    );
+    setCurrentIndex((prevIndex) => {
+      const next = prevIndex + itemsPerSlide;
+      return next >= reviews.length ? 0 : next;
+    });
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex - 3 < 0 ? Math.max(0, reviews.length - 3) : prevIndex - 3
-    );
+    setCurrentIndex((prevIndex) => {
+      const prev = prevIndex - itemsPerSlide;
+      if (prev < 0) {
+        const remainder = reviews.length % itemsPerSlide;
+        const lastFullStart = remainder === 0 ? reviews.length - itemsPerSlide : reviews.length - remainder;
+        return Math.max(0, lastFullStart);
+      }
+      return prev;
+    });
   };
 
   const renderStars = (rating) => {
@@ -69,7 +90,7 @@ export default function Reviews() {
     ));
   };
 
-  const visibleReviews = reviews.slice(currentIndex, currentIndex + 3);
+  const visibleReviews = reviews.slice(currentIndex, currentIndex + itemsPerSlide);
 
   return (
     <section className="mda-reviews">
@@ -115,11 +136,11 @@ export default function Reviews() {
         </div>
 
         <div className="carousel-indicators">
-          {Array.from({ length: Math.ceil(reviews.length / 3) }, (_, index) => (
+          {Array.from({ length: Math.ceil(reviews.length / itemsPerSlide) }, (_, index) => (
             <button
               key={index}
-              className={`indicator ${index === Math.floor(currentIndex / 3) ? 'active' : ''}`}
-              onClick={() => setCurrentIndex(index * 3)}
+              className={`indicator ${index === Math.floor(currentIndex / itemsPerSlide) ? 'active' : ''}`}
+              onClick={() => setCurrentIndex(index * itemsPerSlide)}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
