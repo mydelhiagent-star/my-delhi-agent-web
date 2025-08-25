@@ -57,7 +57,28 @@ export default function MyProperties() {
     }
   };
 
-  const handleSold = (id, soldBy) => {
+  const handleSold = async(id, soldBy) => {
+    console.log(id, soldBy);
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        sold_by: soldBy,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to mark property as sold");
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+
     const updated = properties.map((p) =>
       p.id === id ? { ...p, status: `Sold by ${soldBy}` } : p
     );
