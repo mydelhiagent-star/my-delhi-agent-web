@@ -87,8 +87,30 @@ export default function MyProperties() {
     alert(`Property marked as Sold by ${soldBy}`);
   };
 
-  const handleEditSave = (e) => {
-    e.preventDefault();
+  const handleEditSave = async (id) => {
+    console.log(id);
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: editingProperty.title,
+        description: editingProperty.description,
+        address: editingProperty.address,
+        price: editingProperty.price,
+        nearest_landmark: editingProperty.nearest_landmark,
+        photos: editingProperty.photos,
+        videos: editingProperty.videos,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to edit property");
+    }
+
 
     // handle photos & videos split
     const updatedProperty = {
@@ -386,7 +408,9 @@ export default function MyProperties() {
             </div>
 
             <div className="edit-modal-actions">
-              <button type="submit" className="edit-modal-btn edit-modal-btn-save">
+              <button type="submit" className="edit-modal-btn edit-modal-btn-save"
+              onClick={() => handleEditSave(editingProperty.id)}
+              >
                 Save
               </button>
               <button
