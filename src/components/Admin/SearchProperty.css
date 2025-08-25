@@ -13,6 +13,96 @@
   font-weight: 600;
 }
 
+.client-search {
+  max-width: 640px;
+  margin: 0 auto 1.5rem auto;
+  position: relative;
+}
+
+.client-search-label {
+  display: block;
+  color: #b0bec5;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.client-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 188, 212, 0.25);
+  background: rgba(13, 26, 38, 0.75);
+  color: #ffffff;
+  outline: none;
+}
+
+.client-search-input::placeholder {
+  color: #90a4ae;
+}
+
+.client-search-results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  background: rgba(13, 26, 38, 0.98);
+  border: 1px solid rgba(0, 188, 212, 0.25);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+}
+
+.client-search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: #e0f7fa;
+}
+
+.client-search-result-item:hover,
+.client-search-result-item:focus {
+  background: rgba(0, 188, 212, 0.1);
+}
+
+.client-result-name {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.client-result-phone {
+  color: #90caf9;
+  font-family: 'Poppins', sans-serif;
+}
+
+.client-selected-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 188, 212, 0.12);
+  border: 1px solid rgba(0, 188, 212, 0.35);
+  border-radius: 999px;
+  color: #e0f7fa;
+}
+
+.client-clear-btn {
+  margin-left: 0.25rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: #ffffff;
+  cursor: pointer;
+}
+
 .search-property-empty {
   text-align: center;
   color: #b0bec5;

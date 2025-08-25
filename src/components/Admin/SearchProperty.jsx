@@ -1,8 +1,29 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import "./SearchProperty.css";
 
 export default function SearchProperty({ properties = [] }) {
   const [showDetails, setShowDetails] = useState({});
+  const [clientQuery, setClientQuery] = useState("");
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [isClientListOpen, setIsClientListOpen] = useState(false);
+
+  // Dummy clients data (can be replaced with API later)
+  const dummyClients = useMemo(
+    () => [
+      { id: "c1", name: "Aman Verma", phone: "9876543210" },
+      { id: "c2", name: "Priya Singh", phone: "9811122233" },
+      { id: "c3", name: "Rohit Kumar", phone: "9876001122" },
+      { id: "c4", name: "Neha Gupta", phone: "9910099100" },
+      { id: "c5", name: "Vikas Sharma", phone: "8800550033" },
+    ],
+    []
+  );
+
+  const filteredClients = useMemo(() => {
+    const q = clientQuery.trim();
+    if (!q) return [];
+    return dummyClients.filter((c) => c.phone.includes(q));
+  }, [clientQuery, dummyClients]);
 
   const toggleDetails = (id) => {
     setShowDetails((prev) => ({
@@ -46,6 +67,65 @@ export default function SearchProperty({ properties = [] }) {
   return (
     <div className="search-property-container">
       <h2 className="search-property-title">Property Listings</h2>
+
+      {/* Client Search */}
+      <div className="client-search">
+        <label className="client-search-label">Search Client by Phone</label>
+        <input
+          type="tel"
+          inputMode="numeric"
+          className="client-search-input"
+          placeholder="Enter phone number"
+          value={clientQuery}
+          onChange={(e) => {
+            setClientQuery(e.target.value.replace(/[^0-9]/g, ""));
+            setIsClientListOpen(true);
+          }}
+          onFocus={() => setIsClientListOpen(true)}
+        />
+        {isClientListOpen && filteredClients.length > 0 && (
+          <ul className="client-search-results" role="listbox">
+            {filteredClients.map((c) => (
+              <li
+                key={c.id}
+                role="option"
+                tabIndex={0}
+                className="client-search-result-item"
+                onClick={() => {
+                  setSelectedClient(c);
+                  setIsClientListOpen(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setSelectedClient(c);
+                    setIsClientListOpen(false);
+                  }
+                }}
+              >
+                <span className="client-result-name">{c.name}</span>
+                <span className="client-result-phone">{c.phone}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {selectedClient && (
+          <div className="client-selected-pill">
+            Searching for: <b>{selectedClient.name}</b> ({selectedClient.phone})
+            <button
+              className="client-clear-btn"
+              onClick={() => {
+                setSelectedClient(null);
+                setClientQuery("");
+                setIsClientListOpen(false);
+              }}
+              aria-label="Clear selected client"
+            >
+              ×
+            </button>
+          </div>
+        )}
+      </div>
 
       {properties.length === 0 ? (
         <p className="search-property-empty">No properties found.</p>

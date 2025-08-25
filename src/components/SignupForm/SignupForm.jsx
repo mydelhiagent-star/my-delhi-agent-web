@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./SignupForm.css";
+import "../Admin/AddClient.css";
 import { API_ENDPOINTS } from "../../config/api";
 
 export default function SignupForm() {
@@ -49,81 +50,87 @@ export default function SignupForm() {
   };
 
   return (
-    <form className="signup-form" onSubmit={handleSubmit}>
-      <h2>Broker / Builder Sign Up</h2>
+    <div className="add-client-container">
+      <h3 className="add-client-title">Add Dealer</h3>
+      <form onSubmit={handleSubmit} className="add-client-form" noValidate>
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          autoComplete="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="text"
-        name="name"
-        placeholder="Full Name"
-        value={formData.name}
-        onChange={handleChange}
-        required
-      />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Phone Number"
+          autoComplete="tel"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="tel"
-        name="phone"
-        placeholder="Phone Number"
-        value={formData.phone}
-        onChange={handleChange}
-        required
-      />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          autoComplete="email"
+          value={formData.email}
+          onChange={handleChange}
+        />
 
-      <input
-        type="email"
-        name="email"
-        placeholder="Email Address"
-        value={formData.email}
-        onChange={handleChange}
-      />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          autoComplete="new-password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-      />
+        <input
+          type="text"
+          name="office_address"
+          placeholder="Office Address"
+          autoComplete="street-address"
+          value={formData.office_address}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="text"
-        name="office_address"
-        placeholder="Office Address"
-        value={formData.office_address}
-        onChange={handleChange}
-        required
-      />
+        <input
+          type="text"
+          name="shop_name"
+          placeholder="Shop Name"
+          value={formData.shop_name}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="text"
-        name="shop_name"
-        placeholder="Shop Name"
-        value={formData.shop_name}
-        onChange={handleChange}
-        required
-      />
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={formData.location}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="text"
-        name="location"
-        placeholder="Location"
-        value={formData.location}
-        onChange={handleChange}
-        required
-      />
+        <input
+          type="text"
+          name="sub_location"
+          placeholder="Sub Location"
+          value={formData.sub_location}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="text"
-        name="sub_location"
-        placeholder="Sub Location"
-        value={formData.sub_location}
-        onChange={handleChange}
-        required
-      />
-
-      <button type="submit">Sign Up</button>
-    </form>
+        <button type="submit" className="add-client-submit-btn">Submit</button>
+      </form>
+    </div>
   );
 }
