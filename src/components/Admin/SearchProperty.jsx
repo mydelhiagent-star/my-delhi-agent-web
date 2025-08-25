@@ -1,29 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import "./SearchProperty.css";
 
 export default function SearchProperty({ properties = [] }) {
+  
   const [showDetails, setShowDetails] = useState({});
+  const [showAddClientModal, setShowAddClientModal] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
   const [clientQuery, setClientQuery] = useState("");
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [isClientListOpen, setIsClientListOpen] = useState(false);
-
-  // Dummy clients data (can be replaced with API later)
-  const dummyClients = useMemo(
-    () => [
-      { id: "c1", name: "Aman Verma", phone: "9876543210" },
-      { id: "c2", name: "Priya Singh", phone: "9811122233" },
-      { id: "c3", name: "Rohit Kumar", phone: "9876001122" },
-      { id: "c4", name: "Neha Gupta", phone: "9910099100" },
-      { id: "c5", name: "Vikas Sharma", phone: "8800550033" },
-    ],
-    []
-  );
-
-  const filteredClients = useMemo(() => {
-    const q = clientQuery.trim();
-    if (!q) return [];
-    return dummyClients.filter((c) => c.phone.includes(q));
-  }, [clientQuery, dummyClients]);
+  const [searchingClient, setSearchingClient] = useState(false);
+  const [clientResult, setClientResult] = useState(null);
 
   const toggleDetails = (id) => {
     setShowDetails((prev) => ({
@@ -31,18 +16,21 @@ export default function SearchProperty({ properties = [] }) {
       [id]: !prev[id],
     }));
   };
-
   const handleAddClient = async (prop) => {
     try {
      
-      
-      // ← CORRECT: Send only PropertyInterest data
       const propertyInterest = {
         property_id: prop._id,
         dealer_id: prop.dealer_id,
       };
+
+      if(!clientResult){
+        alert("No client found");
+        return;
+      }
+      
   
-      const response = await fetch("http://localhost:8080/leads/admin/68ab92a05a06fc1c3b418012/properties", {
+      const response = await fetch(`http://localhost:8080/leads/admin/${clientResult[0].id}/properties`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,11 +52,65 @@ export default function SearchProperty({ properties = [] }) {
     } 
   };
 
+ 
+  const closeAddClientModal = () => {
+    setShowAddClientModal(false);
+    setSelectedProperty(null);
+  };
+
+  // Search client when phone number reaches 10 digits
+  const handleClientSearch = async (phoneNumber) => {
+    if (phoneNumber.length === 10) {
+      setSearchingClient(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:8080/leads/admin/search?phone=${phoneNumber}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          if (data.leads) {
+            console.log(data.leads);
+            setClientResult(data.leads);
+            alert(`Client Found!\nName: ${data.leads[0].name}\nPhone: ${data.leads[0].phone}`);
+          } else {
+            setClientResult(null);
+            alert("No client found with this phone number");
+          }
+        } else {
+          setClientResult(null);
+          alert("Error searching for client");
+        }
+      } catch (error) {
+        console.error("Error searching client:", error);
+        setClientResult(null);
+        alert("Failed to search for client");
+      } finally {
+        setSearchingClient(false);
+      }
+    }
+  };
+  
+
+  const handleClientInputChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length <= 10) {
+      setClientQuery(value);
+      handleClientSearch(value);
+    }
+  };
+
   return (
     <div className="search-property-container">
-      <h2 className="search-property-title">Property Listings</h2>
+      <h2 className="search-property-title">
+        Property Listings
+      </h2>
 
-      {/* Client Search */}
+      {/* Client Search Section */}
       <div className="client-search">
         <label className="client-search-label">Search Client by Phone</label>
         <input
@@ -77,52 +119,18 @@ export default function SearchProperty({ properties = [] }) {
           className="client-search-input"
           placeholder="Enter phone number"
           value={clientQuery}
-          onChange={(e) => {
-            setClientQuery(e.target.value.replace(/[^0-9]/g, ""));
-            setIsClientListOpen(true);
-          }}
-          onFocus={() => setIsClientListOpen(true)}
+          onChange={handleClientInputChange}
         />
-        {isClientListOpen && filteredClients.length > 0 && (
-          <ul className="client-search-results" role="listbox">
-            {filteredClients.map((c) => (
-              <li
-                key={c.id}
-                role="option"
-                tabIndex={0}
-                className="client-search-result-item"
-                onClick={() => {
-                  setSelectedClient(c);
-                  setIsClientListOpen(false);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setSelectedClient(c);
-                    setIsClientListOpen(false);
-                  }
-                }}
-              >
-                <span className="client-result-name">{c.name}</span>
-                <span className="client-result-phone">{c.phone}</span>
-              </li>
-            ))}
-          </ul>
+        {searchingClient && (
+          <div className="client-search-loading">Searching...</div>
         )}
-
-        {selectedClient && (
-          <div className="client-selected-pill">
-            Searching for: <b>{selectedClient.name}</b> ({selectedClient.phone})
-            <button
-              className="client-clear-btn"
-              onClick={() => {
-                setSelectedClient(null);
-                setClientQuery("");
-                setIsClientListOpen(false);
-              }}
-              aria-label="Clear selected client"
-            >
-              ×
-            </button>
+        {clientResult && (
+          <div className="client-result">
+            <p><strong>Name:</strong> {clientResult[0].name}</p>
+            <p><strong>Phone:</strong> {clientResult[0].phone}</p>
+            {clientResult[0].requirement && (
+              <p><strong>Requirement:</strong> {clientResult[0].requirement}</p>
+            )}
           </div>
         )}
       </div>
@@ -132,7 +140,7 @@ export default function SearchProperty({ properties = [] }) {
       ) : (
         <div className="search-property-grid">
           {properties.map((prop) => (
-            <div key={prop.id} className="search-property-card">
+            <div key={prop.id || prop._id} className="search-property-card">
               {/* Carousel */}
               <div className="search-property-carousel">
                 <div className="search-property-carousel-content">
@@ -165,14 +173,14 @@ export default function SearchProperty({ properties = [] }) {
                 </p>
 
                 {/* Hidden Price */}
-                {showDetails[prop.id] && (
+                {showDetails[prop.id || prop._id] && (
                   <p className="search-property-price">
                     ₹{prop.price.toLocaleString()}
                   </p>
                 )}
 
                 {/* Owner Details */}
-                {showDetails[prop.id] && (
+                {showDetails[prop.id || prop._id] && (
                   <div className="search-property-owner">
                     <p>
                       <b>Owner:</b> {prop.owner_name}
@@ -183,26 +191,45 @@ export default function SearchProperty({ properties = [] }) {
                   </div>
                 )}
 
-                {/* Toggle Button */}
-                <button
-                  className="search-property-toggle-btn"
-                  onClick={() => toggleDetails(prop.id)}
-                >
-                  {showDetails[prop.id]
-                    ? "Hide Details"
-                    : "Show Price & Owner"}
-                </button>
+                <div className="search-property-buttons">
+                  <button
+                    className="search-property-toggle-btn"
+                    onClick={() => toggleDetails(prop.id || prop._id)}
+                  >
+                    {showDetails[prop.id || prop._id]
+                      ? "Hide Details"
+                      : "Show Price & Owner"}
+                  </button>
 
-                {/* Add Client Button */}
-                <button
-                  className="search-property-add-client-btn"
-                  onClick={() => handleAddClient(prop)}
-                >
-                  Add Client
-                </button>
+                  {/* Add Client Button */}
+                  <button
+                    className="search-property-add-client-btn"
+                    onClick={() => handleAddClient(prop)}
+                  >
+                    Add Client
+                  </button>
+                </div>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Add Client Modal */}
+      {showAddClientModal && (
+        <div className="modal-overlay" onClick={closeAddClientModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add Client</h3>
+              <button className="modal-close" onClick={closeAddClientModal}>
+                ×
+              </button>
+            </div>
+            <AddClientModal 
+              property={selectedProperty}
+              onClose={closeAddClientModal}
+            />
+          </div>
         </div>
       )}
     </div>
