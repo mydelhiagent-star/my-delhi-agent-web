@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./AddClient.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function AddClient() {
   const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ export default function AddClient() {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/leads/admin/", {
+      const response = await fetch(API_ENDPOINTS.LEADS_ADMIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
