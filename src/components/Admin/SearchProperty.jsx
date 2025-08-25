@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./SearchProperty.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function SearchProperty({ properties = [] }) {
   
@@ -30,7 +31,7 @@ export default function SearchProperty({ properties = [] }) {
       }
       
   
-      const response = await fetch(`http://localhost:8080/leads/admin/${clientResult[0].id}/properties`, {
+      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${clientResult[0].id}/properties`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +65,7 @@ export default function SearchProperty({ properties = [] }) {
       setSearchingClient(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://localhost:8080/leads/admin/search?phone=${phoneNumber}`, {
+        const response = await fetch(API_ENDPOINTS.LEADS_ADMIN_SEARCH, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
