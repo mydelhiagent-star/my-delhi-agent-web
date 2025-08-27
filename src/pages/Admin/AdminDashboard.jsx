@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SearchProperty from "../../pages/SearchByLocation";
 import AddDealer from "../../components/SignupForm/SignupForm";
 import AddClient from "../../components/Admin/AddClient";
+import ClientsList from "../../components/Admin/ClientsList";
 import Statistics from "../../components/Admin/Statistics";
 import "./AdminDashboard.css";
 
@@ -33,6 +34,12 @@ export default function AdminDashboard() {
           Add Client
         </button>
         <button 
+          className={`admin-dashboard-menu-btn ${activeTab === "clients" ? "active" : ""}`}
+          onClick={() => setActiveTab("clients")}
+        >
+          All Clients
+        </button>
+        <button 
           className={`admin-dashboard-menu-btn ${activeTab === "stats" ? "active" : ""}`}
           onClick={() => setActiveTab("stats")}
         >
@@ -45,6 +52,7 @@ export default function AdminDashboard() {
         {activeTab === "search" && <SearchProperty />}
         {activeTab === "dealer" && <AddDealer />}
         {activeTab === "client" && <AddClient />}
+        {activeTab === "clients" && <ClientsList />}
         {activeTab === "stats" && <Statistics />}
       </div>
     </div>
