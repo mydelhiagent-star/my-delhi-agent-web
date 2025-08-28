@@ -116,9 +116,7 @@ export default function MyClients() {
                     <strong>Requirement:</strong> {client.requirement}
                   </p>
                 )}
-                <p className="client-property-count">
-                  <strong>Properties Viewed:</strong> {client.properties?.length || 0}
-                </p>
+                
               </div>
               
               <div className="client-actions">
@@ -163,11 +161,12 @@ export default function MyClients() {
             {/* Properties Section */}
             {selectedClient.properties && selectedClient.properties.length > 0 && (
               <div className="client-properties">
-                <h4>Properties Viewed ({selectedClient.properties.length})</h4>
+                
                 
                 {loadingProperties ? (
                   <div className="properties-loading">Loading properties...</div>
                 ) : clientProperties.length > 0 ? (
+                    
                   <div className="properties-grid">
                     {clientProperties.map((property, index) => (
                       <div key={property.id || index} className="property-card">
