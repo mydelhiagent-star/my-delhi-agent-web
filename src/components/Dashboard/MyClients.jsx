@@ -158,10 +158,10 @@ export default function MyClients() {
               </div>
             </div>
 
-            {/* Properties Section */}
+           
             {selectedClient.properties && selectedClient.properties.length > 0 && (
               <div className="client-properties">
-                
+                <h4>Properties</h4>
                 
                 {loadingProperties ? (
                   <div className="properties-loading">Loading properties...</div>
