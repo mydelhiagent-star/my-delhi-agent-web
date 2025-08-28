@@ -14,6 +14,11 @@ export default function MyClients() {
     fetchMyClients();
   }, []);
 
+  useEffect(()=>{
+    console.log("clientProperties");
+    console.log(clientProperties);
+  },[clientProperties])
+
   
 
 
@@ -50,7 +55,7 @@ export default function MyClients() {
     console.log("Selected client for view:", client);
     setSelectedClient(client);
     setShowClientModal(true);
-    await fetchClientProperties(client);
+    await fetchClientProperties(client.id);
   };
 
   const fetchClientProperties = async (id) => {
@@ -70,11 +75,13 @@ export default function MyClients() {
       else
       {
         console.error("Error fetching client properties:", response.status);
+        setClientProperties([]);
       }
     }
     catch(error)
     {
       console.error("Error fetching client properties:", error);
+      setClientProperties([]);
     }
     finally {
         setLoadingProperties(false);
@@ -117,7 +124,7 @@ export default function MyClients() {
               <div className="client-actions">
                 <button
                   className="client-view-btn"
-                  onClick={() => handleView(client.id)}
+                  onClick={() => handleView(client)}
                 >
                   View Details
                 </button>
