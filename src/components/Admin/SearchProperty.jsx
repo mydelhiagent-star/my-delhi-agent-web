@@ -5,11 +5,13 @@ import { API_ENDPOINTS } from "../../config/api";
 export default function SearchProperty({ properties = [] }) {
   
   const [showDetails, setShowDetails] = useState({});
-  const [showAddClientModal, setShowAddClientModal] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const [clientQuery, setClientQuery] = useState("");
-  const [searchingClient, setSearchingClient] = useState(false);
-  const [clientResult, setClientResult] = useState(null);
+  // Inline add-client per-card state
+  const [addClientOpen, setAddClientOpen] = useState({});
+  const [inlinePhone, setInlinePhone] = useState({});
+  const [inlineSearching, setInlineSearching] = useState({});
+  const [inlineProcessing, setInlineProcessing] = useState({});
+  const [inlineError, setInlineError] = useState({});
+  const [inlineNotFound, setInlineNotFound] = useState({});
 
   const toggleDetails = (id) => {
     setShowDetails((prev) => ({
@@ -17,91 +19,90 @@ export default function SearchProperty({ properties = [] }) {
       [id]: !prev[id],
     }));
   };
-  const handleAddClient = async (prop) => {
+  const attachPropertyToClient = async (client, property) => {
+    if (!client) return;
+    const pid = property._id || property.id;
     try {
-     
-      const propertyInterest = {
-        property_id: prop._id,
-        dealer_id: prop.dealer_id,
+      setInlineProcessing((prev) => ({ ...prev, [pid]: true }));
+      const body = {
+        property_id: property._id,
+        dealer_id: property.dealer_id,
       };
-
-      if(!clientResult){
-        alert("No client found");
-        return;
-      }
-      
-  
-      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${clientResult[0].id}/properties`, {
+      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${client.id}/properties`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(propertyInterest), // ← Only PropertyInterest
+        body: JSON.stringify(body),
       });
-  
       if (response.ok) {
         const result = await response.json();
-        alert(result.message || "Property added successfully");
+        alert(result.message || "Property added to client");
+        setAddClientOpen((prev) => ({ ...prev, [pid]: false }));
+        setInlinePhone((prev) => ({ ...prev, [pid]: "" }));
+        setInlineNotFound((prev) => ({ ...prev, [pid]: false }));
       } else {
-        const error = await response.json();
-        alert("Failed to add property");
+        await response.json();
+        alert("Failed to add property to client");
       }
-    } catch (error) {
-      console.error("Error creating lead:", error);
+    } catch (err) {
+      console.error("Attach property error:", err);
       alert("Failed to add property. Please try again.");
-    } 
+    } finally {
+      setInlineProcessing((prev) => ({ ...prev, [pid]: false }));
+    }
   };
 
  
-  const closeAddClientModal = () => {
-    setShowAddClientModal(false);
-    setSelectedProperty(null);
+  const toggleInlineAddClient = (id) => {
+    setAddClientOpen((prev) => ({ ...prev, [id]: !prev[id] }));
+    setInlineError((prev) => ({ ...prev, [id]: "" }));
+    setInlineNotFound((prev) => ({ ...prev, [id]: false }));
   };
 
-  // Search client when phone number reaches 10 digits
-  const handleClientSearch = async (phoneNumber) => {
-    if (phoneNumber.length === 10) {
-      setSearchingClient(true);
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(`${API_ENDPOINTS.LEADS_SEARCH}?phone=${phoneNumber}`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          if (data.leads) {
-            console.log(data.leads);
-            setClientResult(data.leads);
-            alert(`Client Found!\nName: ${data.leads[0].name}\nPhone: ${data.leads[0].phone}`);
-          } else {
-            setClientResult(null);
-            alert("No client found with this phone number");
-          }
-        } else {
-          setClientResult(null);
-          alert("Error searching for client");
-        }
-      } catch (error) {
-        console.error("Error searching client:", error);
-        setClientResult(null);
-        alert("Failed to search for client");
-      } finally {
-        setSearchingClient(false);
-      }
+  // Handle inline phone input (no auto-search)
+  const handleInlinePhoneChange = (property, value) => {
+    const pid = property._id || property.id;
+    const clean = value.replace(/\D/g, '');
+    if (clean.length <= 10) {
+      setInlinePhone((prev) => ({ ...prev, [pid]: clean }));
+      setInlineError((prev) => ({ ...prev, [pid]: "" }));
+      setInlineNotFound((prev) => ({ ...prev, [pid]: false }));
     }
   };
-  
 
-  const handleClientInputChange = (e) => {
-    const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-    if (value.length <= 10) {
-      setClientQuery(value);
-      handleClientSearch(value);
+  // Manual search trigger via button
+  const searchInlineAndAttach = async (property) => {
+    const pid = property._id || property.id;
+    const phone = (inlinePhone[pid] || "").trim();
+    setInlineError((prev) => ({ ...prev, [pid]: "" }));
+    setInlineNotFound((prev) => ({ ...prev, [pid]: false }));
+    if (phone.length !== 10) {
+      setInlineError((prev) => ({ ...prev, [pid]: "Enter a valid 10-digit phone number" }));
+      return;
+    }
+    setInlineSearching((prev) => ({ ...prev, [pid]: true }));
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.LEADS_SEARCH}?phone=${phone}`, {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.leads && data.leads.length > 0) {
+          await attachPropertyToClient(data.leads[0], property);
+        } else {
+          setInlineNotFound((prev) => ({ ...prev, [pid]: true }));
+        }
+      } else {
+        setInlineError((prev) => ({ ...prev, [pid]: "Error searching for client" }));
+      }
+    } catch (err) {
+      console.error("Inline client search error:", err);
+      setInlineError((prev) => ({ ...prev, [pid]: "Failed to search for client" }));
+    } finally {
+      setInlineSearching((prev) => ({ ...prev, [pid]: false }));
     }
   };
 
@@ -111,30 +112,7 @@ export default function SearchProperty({ properties = [] }) {
         Property Listings
       </h2>
 
-      {/* Client Search Section */}
-      <div className="client-search">
-        <label className="client-search-label">Search Client by Phone</label>
-        <input
-          type="tel"
-          inputMode="numeric"
-          className="client-search-input"
-          placeholder="Enter phone number"
-          value={clientQuery}
-          onChange={handleClientInputChange}
-        />
-        {searchingClient && (
-          <div className="client-search-loading">Searching...</div>
-        )}
-        {clientResult && (
-          <div className="client-result">
-            <p><strong>Name:</strong> {clientResult[0].name}</p>
-            <p><strong>Phone:</strong> {clientResult[0].phone}</p>
-            {clientResult[0].requirement && (
-              <p><strong>Requirement:</strong> {clientResult[0].requirement}</p>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Removed top client search as per requirement */}
 
       {properties.length === 0 ? (
         <p className="search-property-empty">No properties found.</p>
@@ -205,34 +183,49 @@ export default function SearchProperty({ properties = [] }) {
                   {/* Add Client Button */}
                   <button
                     className="search-property-add-client-btn"
-                    onClick={() => handleAddClient(prop)}
+                    onClick={() => toggleInlineAddClient(prop._id || prop.id)}
                   >
                     Add Client
                   </button>
+                  {addClientOpen[prop._id || prop.id] && (
+                    <div className="client-inline-add">
+                      <label className="client-search-label">Client Phone</label>
+                      <input
+                        type="tel"
+                        inputMode="numeric"
+                        className="client-search-input"
+                        placeholder="Enter phone number"
+                        value={inlinePhone[prop._id || prop.id] || ""}
+                        onChange={(e) => handleInlinePhoneChange(prop, e.target.value)}
+                      />
+                      <button
+                        className="search-property-add-client-btn"
+                        onClick={() => searchInlineAndAttach(prop)}
+                        disabled={inlineSearching[prop._id || prop.id] || inlineProcessing[prop._id || prop.id]}
+                      >
+                        {inlineSearching[prop._id || prop.id] ? 'Searching...' : (inlineProcessing[prop._id || prop.id] ? 'Adding...' : 'Search')}
+                      </button>
+                      {inlineSearching[prop._id || prop.id] && (
+                        <div className="client-search-loading">Searching...</div>
+                      )}
+                      {inlineProcessing[prop._id || prop.id] && (
+                        <div className="client-search-loading">Adding...</div>
+                      )}
+                      {inlineError[prop._id || prop.id] && (
+                        <div className="client-search-loading">{inlineError[prop._id || prop.id]}</div>
+                      )}
+                      {inlineNotFound[prop._id || prop.id] && (
+                        <div className="client-search-loading">Client not found</div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
-
-      {/* Add Client Modal */}
-      {showAddClientModal && (
-        <div className="modal-overlay" onClick={closeAddClientModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Add Client</h3>
-              <button className="modal-close" onClick={closeAddClientModal}>
-                ×
-              </button>
-            </div>
-            <AddClientModal 
-              property={selectedProperty}
-              onClose={closeAddClientModal}
-            />
-          </div>
-        </div>
-      )}
+      {/* Modal removed as per requirement */}
     </div>
   );
 }
