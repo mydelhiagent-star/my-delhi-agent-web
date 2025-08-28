@@ -19,7 +19,8 @@ export const API_ENDPOINTS = {
   
   // Leads/Client Management
   LEADS_ADMIN: `${API_BASE_URL}/leads/admin/`,
-  LEADS_ADMIN_SEARCH: `${API_BASE_URL}/leads/admin/search`,
+  LEADS_SEARCH: `${API_BASE_URL}/leads/search`,
+  LEADS: `${API_BASE_URL}/leads/`,
   
   
   

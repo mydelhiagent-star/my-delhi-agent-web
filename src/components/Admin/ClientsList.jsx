@@ -19,7 +19,7 @@ export default function ClientsList() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN_SEARCH}`, {
+      const response = await fetch(`${API_ENDPOINTS.LEADS_SEARCH}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,7 +52,7 @@ export default function ClientsList() {
   const fetchClientProperties = async (id) => {
     try{
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${id}/property-details`, {
+      const response = await fetch(`${API_ENDPOINTS.LEADS}${id}/property-details`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import PostProperty from "../components/Dashboard/PostProperty";
 import MyProperties from "../components/Dashboard/MyProperties";
+import MyClients from "../components/Dashboard/MyClients";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("post");
@@ -19,6 +20,7 @@ export default function Dashboard() {
           justifyContent: "center",
           gap: "20px",
           marginBottom: "20px",
+          flexWrap: "wrap"
         }}
       >
         <button
@@ -47,11 +49,25 @@ export default function Dashboard() {
         >
           My Properties
         </button>
+        <button
+          onClick={() => setActiveTab("clients")}
+          style={{
+            padding: "10px 20px",
+            background: activeTab === "clients" ? "#007bff" : "#ddd",
+            color: activeTab === "clients" ? "#fff" : "#000",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          My Clients
+        </button>
       </div>
 
       {/* Conditional Components */}
       {activeTab === "post" && <PostProperty />}
       {activeTab === "my" && <MyProperties />}
+      {activeTab === "clients" && <MyClients />}
     </div>
   );
 }
