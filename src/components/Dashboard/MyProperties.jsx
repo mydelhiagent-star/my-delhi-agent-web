@@ -50,10 +50,25 @@ export default function MyProperties() {
     fetchProperties();
   }, []);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
+    console.log(id);
     if (window.confirm("Are you sure you want to delete this property?")) {
-      const updated = properties.filter((p) => p.id !== id);
-      setProperties(updated);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+       
+
+        if (!response.ok) {
+          throw new Error("Failed to delete property");
+        }
+      } catch (error) {
+        console.error("Error deleting property:", error);
+      }
     }
   };
 
@@ -194,7 +209,7 @@ export default function MyProperties() {
               </button>
               <button
                 className="property-btn property-btn-delete"
-                onClick={() => handleDelete(id)}
+                onClick={() => handleDelete(prop.id)}
               >
                 Delete
               </button>
