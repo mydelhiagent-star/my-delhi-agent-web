@@ -1,0 +1,169 @@
+.conflicts-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.conflicts-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 24px;
+}
+
+.conflicts-loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}
+
+.no-conflicts {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.conflicts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+}
+
+.conflict-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.conflict-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.property-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.property-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.section-title {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #007bff;
+}
+
+.property-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.property-title {
+  margin: 8px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.property-description {
+  margin: 8px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.property-address,
+.property-price,
+.property-landmark,
+.property-owner,
+.property-owner-phone {
+  margin: 5px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.property-price {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.dealer-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.dealer-name,
+.dealer-shop,
+.dealer-location,
+.dealer-sub-location,
+.dealer-address,
+.dealer-phone,
+.dealer-email {
+  margin: 5px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.client-section {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+}
+
+.client-name,
+.client-phone,
+.client-email,
+.client-aadhar,
+.client-requirement,
+.client-status {
+  margin: 5px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.client-status {
+  color: #007bff;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .conflicts-container {
+    padding: 10px;
+  }
+  
+  .conflicts-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .conflict-card {
+    margin: 0 10px;
+  }
+  
+  .property-image {
+    height: 150px;
+  }
+}

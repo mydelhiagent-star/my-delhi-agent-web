@@ -3,6 +3,7 @@ import SearchProperty from "../../pages/SearchByLocation";
 import AddDealer from "../../components/SignupForm/SignupForm";
 import AddClient from "../../components/Admin/AddClient";
 import ClientsList from "../../components/Admin/ClientsList";
+import ConflictingProperties from "../../components/Dashboard/ConflictingProperties";
 import Statistics from "../../components/Admin/Statistics";
 import "./AdminDashboard.css";
 
@@ -40,6 +41,12 @@ export default function AdminDashboard() {
           All Clients
         </button>
         <button 
+          className={`admin-dashboard-menu-btn ${activeTab === "conflicts" ? "active" : ""}`}
+          onClick={() => setActiveTab("conflicts")}
+        >
+          Conflicting Properties
+        </button>
+        <button 
           className={`admin-dashboard-menu-btn ${activeTab === "stats" ? "active" : ""}`}
           onClick={() => setActiveTab("stats")}
         >
@@ -53,6 +60,7 @@ export default function AdminDashboard() {
         {activeTab === "dealer" && <AddDealer />}
         {activeTab === "client" && <AddClient />}
         {activeTab === "clients" && <ClientsList />}
+        {activeTab === "conflicts" && <ConflictingProperties />}
         {activeTab === "stats" && <Statistics />}
       </div>
     </div>
