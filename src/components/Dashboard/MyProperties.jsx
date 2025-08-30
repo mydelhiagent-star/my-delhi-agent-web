@@ -61,11 +61,11 @@ export default function MyProperties() {
             Authorization: `Bearer ${token}`,
           },
         });
-       
-
         if (!response.ok) {
           throw new Error("Failed to delete property");
         }
+        const updatedProperties = properties.filter((p) => p.id !== id);
+        setProperties(updatedProperties);
       } catch (error) {
         console.error("Error deleting property:", error);
       }
