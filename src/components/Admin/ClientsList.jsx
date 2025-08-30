@@ -51,6 +51,7 @@ export default function ClientsList() {
 
   const fetchClientProperties = async (id) => {
     try{
+      setLoadingProperties(true);
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_ENDPOINTS.LEADS}${id}/property-details`, {
         headers: {
@@ -60,16 +61,22 @@ export default function ClientsList() {
       if(response.ok)
       {
         const data = await response.json();
-        setClientProperties(data);
+        data != null ? setClientProperties(data) : setClientProperties([]);
       }
       else
       {
         console.error("Error fetching client properties:", response.status);
+        setClientProperties([]);
       }
     }
     catch(error)
     {
       console.error("Error fetching client properties:", error);
+      setLoadingProperties(false);
+      setClientProperties([]);
+    }
+    finally{
+      setLoadingProperties(false);
     }
   };
 

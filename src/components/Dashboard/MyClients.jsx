@@ -61,6 +61,7 @@ export default function MyClients() {
   const fetchClientProperties = async (id) => {
     console.log(id);
     try{
+      setLoadingProperties(true);
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_ENDPOINTS.LEADS}${id}/property-details`, {
         headers: {
@@ -70,7 +71,8 @@ export default function MyClients() {
       if(response.ok)
       {
         const data = await response.json();
-        setClientProperties(data);
+        console.log(data);
+        data != null ? setClientProperties(data) : setClientProperties([]);
       }
       else
       {
