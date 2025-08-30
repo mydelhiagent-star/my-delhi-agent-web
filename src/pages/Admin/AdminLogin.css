@@ -80,13 +80,89 @@
 }
 
 @media (max-width: 768px) {
+  .admin-login-container {
+    padding: 1rem;
+    height: 100vh;
+  }
+  
   .admin-login-form {
     width: 90%;
     margin: 1rem;
     padding: 2rem 1.5rem;
+    border-radius: 12px;
   }
   
   .admin-login-title {
     font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .admin-login-input {
+    padding: 0.8rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .admin-login-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-login-container {
+    padding: 0.5rem;
+  }
+  
+  .admin-login-form {
+    width: 95%;
+    margin: 0.5rem;
+    padding: 1.75rem 1.25rem;
+    border-radius: 10px;
+  }
+  
+  .admin-login-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .admin-login-input {
+    padding: 0.75rem;
+    font-size: 16px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .admin-login-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-login-container {
+    padding: 0.25rem;
+  }
+  
+  .admin-login-form {
+    width: 98%;
+    margin: 0.25rem;
+    padding: 1.5rem 1rem;
+    border-radius: 8px;
+  }
+  
+  .admin-login-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .admin-login-input {
+    padding: 0.7rem;
+    font-size: 16px;
+    margin-bottom: 0.6rem;
+  }
+  
+  .admin-login-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
   }
 }

@@ -13,12 +13,62 @@ export default function SearchProperty({ properties = [] }) {
   const [inlineError, setInlineError] = useState({});
   const [inlineNotFound, setInlineNotFound] = useState({});
 
+  // View Client state
+  const [viewClientOpen, setViewClientOpen] = useState({});
+  const [clientModalOpen, setClientModalOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+
+  // Dummy data for clients linked to properties
+  const getDummyClients = (propertyId) => {
+    // Generate some dummy clients for any property
+    const names = ["Rahul Sharma", "Priya Patel", "Amit Kumar", "Neha Singh", "Vikram Malhotra", "Sneha Gupta", "Rajesh Verma", "Anjali Desai"];
+    const phones = ["9876543210", "8765432109", "7654321098", "6543210987", "5432109876", "4321098765", "3210987654", "2109876543"];
+    const statuses = ["view", "ongoing", "closed", "converted"];
+    
+    // Generate 2-4 random clients for each property
+    const numClients = Math.floor(Math.random() * 3) + 2;
+    const clients = [];
+    
+    for (let i = 0; i < numClients; i++) {
+      const randomName = names[Math.floor(Math.random() * names.length)];
+      const randomPhone = phones[Math.floor(Math.random() * phones.length)];
+      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      
+      clients.push({
+        id: `${propertyId}_${i + 1}`,
+        name: randomName,
+        phone: randomPhone,
+        status: randomStatus
+      });
+    }
+    
+    return clients;
+  };
+
   const toggleDetails = (id) => {
     setShowDetails((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
   };
+
+  const openClientModal = (property) => {
+    setSelectedProperty(property);
+    setClientModalOpen(true);
+  };
+
+  const closeClientModal = () => {
+    setClientModalOpen(false);
+    setSelectedProperty(null);
+  };
+
+  const changeClientStatus = (propertyId, clientId, newStatus) => {
+    // In a real app, this would make an API call
+    console.log(`Changing client ${clientId} status to ${newStatus} for property ${propertyId}`);
+    // For now, just log the change - in real app this would update the database
+    alert(`Client ${clientId} status changed to ${newStatus}`);
+  };
+
   const attachPropertyToClient = async (client, property) => {
     if (!client) return;
     const pid = property._id || property.id;
@@ -219,13 +269,73 @@ export default function SearchProperty({ properties = [] }) {
                       )}
                     </div>
                   )}
+
+                  {/* View Client Button */}
+                  <button
+                    className="search-property-view-client-btn"
+                    onClick={() => openClientModal(prop)}
+                  >
+                    View Clients
+                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
-      {/* Modal removed as per requirement */}
+
+      {/* Client List Modal */}
+      {clientModalOpen && selectedProperty && (
+        <div className="modal-overlay" onClick={closeClientModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Clients for {selectedProperty.title}</h3>
+              <button className="modal-close-btn" onClick={closeClientModal}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="client-table-container">
+                <table className="client-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Phone</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getDummyClients(selectedProperty._id || selectedProperty.id).map(client => (
+                      <tr key={client.id}>
+                        <td>{client.name}</td>
+                        <td>{client.phone}</td>
+                        <td>
+                          <span className={`status-badge status-${client.status}`}>
+                            {client.status}
+                          </span>
+                        </td>
+                        <td className="status-actions">
+                          <select
+                            value={client.status}
+                            onChange={(e) => changeClientStatus(selectedProperty._id || selectedProperty.id, client.id, e.target.value)}
+                            className="status-dropdown"
+                          >
+                            <option value="view">View</option>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="closed">Closed</option>
+                            <option value="converted">Converted</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

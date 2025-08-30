@@ -408,11 +408,13 @@
 
   .clients-table-container {
     font-size: 14px;
+    overflow-x: auto;
   }
 
   .clients-table th,
   .clients-table td {
     padding: 10px 8px;
+    font-size: 13px;
   }
 
   .client-actions {
@@ -423,6 +425,7 @@
   .client-btn {
     width: 100%;
     padding: 8px;
+    font-size: 12px;
   }
 
   .client-modal-content,
@@ -451,5 +454,134 @@
 
   .client-modal-content {
     max-width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .clients-container {
+    padding: 5px;
+  }
+
+  .clients-table-container {
+    font-size: 12px;
+    margin: 0 -5px;
+  }
+
+  .clients-table th,
+  .clients-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  .client-actions {
+    gap: 3px;
+  }
+
+  .client-btn {
+    padding: 6px;
+    font-size: 11px;
+  }
+
+  .client-modal-content,
+  .client-edit-modal-content {
+    width: 98%;
+    margin: 5px;
+    padding: 15px;
+  }
+
+  .properties-grid {
+    gap: 10px;
+  }
+
+  .property-card {
+    margin: 0 5px;
+  }
+
+  .property-carousel {
+    height: 120px;
+  }
+
+  .property-carousel-content img,
+  .property-carousel-content video {
+    height: 120px;
+  }
+
+  .client-edit-form {
+    padding: 15px;
+  }
+
+  .client-edit-form input,
+  .client-edit-form textarea {
+    padding: 8px;
+    font-size: 16px;
+  }
+
+  .client-edit-actions {
+    padding: 15px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .client-edit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .clients-container {
+    padding: 3px;
+  }
+
+  .clients-table-container {
+    font-size: 11px;
+    margin: 0 -3px;
+  }
+
+  .clients-table th,
+  .clients-table td {
+    padding: 6px 4px;
+    font-size: 11px;
+  }
+
+  .client-btn {
+    padding: 5px;
+    font-size: 10px;
+  }
+
+  .client-modal-content,
+  .client-edit-modal-content {
+    width: 99%;
+    margin: 3px;
+    padding: 12px;
+  }
+
+  .property-carousel {
+    height: 100px;
+  }
+
+  .property-carousel-content img,
+  .property-carousel-content video {
+    height: 100px;
+  }
+
+  .client-edit-form {
+    padding: 12px;
+  }
+
+  .client-edit-form input,
+  .client-edit-form textarea {
+    padding: 6px;
+    font-size: 16px;
+  }
+
+  .client-edit-actions {
+    padding: 12px;
+  }
+
+  .client-edit-btn {
+    padding: 10px;
+    font-size: 13px;
   }
 }
