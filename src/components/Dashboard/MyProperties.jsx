@@ -5,7 +5,6 @@ import { API_ENDPOINTS } from "../../config/api";
 export default function MyProperties() {
   const [properties, setProperties] = useState([]);
   const [editingProperty, setEditingProperty] = useState(null);
-  const [soldOptions, setSoldOptions] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,40 +65,12 @@ export default function MyProperties() {
         }
         const updatedProperties = properties.filter((p) => p.id !== id);
         setProperties(updatedProperties);
+        alert("Property deleted successfully!");
       } catch (error) {
         console.error("Error deleting property:", error);
+        alert("Failed to delete property");
       }
     }
-  };
-
-  const handleSold = async(id, soldBy) => {
-    console.log(id, soldBy);
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        sold_by: soldBy,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to mark property as sold");
-    }
-
-    const data = await response.json();
-    console.log(data);
-
-
-    const updated = properties.map((p) =>
-      p.id === id ? { ...p, status: `Sold by ${soldBy}` } : p
-    );
-    setProperties(updated);
-    setSoldOptions(null);
-    alert(`Property marked as Sold by ${soldBy}`);
   };
 
   const handleEditSave = async (e) => {
@@ -126,7 +97,6 @@ export default function MyProperties() {
     if (!response.ok) {
       throw new Error("Failed to edit property");
     }
-
 
     // handle photos & videos split
     const updatedProperty = {
@@ -214,37 +184,6 @@ export default function MyProperties() {
                 Delete
               </button>
             </div>
-
-            {/* Sold Flow */}
-            {soldOptions === prop.id ? (
-              <div className="sold-options">
-                <button
-                  className="sold-btn sold-btn-me"
-                  onClick={() => handleSold(prop.id, "Me")}
-                >
-                  Sold by Me
-                </button>
-                <button
-                  className="sold-btn sold-btn-mda"
-                  onClick={() => handleSold(prop.id, "My Delhi Agent")}
-                >
-                  Sold by My Delhi Agent
-                </button>
-                <button
-                  className="sold-btn sold-btn-other"
-                  onClick={() => handleSold(prop.id, "Other")}
-                >
-                  Sold by Other
-                </button>
-              </div>
-            ) : (
-              <button
-                className="property-btn-sold"
-                onClick={() => setSoldOptions(prop.id)}
-              >
-                Mark as Sold
-              </button>
-            )}
           </div>
         ))}
       </div>
@@ -424,8 +363,7 @@ export default function MyProperties() {
             </div>
 
             <div className="edit-modal-actions">
-              <button type="submit" className="edit-modal-btn edit-modal-btn-save"
-              >
+              <button type="submit" className="edit-modal-btn edit-modal-btn-save">
                 Save
               </button>
               <button

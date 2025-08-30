@@ -63,24 +63,24 @@
 .property-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #333 !important;
   margin-bottom: 0.75rem;
 }
 
 .property-description {
-  color: #b0bec5;
+  color: #333 !important;
   margin-bottom: 0.75rem;
   line-height: 1.5;
 }
 
 .property-detail {
-  color: #b0bec5;
+  color: #333 !important;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
 
 .property-detail b {
-  color: #ffffff;
+  color: #333 !important;
   font-weight: 600;
 }
 
