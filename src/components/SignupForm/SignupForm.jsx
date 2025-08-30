@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./SignupForm.css";
 import "../Admin/AddClient.css";
 import { API_ENDPOINTS } from "../../config/api";
+import { locations } from "../../constants/locations";
 
 export default function SignupForm() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function SignupForm() {
   });
 
   const handleChange = (e) => {
+    
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -111,14 +113,20 @@ export default function SignupForm() {
           required
         />
 
-        <input
-          type="text"
+        <select
           name="location"
-          placeholder="Location"
           value={formData.location}
           onChange={handleChange}
           required
-        />
+          className="add-client-form select"
+        >
+          <option value="">Select Location</option>
+          {locations.map((location, index) => (
+            <option key={index} value={location}>
+              {location}
+            </option>
+          ))}
+        </select>
 
         <input
           type="text"
