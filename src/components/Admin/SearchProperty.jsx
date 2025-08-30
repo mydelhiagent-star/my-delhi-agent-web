@@ -13,37 +13,38 @@ export default function SearchProperty({ properties = [] }) {
   const [inlineError, setInlineError] = useState({});
   const [inlineNotFound, setInlineNotFound] = useState({});
 
-  // View Client state
-  const [viewClientOpen, setViewClientOpen] = useState({});
+ 
   const [clientModalOpen, setClientModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [propertyClients, setPropertyClients] = useState([]);
 
   // Dummy data for clients linked to properties
-  const getDummyClients = (propertyId) => {
-    // Generate some dummy clients for any property
-    const names = ["Rahul Sharma", "Priya Patel", "Amit Kumar", "Neha Singh", "Vikram Malhotra", "Sneha Gupta", "Rajesh Verma", "Anjali Desai"];
-    const phones = ["9876543210", "8765432109", "7654321098", "6543210987", "5432109876", "4321098765", "3210987654", "2109876543"];
-    const statuses = ["view", "ongoing", "closed", "converted"];
-    
-    // Generate 2-4 random clients for each property
-    const numClients = Math.floor(Math.random() * 3) + 2;
-    const clients = [];
-    
-    for (let i = 0; i < numClients; i++) {
-      const randomName = names[Math.floor(Math.random() * names.length)];
-      const randomPhone = phones[Math.floor(Math.random() * phones.length)];
-      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+  const getClients = async(propertyId) => {
+    try{
+      const token = localStorage.getItem("token");
       
-      clients.push({
-        id: `${propertyId}_${i + 1}`,
-        name: randomName,
-        phone: randomPhone,
-        status: randomStatus
+      const response = await fetch(`${API_ENDPOINTS.LEADS_SEARCH}?property_id=${propertyId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-    }
-    
-    return clients;
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch clients");
+      }
+      const data = await response.json();
+      const leads = Array.isArray(data.leads) ? data.leads : [];
+      setPropertyClients(leads);
+    }catch (error) {
+      console.error("Error fetching property clients:", error);
+      setPropertyClients([]);
+    } 
   };
+    
+    
+   
+    
+  
 
   const toggleDetails = (id) => {
     setShowDetails((prev) => ({
@@ -55,6 +56,7 @@ export default function SearchProperty({ properties = [] }) {
   const openClientModal = (property) => {
     setSelectedProperty(property);
     setClientModalOpen(true);
+    getClients(property._id || property.id);
   };
 
   const closeClientModal = () => {
@@ -62,11 +64,45 @@ export default function SearchProperty({ properties = [] }) {
     setSelectedProperty(null);
   };
 
-  const changeClientStatus = (propertyId, clientId, newStatus) => {
-    // In a real app, this would make an API call
-    console.log(`Changing client ${clientId} status to ${newStatus} for property ${propertyId}`);
-    // For now, just log the change - in real app this would update the database
-    alert(`Client ${clientId} status changed to ${newStatus}`);
+  const changeClientStatus = async(propertyId, clientId, newStatus) => {
+    console.log(newStatus);
+    try{
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${clientId}/properties/${propertyId}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
+      if(response.ok)
+      {
+        alert("Client status changed successfully");
+        setPropertyClients(prevClients => 
+          prevClients.map(client => 
+            client.id === clientId 
+              ? { ...client, properties: client.properties.map(prop => 
+                  prop.property_id === propertyId 
+                    ? { ...prop, status: newStatus }
+                    : prop
+                )}
+              : client
+          )
+        );
+
+      }
+      else
+      {
+        alert("Failed to change client status");
+      }
+    }
+    catch(error)
+    {
+      console.error("Error changing client status:", error);
+    }
+    
   };
 
   const attachPropertyToClient = async (client, property) => {
@@ -306,13 +342,13 @@ export default function SearchProperty({ properties = [] }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {getDummyClients(selectedProperty._id || selectedProperty.id).map(client => (
+                    {propertyClients.map(client => (
                       <tr key={client.id}>
                         <td>{client.name}</td>
                         <td>{client.phone}</td>
                         <td>
                           <span className={`status-badge status-${client.status}`}>
-                            {client.status}
+                            {client.properties[0].status}
                           </span>
                         </td>
                         <td className="status-actions">
