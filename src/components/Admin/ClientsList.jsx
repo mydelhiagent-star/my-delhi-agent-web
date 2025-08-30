@@ -219,7 +219,7 @@ export default function ClientsList() {
             {/* Properties Section */}
             {selectedClient.properties && selectedClient.properties.length > 0 && (
               <div className="client-properties">
-                <h4>Properties Viewed ({selectedClient.properties.length})</h4>
+                <h4>Properties</h4>
                 
                 {loadingProperties ? (
                   <div className="properties-loading">Loading properties...</div>
