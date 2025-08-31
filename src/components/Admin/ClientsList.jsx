@@ -10,6 +10,7 @@ export default function ClientsList() {
   const [editingClient, setEditingClient] = useState(null);
   const [clientProperties, setClientProperties] = useState([]);
   const [loadingProperties, setLoadingProperties] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     fetchClients();
@@ -45,15 +46,22 @@ export default function ClientsList() {
     setShowClientModal(true);
     
     if (client.properties && client.properties.length > 0) {
-      await fetchClientProperties(client.id);
+      await fetchClientProperties(client.id, statusFilter);
     }
   };
 
-  const fetchClientProperties = async (id) => {
+  const fetchClientProperties = async (id, status) => {
     try{
       setLoadingProperties(true);
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.LEADS}${id}/property-details`, {
+      
+      // Build URL with status filter if not "all"
+      let url = `${API_ENDPOINTS.LEADS}${id}/property-details`;
+      if (status !== "all") {
+        url += `?status=${status}`;
+      }
+      
+      const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -78,6 +86,10 @@ export default function ClientsList() {
     finally{
       setLoadingProperties(false);
     }
+  };
+
+  const handleStatusFilterChange = (newStatus) => {
+    setStatusFilter(newStatus);
   };
 
   const handleEdit = (client) => {
@@ -149,6 +161,25 @@ export default function ClientsList() {
   return (
     <div className="clients-container">
       <h3 className="clients-title">All Clients</h3>
+      
+      {/* Status Filter */}
+      <div className="status-filter-container">
+        <label htmlFor="status-filter" className="status-filter-label">
+          Filter by Status:
+        </label>
+        <select
+          id="status-filter"
+          value={statusFilter}
+          onChange={(e) => handleStatusFilterChange(e.target.value)}
+          className="status-filter-dropdown"
+        >
+          <option value="all">All Statuses</option>
+          <option value="view">View</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="closed">Closed</option>
+          <option value="converted">Converted</option>
+        </select>
+      </div>
       
       <div className="clients-table-container">
         <table className="clients-table">
@@ -226,7 +257,7 @@ export default function ClientsList() {
             {/* Properties Section */}
             {selectedClient.properties && selectedClient.properties.length > 0 && (
               <div className="client-properties">
-                <h4>Properties</h4>
+                <h4>Properties (Filtered by: {statusFilter === "all" ? "All Statuses" : statusFilter})</h4>
                 
                 {loadingProperties ? (
                   <div className="properties-loading">Loading properties...</div>
@@ -275,7 +306,7 @@ export default function ClientsList() {
                     ))}
                   </div>
                 ) : (
-                  <div className="no-properties">No property details found</div>
+                  <div className="no-properties">No property details found for selected status</div>
                 )}
               </div>
             )}
