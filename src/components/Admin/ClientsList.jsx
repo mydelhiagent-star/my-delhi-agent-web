@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from "../../config/api";
 
 export default function ClientsList() {
   const [clients, setClients] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
   const [showClientModal, setShowClientModal] = useState(false);
@@ -32,6 +33,7 @@ export default function ClientsList() {
 
       const data = await response.json();
       setClients(Array.isArray(data.leads) ? data.leads : []);
+      setFilteredClients(Array.isArray(data.leads) ? data.leads : []);
     } catch (error) {
       console.error("Error fetching clients:", error);
       setClients([]);
@@ -89,6 +91,19 @@ export default function ClientsList() {
   };
 
   const handleStatusFilterChange = (newStatus) => {
+    if(newStatus === "all") {
+      setFilteredClients(clients);
+      setStatusFilter(newStatus);
+      return;
+    }
+    const filteredClients = clients.filter(client => {
+      if (!client.properties || client.properties.length === 0) {
+        return false;
+      }
+      return client.properties.some(property => property.status === newStatus);
+    });
+    console.log(filteredClients);
+    setFilteredClients(filteredClients);
     setStatusFilter(newStatus);
   };
 
@@ -191,7 +206,7 @@ export default function ClientsList() {
             </tr>
           </thead>
           <tbody>
-            {clients.map((client) => (
+            {filteredClients.map((client) => (
               <tr key={client.id} className="client-row">
                 <td>{client.name}</td>
                 <td>{client.phone}</td>
