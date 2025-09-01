@@ -41,7 +41,11 @@ export default function MyClients() {
       
       const brokerClients = data.leads;
       
-      setClients(brokerClients);
+      const clientsWithProperties = brokerClients.filter(client => 
+        client.properties && client.properties.length > 0
+      );
+      
+      setClients(clientsWithProperties);
     } catch (error) {
       console.error("Error fetching clients:", error);
       setClients([]);
