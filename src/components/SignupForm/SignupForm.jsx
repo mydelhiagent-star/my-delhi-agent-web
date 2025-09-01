@@ -42,12 +42,22 @@ export default function SignupForm() {
       }
       const data = await response.json();
       console.log("Signup successful:", data);
+      setFormData({
+        name: "",
+        phone: "",
+        password: "",
+        email: "",
+        office_address: "",
+        shop_name: "",
+        location: "",
+        sub_location: "",
+      });
+
       alert("Signup successful!");
-      window.location.href = "/";
     } catch (error) {
       console.error("Error submitting form:", error);
     }
-    console.log("Form Submitted", formData);
+    
     // TODO: API call here
   };
 
