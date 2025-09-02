@@ -20,11 +20,17 @@ export default function PostProperty() {
   const [isUploading, setIsUploading] = useState(false);
   const [previews, setPreviews] = useState({ photos: [], videos: [] });
   const [menuOpen, setMenuOpen] = useState({ type: null, index: null });
+  const [errors, setErrors] = useState({});
   const previousObjectUrlsRef = useRef({ photos: [], videos: [] });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProperty({ ...property, [name]: value });
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
   };
 
   const handleFileChange = (e, type) => {
@@ -98,8 +104,86 @@ export default function PostProperty() {
     };
   }, []);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Required field validations
+    if (!property.title.trim()) {
+      newErrors.title = "Title is required";
+    } else if (property.title.trim().length < 5) {
+      newErrors.title = "Title must be at least 5 characters long";
+    }
+
+    if (!property.description.trim()) {
+      newErrors.description = "Description is required";
+    } else if (property.description.trim().length < 20) {
+      newErrors.description = "Description must be at least 20 characters long";
+    }
+
+    if (!property.address.trim()) {
+      newErrors.address = "Address is required";
+    }
+
+    // Price validations
+    if (!property.min_price) {
+      newErrors.min_price = "Minimum price is required";
+    } else if (parseFloat(property.min_price) <= 0) {
+      newErrors.min_price = "Minimum price must be greater than 0";
+    }
+
+    if (!property.max_price) {
+      newErrors.max_price = "Maximum price is required";
+    } else if (parseFloat(property.max_price) <= 0) {
+      newErrors.max_price = "Maximum price must be greater than 0";
+    }
+
+    if (property.min_price && property.max_price) {
+      if (parseFloat(property.min_price) > parseFloat(property.max_price)) {
+        newErrors.max_price = "Maximum price must be greater than minimum price";
+      }
+    }
+
+    // Phone number validation (if provided)
+    if (property.owner_phone && !/^[0-9]{10}$/.test(property.owner_phone)) {
+      newErrors.owner_phone = "Phone number must be 10 digits";
+    }
+
+    // File validations
+    // if (property.photos.length > 10) {
+    //   newErrors.photos = "Maximum 10 photos allowed";
+    // }
+
+    // if (property.videos.length > 2) {
+    //   newErrors.videos = "Maximum 2 videos allowed";
+    // }
+
+    // File size validations
+    // const maxPhotoSize = 5 * 1024 * 1024; // 5MB
+    // const maxVideoSize = 100 * 1024 * 1024; // 100MB
+
+    // property.photos.forEach((file, index) => {
+    //   if (file.size > maxPhotoSize) {
+    //     newErrors.photos = `Photo ${index + 1} is too large (max 5MB)`;
+    //   }
+    // });
+
+    // property.videos.forEach((file, index) => {
+    //   if (file.size > maxVideoSize) {
+    //     newErrors.videos = `Video ${index + 1} is too large (max 100MB)`;
+    //   }
+    // });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
 
     setIsUploading(true);
 
@@ -192,7 +276,8 @@ export default function PostProperty() {
         ...property,
         photos: uploadedPhotoKeys,
         videos: uploadedVideoKeys,
-        price: parseFloat(property.price),
+        min_price: parseFloat(property.min_price),
+        max_price: parseFloat(property.max_price),
       };
 
       console.log(propertyWithFileKeys);
@@ -226,6 +311,8 @@ export default function PostProperty() {
         owner_phone: "",
         nearest_landmark: "",
       });
+      setErrors({});
+      setPreviews({ photos: [], videos: [] });
     } catch (error) {
       console.error("Failed to post property:", error);
       alert("Failed to post property. Please try again.");
@@ -242,16 +329,20 @@ export default function PostProperty() {
         placeholder="Title"
         value={property.title}
         onChange={handleChange}
+        className={errors.title ? "error" : ""}
         required
       />
+      {errors.title && <span className="error-message">{errors.title}</span>}
 
       <textarea
         name="description"
         placeholder="Description"
         value={property.description}
         onChange={handleChange}
+        className={errors.description ? "error" : ""}
         required
       />
+      {errors.description && <span className="error-message">{errors.description}</span>}
 
       <input
         type="text"
@@ -259,8 +350,10 @@ export default function PostProperty() {
         placeholder="Address"
         value={property.address}
         onChange={handleChange}
+        className={errors.address ? "error" : ""}
         required
       />
+      {errors.address && <span className="error-message">{errors.address}</span>}
 
       <input
         type="number"
@@ -268,16 +361,21 @@ export default function PostProperty() {
         placeholder="Min Price"
         value={property.min_price}
         onChange={handleChange}
+        className={errors.min_price ? "error" : ""}
         required
       />
+      {errors.min_price && <span className="error-message">{errors.min_price}</span>}
+      
       <input
         type="number"
         name="max_price"
         placeholder="Max Price"
         value={property.max_price}
         onChange={handleChange}
+        className={errors.max_price ? "error" : ""}
         required
       />
+      {errors.max_price && <span className="error-message">{errors.max_price}</span>}
 
       <input
         type="text"
@@ -293,7 +391,9 @@ export default function PostProperty() {
         placeholder="Owner Phone"
         value={property.owner_phone}
         onChange={handleChange}
+        className={errors.owner_phone ? "error" : ""}
       />
+      {errors.owner_phone && <span className="error-message">{errors.owner_phone}</span>}
 
       <input
         type="text"
@@ -310,6 +410,7 @@ export default function PostProperty() {
         accept="image/*"
         onChange={(e) => handleFileChange(e, "photos")}
       />
+      {errors.photos && <span className="error-message">{errors.photos}</span>}
       {previews.photos.length > 0 && (
         <div className="media-preview-grid">
           {previews.photos.map((src, idx) => (
@@ -358,6 +459,7 @@ export default function PostProperty() {
         accept="video/*"
         onChange={(e) => handleFileChange(e, "videos")}
       />
+      {errors.videos && <span className="error-message">{errors.videos}</span>}
       {previews.videos.length > 0 && (
         <div className="media-preview-grid">
           {previews.videos.map((src, idx) => (
