@@ -93,22 +93,18 @@ export default function MyProperties() {
         videos: editingProperty.videos,
       }),
     });
-
+  
     if (!response.ok) {
       throw new Error("Failed to edit property");
     }
-
-    // handle photos & videos split
+  
+    // Update local state with the current editingProperty data
     const updatedProperty = {
       ...editingProperty,
-      photos: editingProperty.photosInput
-        ? editingProperty.photosInput.split(",").map((p) => p.trim())
-        : [],
-      videos: editingProperty.videosInput
-        ? editingProperty.videosInput.split(",").map((v) => v.trim())
-        : [],
+      photos: editingProperty.photos || [], // Use current photos from state
+      videos: editingProperty.videos || [], // Use current videos from state
     };
-
+  
     const updated = properties.map((p) =>
       p.id === editingProperty.id ? updatedProperty : p
     );
