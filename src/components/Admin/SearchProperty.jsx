@@ -259,8 +259,11 @@ export default function SearchProperty({ properties = [] }) {
                   onClick={() => setPreviewProperty(prop)}
                   style={{ cursor: "pointer" }}
                 >
-                  {prop.title}
+                  Property Number: {prop.property_number}
                 </h3>
+                <p className="search-property-info">
+                  <b>Title:</b> {prop.title}
+                </p>
 
                 <p className="search-property-info">
                   <b>Nearest Landmark:</b> {prop.nearest_landmark}
