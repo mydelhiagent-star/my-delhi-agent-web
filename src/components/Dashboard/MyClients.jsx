@@ -94,6 +94,16 @@ export default function MyClients() {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   if (loading) {
     return <div className="my-clients-loading">Loading your clients...</div>;
   }
@@ -207,6 +217,9 @@ export default function MyClients() {
                         </p>
                         <p className="property-detail">
                           <b>Nearest Landmark:</b> {property.nearest_landmark}
+                        </p>
+                        <p className="property-detail">
+                          <b>Date:</b> {formatDate(property.created_at)}
                         </p>
                         {property.status && (
                           <p className="property-status">

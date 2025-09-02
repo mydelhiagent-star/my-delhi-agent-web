@@ -4,6 +4,17 @@ import "./SearchProperty.css";
 import { API_ENDPOINTS } from "../../config/api";
 import PropertyPreview from "../PropertyPreview/PropertyPreview";
 
+// Helper function to format date
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
 export default function SearchProperty({ properties = [] }) {
   const [showDetails, setShowDetails] = useState({});
   const navigate = useNavigate();
@@ -365,6 +376,7 @@ export default function SearchProperty({ properties = [] }) {
                     <tr>
                       <th>Name</th>
                       <th>Phone</th>
+                      <th>Date</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
@@ -374,6 +386,7 @@ export default function SearchProperty({ properties = [] }) {
                       <tr key={client.id}>
                         <td>{client.name}</td>
                         <td>{client.phone}</td>
+                        <td>{formatDate(client.properties[0].created_at)}</td>
                         <td>
                           <span
                             className={`status-badge status-${client.status}`}
