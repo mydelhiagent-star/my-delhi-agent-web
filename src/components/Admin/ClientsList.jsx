@@ -317,7 +317,7 @@ export default function ClientsList() {
                           <b>Address:</b> {property.address}
                         </p>
                         <p className="property-detail">
-                          <b>Price:</b> ₹{property.price}
+                          <b>Price:</b> ₹{property.min_price} - ₹{property.max_price}
                         </p>
                         <p className="property-detail">
                           <b>Nearest Landmark:</b> {property.nearest_landmark}

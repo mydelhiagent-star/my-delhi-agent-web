@@ -129,6 +129,7 @@ export default function MyProperties() {
         {(properties ?? []).map((prop) => (
           <div key={prop.id} className="property-card">
             {/* Carousel */}
+
             <div
               className="property-carousel"
               onClick={() => setPreviewProperty(prop)}
@@ -153,8 +154,18 @@ export default function MyProperties() {
               onClick={() => setPreviewProperty(prop)}
               style={{ cursor: "pointer" }}
             >
-              {prop.title}
+              Property Number: {prop.property_number}
             </h4>
+
+            
+
+            <p
+              className="property-detail"
+              onClick={() => setPreviewProperty(prop)}
+              style={{ cursor: "pointer" }}
+            >
+              <b>Title:</b> {prop.title}
+            </p>
 
             <p className="property-detail">
               <b>Price:</b> ₹{prop.min_price} - ₹{prop.max_price}

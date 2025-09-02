@@ -15,9 +15,13 @@ export default function SearchByLocation() {
   // 🔹 Fetch location → sub_location mapping from API
   useEffect(() => {
     const loadLocations = async () => {
+      const token = localStorage.getItem("token");
       try {
         const res = await fetch(
           API_ENDPOINTS.ADMIN_DEALERS_LOCATIONS
+          ,{
+            headers: { Authorization: `Bearer ${token}` },
+          },
         );
         const data = await res.json();
         setLocations(data); // [{location: "...", sub_location: ["..",".."]}]
