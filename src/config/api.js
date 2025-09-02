@@ -20,7 +20,7 @@ export const API_ENDPOINTS = {
   ADMIN_DEALERS: `${API_BASE_URL}/admin/dealers/`,
   ADMIN_DEALER_UPDATE: `${API_BASE_URL}/admin/dealers/`,
   ADMIN_DEALER_DELETE: `${API_BASE_URL}/admin/dealers/`,
-  ADMIN_DEALER_PASSWORD: `${API_BASE_URL}/admin/dealers/`,
+  ADMIN_DEALER_PASSWORD: `${API_BASE_URL}/admin/dealers/reset-password/`,
 
   // Leads/Client Management
   LEADS_ADMIN: `${API_BASE_URL}/leads/admin/`,

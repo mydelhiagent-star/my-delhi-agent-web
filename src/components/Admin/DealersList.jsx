@@ -111,10 +111,14 @@ export default function DealersList() {
   };
 
   const onSavePassword = async () => {
+    if (passwordDealer.newPassword.trim().length < 6) {
+      alert("Please enter a new password with at least 6 characters");
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${API_ENDPOINTS.ADMIN_DEALER_PASSWORD}${passwordDealer.id}/password`,
+        `${API_ENDPOINTS.ADMIN_DEALER_PASSWORD}${passwordDealer.id}`,
         {
           method: "PUT",
           headers: {
