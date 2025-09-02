@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SearchProperty.css";
 import { API_ENDPOINTS } from "../../config/api";
+import PropertyPreview from "../PropertyPreview/PropertyPreview";
 
 export default function SearchProperty({ properties = [] }) {
   const [showDetails, setShowDetails] = useState({});
   const navigate = useNavigate();
+  const [previewProperty, setPreviewProperty] = useState(null);
   // Inline add-client per-card state
   const [addClientOpen, setAddClientOpen] = useState({});
   const [inlinePhone, setInlinePhone] = useState({});
@@ -214,18 +216,13 @@ export default function SearchProperty({ properties = [] }) {
       ) : (
         <div className="search-property-grid">
           {properties.map((prop) => (
-            <div
-              key={prop.id || prop._id}
-              className="search-property-card"
-              onClick={() =>
-                navigate(`/property/${prop._id || prop.id}`, {
-                  state: { property: prop },
-                })
-              }
-              style={{ cursor: "pointer" }}
-            >
+            <div key={prop.id || prop._id} className="search-property-card">
               {/* Carousel */}
-              <div className="search-property-carousel">
+              <div
+                className="search-property-carousel"
+                onClick={() => setPreviewProperty(prop)}
+                style={{ cursor: "pointer" }}
+              >
                 <div className="search-property-carousel-content">
                   {prop.photos &&
                     prop.photos.map((photo, i) => (
@@ -241,8 +238,18 @@ export default function SearchProperty({ properties = [] }) {
               </div>
 
               {/* Property Details */}
-              <div className="search-property-details">
-                <h3 className="search-property-card-title">{prop.title}</h3>
+              <div
+                className="search-property-details"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <h3
+                  className="search-property-card-title"
+                  onClick={() => setPreviewProperty(prop)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {prop.title}
+                </h3>
 
                 <p className="search-property-info">
                   <b>Nearest Landmark:</b> {prop.nearest_landmark}
@@ -400,6 +407,12 @@ export default function SearchProperty({ properties = [] }) {
             </div>
           </div>
         </div>
+      )}
+      {previewProperty && (
+        <PropertyPreview
+          property={previewProperty}
+          onClose={() => setPreviewProperty(null)}
+        />
       )}
     </div>
   );

@@ -8,6 +8,7 @@ export default function PropertyDetails() {
   const location = useLocation();
   const preloaded =
     location.state && location.state.property ? location.state.property : null;
+  // Back closes preview by returning to previous history entry
 
   const [property, setProperty] = useState(preloaded);
   const [loading, setLoading] = useState(!preloaded);
@@ -95,7 +96,18 @@ export default function PropertyDetails() {
   return (
     <div style={{ background: "#0d1a26", minHeight: "100vh", color: "#fff" }}>
       <div style={{ display: "flex", alignItems: "center", padding: "1rem" }}>
-        <button onClick={() => navigate(-1)} style={{ marginRight: 12 }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            marginRight: 12,
+            background: "transparent",
+            color: "#00bcd4",
+            border: "1px solid rgba(0,188,212,0.4)",
+            padding: "8px 12px",
+            borderRadius: 10,
+            cursor: "pointer",
+          }}
+        >
           ← Back
         </button>
         <h2 style={{ margin: 0 }}>{property.title}</h2>

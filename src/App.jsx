@@ -5,6 +5,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PropertyDetails from "./pages/PropertyDetails";
+import SearchByLocation from "./pages/SearchByLocation";
 
 function App() {
   return (

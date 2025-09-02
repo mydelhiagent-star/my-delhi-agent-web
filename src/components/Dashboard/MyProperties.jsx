@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PropertyPreview from "../PropertyPreview/PropertyPreview";
 import "./MyProperties.css";
 import { API_ENDPOINTS } from "../../config/api";
 
@@ -8,6 +9,7 @@ export default function MyProperties() {
   const [editingProperty, setEditingProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [previewProperty, setPreviewProperty] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -124,16 +126,13 @@ export default function MyProperties() {
       <h3 className="my-properties-title">My Properties</h3>
       <div className="properties-grid">
         {(properties ?? []).map((prop) => (
-          <div
-            key={prop.id}
-            className="property-card"
-            onClick={() =>
-              navigate(`/property/${prop.id}`, { state: { property: prop } })
-            }
-            style={{ cursor: "pointer" }}
-          >
+          <div key={prop.id} className="property-card">
             {/* Carousel */}
-            <div className="property-carousel">
+            <div
+              className="property-carousel"
+              onClick={() => setPreviewProperty(prop)}
+              style={{ cursor: "pointer" }}
+            >
               <div className="property-carousel-content">
                 {prop.photos &&
                   prop.photos.map((photo, i) => (
@@ -148,7 +147,13 @@ export default function MyProperties() {
               </div>
             </div>
 
-            <h4 className="property-title">{prop.title}</h4>
+            <h4
+              className="property-title"
+              onClick={() => setPreviewProperty(prop)}
+              style={{ cursor: "pointer" }}
+            >
+              {prop.title}
+            </h4>
 
             <p className="property-detail">
               <b>Price:</b> ₹{prop.price}
@@ -160,7 +165,11 @@ export default function MyProperties() {
               <p className="property-status">Status: {prop.status}</p>
             )}
 
-            <div className="property-actions">
+            <div
+              className="property-actions"
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+            >
               <button
                 className="property-btn property-btn-edit"
                 onClick={() =>
@@ -372,6 +381,12 @@ export default function MyProperties() {
             </div>
           </form>
         </div>
+      )}
+      {previewProperty && (
+        <PropertyPreview
+          property={previewProperty}
+          onClose={() => setPreviewProperty(null)}
+        />
       )}
     </div>
   );

@@ -18,6 +18,7 @@ export default function PostProperty() {
 
   const [isUploading, setIsUploading] = useState(false);
   const [previews, setPreviews] = useState({ photos: [], videos: [] });
+  const [menuOpen, setMenuOpen] = useState({ type: null, index: null });
   const previousObjectUrlsRef = useRef({ photos: [], videos: [] });
 
   const handleChange = (e) => {
@@ -67,6 +68,21 @@ export default function PostProperty() {
       files.splice(index, 1);
       return { ...prev, [type]: files };
     });
+    setMenuOpen({ type: null, index: null });
+  };
+
+  const toggleMenu = (type, index) => {
+    setMenuOpen((curr) =>
+      curr.type === type && curr.index === index
+        ? { type: null, index: null }
+        : { type, index }
+    );
+  };
+
+  const handleViewMedia = (type, index) => {
+    const src = (previews[type] || [])[index];
+    if (src) window.open(src, "_blank", "noopener,noreferrer");
+    setMenuOpen({ type: null, index: null });
   };
 
   useEffect(() => {
@@ -290,11 +306,35 @@ export default function PostProperty() {
             <div key={idx} className="media-preview-item">
               <button
                 type="button"
-                className="media-remove-btn"
-                onClick={() => handleRemoveMedia("photos", idx)}
+                className="media-menu-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleMenu("photos", idx);
+                }}
+                aria-label="Options"
+                title="Options"
               >
-                ×
+                ⋯
               </button>
+              {menuOpen.type === "photos" && menuOpen.index === idx && (
+                <div
+                  className="media-menu"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleViewMedia("photos", idx)}
+                  >
+                    View
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMedia("photos", idx)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
               <img src={src} alt={`preview-${idx}`} />
             </div>
           ))}
@@ -314,11 +354,35 @@ export default function PostProperty() {
             <div key={idx} className="media-preview-item">
               <button
                 type="button"
-                className="media-remove-btn"
-                onClick={() => handleRemoveMedia("videos", idx)}
+                className="media-menu-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleMenu("videos", idx);
+                }}
+                aria-label="Options"
+                title="Options"
               >
-                ×
+                ⋯
               </button>
+              {menuOpen.type === "videos" && menuOpen.index === idx && (
+                <div
+                  className="media-menu"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleViewMedia("videos", idx)}
+                  >
+                    View
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMedia("videos", idx)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
               <video controls>
                 <source src={src} type="video/mp4" />
               </video>

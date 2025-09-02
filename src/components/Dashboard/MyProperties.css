@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 .my-properties-container {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   color: #ffffff;
 }
 
@@ -102,7 +102,7 @@
   padding: 0.75rem;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -139,7 +139,7 @@
   border-radius: 8px;
   cursor: pointer;
   color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -162,7 +162,7 @@
   border-radius: 8px;
   cursor: pointer;
   color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -240,7 +240,7 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -262,7 +262,7 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   transition: all 0.3s ease;
   min-height: 80px;
   resize: vertical;
@@ -339,7 +339,7 @@
   padding: 0.75rem;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -371,7 +371,7 @@
     width: 100%;
     max-width: 350px;
   }
-  
+
   .edit-modal-content {
     width: 90%;
     margin: 1rem;
