@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SearchProperty.css";
 import { API_ENDPOINTS } from "../../config/api";
 
 export default function SearchProperty({ properties = [] }) {
-  
   const [showDetails, setShowDetails] = useState({});
+  const navigate = useNavigate();
   // Inline add-client per-card state
   const [addClientOpen, setAddClientOpen] = useState({});
   const [inlinePhone, setInlinePhone] = useState({});
@@ -13,21 +14,23 @@ export default function SearchProperty({ properties = [] }) {
   const [inlineError, setInlineError] = useState({});
   const [inlineNotFound, setInlineNotFound] = useState({});
 
- 
   const [clientModalOpen, setClientModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [propertyClients, setPropertyClients] = useState([]);
 
   // Dummy data for clients linked to properties
-  const getClients = async(propertyId) => {
-    try{
+  const getClients = async (propertyId) => {
+    try {
       const token = localStorage.getItem("token");
-      
-      const response = await fetch(`${API_ENDPOINTS.LEADS_SEARCH}?property_id=${propertyId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+
+      const response = await fetch(
+        `${API_ENDPOINTS.LEADS_SEARCH}?property_id=${propertyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch clients");
@@ -35,16 +38,11 @@ export default function SearchProperty({ properties = [] }) {
       const data = await response.json();
       const leads = Array.isArray(data.leads) ? data.leads : [];
       setPropertyClients(leads);
-    }catch (error) {
+    } catch (error) {
       console.error("Error fetching property clients:", error);
       setPropertyClients([]);
-    } 
+    }
   };
-    
-    
-   
-    
-  
 
   const toggleDetails = (id) => {
     setShowDetails((prev) => ({
@@ -64,45 +62,44 @@ export default function SearchProperty({ properties = [] }) {
     setSelectedProperty(null);
   };
 
-  const changeClientStatus = async(propertyId, clientId, newStatus) => {
+  const changeClientStatus = async (propertyId, clientId, newStatus) => {
     console.log(newStatus);
-    try{
+    try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${clientId}/properties/${propertyId}`, {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          status: newStatus,
-        }),
-      });
-      if(response.ok)
-      {
+      const response = await fetch(
+        `${API_ENDPOINTS.LEADS_ADMIN}${clientId}/properties/${propertyId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            status: newStatus,
+          }),
+        }
+      );
+      if (response.ok) {
         alert("Client status changed successfully");
-        setPropertyClients(prevClients => 
-          prevClients.map(client => 
-            client.id === clientId 
-              ? { ...client, properties: client.properties.map(prop => 
-                  prop.property_id === propertyId 
-                    ? { ...prop, status: newStatus }
-                    : prop
-                )}
+        setPropertyClients((prevClients) =>
+          prevClients.map((client) =>
+            client.id === clientId
+              ? {
+                  ...client,
+                  properties: client.properties.map((prop) =>
+                    prop.property_id === propertyId
+                      ? { ...prop, status: newStatus }
+                      : prop
+                  ),
+                }
               : client
           )
         );
-
-      }
-      else
-      {
+      } else {
         alert("Failed to change client status");
       }
-    }
-    catch(error)
-    {
+    } catch (error) {
       console.error("Error changing client status:", error);
     }
-    
   };
 
   const attachPropertyToClient = async (client, property) => {
@@ -114,14 +111,17 @@ export default function SearchProperty({ properties = [] }) {
         property_id: property._id,
         dealer_id: property.dealer_id,
       };
-      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${client.id}/properties`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(body),
-      });
+      const response = await fetch(
+        `${API_ENDPOINTS.LEADS_ADMIN}${client.id}/properties`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(body),
+        }
+      );
       if (response.ok) {
         const result = await response.json();
         alert(result.message || "Property added to client");
@@ -140,7 +140,6 @@ export default function SearchProperty({ properties = [] }) {
     }
   };
 
- 
   const toggleInlineAddClient = (id) => {
     setAddClientOpen((prev) => ({ ...prev, [id]: !prev[id] }));
     setInlineError((prev) => ({ ...prev, [id]: "" }));
@@ -150,7 +149,7 @@ export default function SearchProperty({ properties = [] }) {
   // Handle inline phone input (no auto-search)
   const handleInlinePhoneChange = (property, value) => {
     const pid = property._id || property.id;
-    const clean = value.replace(/\D/g, '');
+    const clean = value.replace(/\D/g, "");
     if (clean.length <= 10) {
       setInlinePhone((prev) => ({ ...prev, [pid]: clean }));
       setInlineError((prev) => ({ ...prev, [pid]: "" }));
@@ -165,15 +164,21 @@ export default function SearchProperty({ properties = [] }) {
     setInlineError((prev) => ({ ...prev, [pid]: "" }));
     setInlineNotFound((prev) => ({ ...prev, [pid]: false }));
     if (phone.length !== 10) {
-      setInlineError((prev) => ({ ...prev, [pid]: "Enter a valid 10-digit phone number" }));
+      setInlineError((prev) => ({
+        ...prev,
+        [pid]: "Enter a valid 10-digit phone number",
+      }));
       return;
     }
     setInlineSearching((prev) => ({ ...prev, [pid]: true }));
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.LEADS_SEARCH}?phone=${phone}`, {
-        headers: { "Authorization": `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_ENDPOINTS.LEADS_SEARCH}?phone=${phone}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         if (data.leads && data.leads.length > 0) {
@@ -182,11 +187,17 @@ export default function SearchProperty({ properties = [] }) {
           setInlineNotFound((prev) => ({ ...prev, [pid]: true }));
         }
       } else {
-        setInlineError((prev) => ({ ...prev, [pid]: "Error searching for client" }));
+        setInlineError((prev) => ({
+          ...prev,
+          [pid]: "Error searching for client",
+        }));
       }
     } catch (err) {
       console.error("Inline client search error:", err);
-      setInlineError((prev) => ({ ...prev, [pid]: "Failed to search for client" }));
+      setInlineError((prev) => ({
+        ...prev,
+        [pid]: "Failed to search for client",
+      }));
     } finally {
       setInlineSearching((prev) => ({ ...prev, [pid]: false }));
     }
@@ -194,9 +205,7 @@ export default function SearchProperty({ properties = [] }) {
 
   return (
     <div className="search-property-container">
-      <h2 className="search-property-title">
-        Property Listings
-      </h2>
+      <h2 className="search-property-title">Property Listings</h2>
 
       {/* Removed top client search as per requirement */}
 
@@ -205,17 +214,22 @@ export default function SearchProperty({ properties = [] }) {
       ) : (
         <div className="search-property-grid">
           {properties.map((prop) => (
-            <div key={prop.id || prop._id} className="search-property-card">
+            <div
+              key={prop.id || prop._id}
+              className="search-property-card"
+              onClick={() =>
+                navigate(`/property/${prop._id || prop.id}`, {
+                  state: { property: prop },
+                })
+              }
+              style={{ cursor: "pointer" }}
+            >
               {/* Carousel */}
               <div className="search-property-carousel">
                 <div className="search-property-carousel-content">
                   {prop.photos &&
                     prop.photos.map((photo, i) => (
-                      <img
-                        key={i}
-                        src={photo}
-                        alt={`Property ${i}`}
-                      />
+                      <img key={i} src={photo} alt={`Property ${i}`} />
                     ))}
                   {prop.videos &&
                     prop.videos.map((video, i) => (
@@ -229,7 +243,9 @@ export default function SearchProperty({ properties = [] }) {
               {/* Property Details */}
               <div className="search-property-details">
                 <h3 className="search-property-card-title">{prop.title}</h3>
-                <p className="search-property-description">{prop.description}</p>
+                <p className="search-property-description">
+                  {prop.description}
+                </p>
                 <p className="search-property-info">
                   <b>Address:</b> {prop.address}
                 </p>
@@ -275,33 +291,50 @@ export default function SearchProperty({ properties = [] }) {
                   </button>
                   {addClientOpen[prop._id || prop.id] && (
                     <div className="client-inline-add">
-                      <label className="client-search-label">Client Phone</label>
+                      <label className="client-search-label">
+                        Client Phone
+                      </label>
                       <input
                         type="tel"
                         inputMode="numeric"
                         className="client-search-input"
                         placeholder="Enter phone number"
                         value={inlinePhone[prop._id || prop.id] || ""}
-                        onChange={(e) => handleInlinePhoneChange(prop, e.target.value)}
+                        onChange={(e) =>
+                          handleInlinePhoneChange(prop, e.target.value)
+                        }
                       />
                       <button
                         className="search-property-add-client-btn"
                         onClick={() => searchInlineAndAttach(prop)}
-                        disabled={inlineSearching[prop._id || prop.id] || inlineProcessing[prop._id || prop.id]}
+                        disabled={
+                          inlineSearching[prop._id || prop.id] ||
+                          inlineProcessing[prop._id || prop.id]
+                        }
                       >
-                        {inlineSearching[prop._id || prop.id] ? 'Searching...' : (inlineProcessing[prop._id || prop.id] ? 'Adding...' : 'Search')}
+                        {inlineSearching[prop._id || prop.id]
+                          ? "Searching..."
+                          : inlineProcessing[prop._id || prop.id]
+                          ? "Adding..."
+                          : "Search"}
                       </button>
                       {inlineSearching[prop._id || prop.id] && (
-                        <div className="client-search-loading">Searching...</div>
+                        <div className="client-search-loading">
+                          Searching...
+                        </div>
                       )}
                       {inlineProcessing[prop._id || prop.id] && (
                         <div className="client-search-loading">Adding...</div>
                       )}
                       {inlineError[prop._id || prop.id] && (
-                        <div className="client-search-loading">{inlineError[prop._id || prop.id]}</div>
+                        <div className="client-search-loading">
+                          {inlineError[prop._id || prop.id]}
+                        </div>
                       )}
                       {inlineNotFound[prop._id || prop.id] && (
-                        <div className="client-search-loading">Client not found</div>
+                        <div className="client-search-loading">
+                          Client not found
+                        </div>
                       )}
                     </div>
                   )}
@@ -325,7 +358,9 @@ export default function SearchProperty({ properties = [] }) {
         <div className="modal-overlay" onClick={closeClientModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className="modal-title">Clients for {selectedProperty.title}</h3>
+              <h3 className="modal-title">
+                Clients for {selectedProperty.title}
+              </h3>
               <button className="modal-close-btn" onClick={closeClientModal}>
                 ×
               </button>
@@ -342,19 +377,27 @@ export default function SearchProperty({ properties = [] }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {propertyClients.map(client => (
+                    {propertyClients.map((client) => (
                       <tr key={client.id}>
                         <td>{client.name}</td>
                         <td>{client.phone}</td>
                         <td>
-                          <span className={`status-badge status-${client.status}`}>
+                          <span
+                            className={`status-badge status-${client.status}`}
+                          >
                             {client.properties[0].status}
                           </span>
                         </td>
                         <td className="status-actions">
                           <select
                             value={client.status}
-                            onChange={(e) => changeClientStatus(selectedProperty._id || selectedProperty.id, client.id, e.target.value)}
+                            onChange={(e) =>
+                              changeClientStatus(
+                                selectedProperty._id || selectedProperty.id,
+                                client.id,
+                                e.target.value
+                              )
+                            }
                             className="status-dropdown"
                           >
                             <option value="view">View</option>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./MyProperties.css";
 import { API_ENDPOINTS } from "../../config/api";
 
@@ -6,6 +7,7 @@ export default function MyProperties() {
   const [properties, setProperties] = useState([]);
   const [editingProperty, setEditingProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,13 +19,10 @@ export default function MyProperties() {
     const fetchProperties = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          API_ENDPOINTS.PROPERTIES,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        
+        const response = await fetch(API_ENDPOINTS.PROPERTIES, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         if (!response.ok) {
           throw new Error("Failed to fetch properties");
         }
@@ -45,7 +44,7 @@ export default function MyProperties() {
         setLoading(false);
       }
     };
-    
+
     fetchProperties();
   }, []);
 
@@ -54,12 +53,15 @@ export default function MyProperties() {
     if (window.confirm("Are you sure you want to delete this property?")) {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${API_ENDPOINTS.PROPERTIES_DEALER}${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to delete property");
         }
@@ -126,17 +128,20 @@ export default function MyProperties() {
       <h3 className="my-properties-title">My Properties</h3>
       <div className="properties-grid">
         {(properties ?? []).map((prop) => (
-          <div key={prop.id} className="property-card">
+          <div
+            key={prop.id}
+            className="property-card"
+            onClick={() =>
+              navigate(`/property/${prop.id}`, { state: { property: prop } })
+            }
+            style={{ cursor: "pointer" }}
+          >
             {/* Carousel */}
             <div className="property-carousel">
               <div className="property-carousel-content">
                 {prop.photos &&
                   prop.photos.map((photo, i) => (
-                    <img
-                      key={i}
-                      src={photo}
-                      alt={`Property ${i}`}
-                    />
+                    <img key={i} src={photo} alt={`Property ${i}`} />
                   ))}
                 {prop.videos &&
                   prop.videos.map((video, i) => (
@@ -159,9 +164,7 @@ export default function MyProperties() {
               <b>Nearest Landmark:</b> {prop.nearest_landmark}
             </p>
             {prop.status && (
-              <p className="property-status">
-                Status: {prop.status}
-              </p>
+              <p className="property-status">Status: {prop.status}</p>
             )}
 
             <div className="property-actions">
@@ -262,10 +265,7 @@ export default function MyProperties() {
                 {editingProperty.photos &&
                   editingProperty.photos.map((photo, i) => (
                     <div key={i} className="media-item">
-                      <img
-                        src={photo}
-                        alt={`photo-${i}`}
-                      />
+                      <img src={photo} alt={`photo-${i}`} />
                       <button
                         type="button"
                         className="media-remove-btn"
@@ -363,7 +363,10 @@ export default function MyProperties() {
             </div>
 
             <div className="edit-modal-actions">
-              <button type="submit" className="edit-modal-btn edit-modal-btn-save">
+              <button
+                type="submit"
+                className="edit-modal-btn edit-modal-btn-save"
+              >
                 Save
               </button>
               <button
