@@ -258,7 +258,7 @@ export default function SearchProperty({ properties = [] }) {
                 {/* Hidden Price */}
                 {showDetails[prop.id || prop._id] && (
                   <p className="search-property-price">
-                    ₹{prop.price.toLocaleString()}
+                    ₹{prop.min_price.toLocaleString()} - ₹{prop.max_price.toLocaleString()}
                   </p>
                 )}
 

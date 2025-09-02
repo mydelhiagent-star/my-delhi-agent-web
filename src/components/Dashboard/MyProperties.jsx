@@ -91,7 +91,8 @@ export default function MyProperties() {
         title: editingProperty.title,
         description: editingProperty.description,
         address: editingProperty.address,
-        price: editingProperty.price,
+        min_price: editingProperty.min_price,
+        max_price: editingProperty.max_price,
         nearest_landmark: editingProperty.nearest_landmark,
         photos: editingProperty.photos,
         videos: editingProperty.videos,
@@ -156,7 +157,7 @@ export default function MyProperties() {
             </h4>
 
             <p className="property-detail">
-              <b>Price:</b> ₹{prop.price}
+              <b>Price:</b> ₹{prop.min_price} - ₹{prop.max_price}
             </p>
             <p className="property-detail">
               <b>Nearest Landmark:</b> {prop.nearest_landmark}
@@ -237,11 +238,23 @@ export default function MyProperties() {
               type="number"
               name="price"
               className="edit-modal-input"
-              value={editingProperty.price}
+              value={editingProperty.min_price}
               onChange={(e) =>
                 setEditingProperty({
                   ...editingProperty,
-                  price: e.target.value,
+                  min_price: e.target.value,
+                })
+              }
+            />
+            <input
+              type="number"
+              name="max_price"
+              className="edit-modal-input"
+              value={editingProperty.max_price}
+              onChange={(e) =>
+                setEditingProperty({
+                  ...editingProperty,
+                  max_price: e.target.value,
                 })
               }
             />

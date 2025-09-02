@@ -8,7 +8,8 @@ export default function PostProperty() {
     title: "",
     description: "",
     address: "",
-    price: "",
+    min_price: "",
+    max_price: "",
     photos: [],
     videos: [],
     owner_name: "",
@@ -217,7 +218,8 @@ export default function PostProperty() {
         title: "",
         description: "",
         address: "",
-        price: "",
+        min_price: "",
+        max_price: "",
         photos: [],
         videos: [],
         owner_name: "",
@@ -262,9 +264,17 @@ export default function PostProperty() {
 
       <input
         type="number"
-        name="price"
-        placeholder="Price"
-        value={property.price}
+        name="min_price"
+        placeholder="Min Price"
+        value={property.min_price}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="number"
+        name="max_price"
+        placeholder="Max Price"
+        value={property.max_price}
         onChange={handleChange}
         required
       />
