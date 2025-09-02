@@ -243,12 +243,7 @@ export default function SearchProperty({ properties = [] }) {
               {/* Property Details */}
               <div className="search-property-details">
                 <h3 className="search-property-card-title">{prop.title}</h3>
-                <p className="search-property-description">
-                  {prop.description}
-                </p>
-                <p className="search-property-info">
-                  <b>Address:</b> {prop.address}
-                </p>
+
                 <p className="search-property-info">
                   <b>Nearest Landmark:</b> {prop.nearest_landmark}
                 </p>
@@ -273,15 +268,6 @@ export default function SearchProperty({ properties = [] }) {
                 )}
 
                 <div className="search-property-buttons">
-                  <button
-                    className="search-property-toggle-btn"
-                    onClick={() => toggleDetails(prop.id || prop._id)}
-                  >
-                    {showDetails[prop.id || prop._id]
-                      ? "Hide Details"
-                      : "Show Price & Owner"}
-                  </button>
-
                   {/* Add Client Button */}
                   <button
                     className="search-property-add-client-btn"

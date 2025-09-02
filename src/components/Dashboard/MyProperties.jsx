@@ -95,18 +95,18 @@ export default function MyProperties() {
         videos: editingProperty.videos,
       }),
     });
-  
+
     if (!response.ok) {
       throw new Error("Failed to edit property");
     }
-  
+
     // Update local state with the current editingProperty data
     const updatedProperty = {
       ...editingProperty,
       photos: editingProperty.photos || [], // Use current photos from state
       videos: editingProperty.videos || [], // Use current videos from state
     };
-  
+
     const updated = properties.map((p) =>
       p.id === editingProperty.id ? updatedProperty : p
     );
@@ -149,10 +149,7 @@ export default function MyProperties() {
             </div>
 
             <h4 className="property-title">{prop.title}</h4>
-            <p className="property-description">{prop.description}</p>
-            <p className="property-detail">
-              <b>Address:</b> {prop.address}
-            </p>
+
             <p className="property-detail">
               <b>Price:</b> ₹{prop.price}
             </p>
