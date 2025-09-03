@@ -107,7 +107,7 @@ export default function SearchProperty({ properties = [] }) {
           },
           body: JSON.stringify({
             status: newStatus,
-            ...(sellingPrice !== undefined ? { selling_price: sellingPrice } : {}),
+            ...(sellingPrice !== undefined ? { sold_price: sellingPrice } : {}),
           }),
         }
       );
@@ -127,6 +127,9 @@ export default function SearchProperty({ properties = [] }) {
               : client
           )
         );
+        if(newStatus === "converted") {
+          closeClientModal()
+        }
       } else {
         alert("Failed to change client status");
       }
