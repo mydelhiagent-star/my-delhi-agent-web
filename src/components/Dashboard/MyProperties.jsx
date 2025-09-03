@@ -11,6 +11,16 @@ export default function MyProperties() {
   const navigate = useNavigate();
   const [previewProperty, setPreviewProperty] = useState(null);
 
+  // Add/attach client inline state per property
+  // Add client modal
+  const [addClientModalOpen, setAddClientModalOpen] = useState(false);
+  const [selectedPropertyForAdd, setSelectedPropertyForAdd] = useState(null);
+  const [addClientForm, setAddClientForm] = useState({ name: "", phone: "" });
+  const [addClientSubmitting, setAddClientSubmitting] = useState(false);
+  const [addClientError, setAddClientError] = useState("");
+
+  // View clients removed per request
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -122,6 +132,91 @@ export default function MyProperties() {
     return <div>Loading properties...</div>;
   }
 
+  const openAddClientModal = (property) => {
+    setSelectedPropertyForAdd(property);
+    setAddClientForm({ name: "", phone: "" });
+    setAddClientError("");
+    setAddClientModalOpen(true);
+  };
+
+  const closeAddClientModal = () => {
+    setAddClientModalOpen(false);
+    setSelectedPropertyForAdd(null);
+    setAddClientForm({ name: "", phone: "" });
+    setAddClientError("");
+  };
+
+  const attachPropertyToClient = async (client, property) => {
+    if (!client) return;
+    try {
+      const body = {
+        property_id: property._id || property.id,
+        dealer_id: property.dealer_id,
+      };
+      const response = await fetch(
+        `${API_ENDPOINTS.LEADS_ADMIN}${client.id}/properties`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(body),
+        }
+      );
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message || "Property added to client");
+      } else {
+        await response.json();
+        alert("Failed to add property to client");
+      }
+    } catch (err) {
+      console.error("Attach property error:", err);
+      alert("Failed to add property. Please try again.");
+    }
+  };
+
+  const createClientAndAttach = async () => {
+    if (!selectedPropertyForAdd) return;
+    const { name, phone } = addClientForm;
+    const cleanPhone = (phone || "").replace(/\D/g, "");
+    if (!name.trim() || cleanPhone.length !== 10) {
+      setAddClientError("Enter a valid name and 10-digit phone");
+      return;
+    }
+    setAddClientSubmitting(true);
+    setAddClientError("");
+    try {
+      const token = localStorage.getItem("token");
+      // Create client
+      const createRes = await fetch(API_ENDPOINTS.LEADS_ADMIN, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name: name.trim(), phone: cleanPhone }),
+      });
+      if (!createRes.ok) {
+        const err = await createRes.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to create client");
+      }
+      const created = await createRes.json();
+      const client = created.lead || created.client || created; // backend may return lead
+      // Attach to property
+      await attachPropertyToClient(client, selectedPropertyForAdd);
+      closeAddClientModal();
+    } catch (e) {
+      console.error(e);
+      setAddClientError(e.message || "Failed to add client");
+    } finally {
+      setAddClientSubmitting(false);
+    }
+  };
+
+  // View clients helpers removed
+
   return (
     <div className="my-properties-container">
       <h3 className="my-properties-title">My Properties</h3>
@@ -156,8 +251,6 @@ export default function MyProperties() {
             >
               Property Number: {prop.property_number}
             </h4>
-
-            
 
             <p
               className="property-detail"
@@ -200,7 +293,16 @@ export default function MyProperties() {
               >
                 Delete
               </button>
+              {/* View Clients removed; Add Client moved to bottom */}
             </div>
+
+            {/* Add Client button at bottom of card */}
+            <button
+              className="property-btn property-btn-sold"
+              onClick={() => openAddClientModal(prop)}
+            >
+              Add Client
+            </button>
           </div>
         ))}
       </div>
@@ -411,6 +513,79 @@ export default function MyProperties() {
           property={previewProperty}
           onClose={() => setPreviewProperty(null)}
         />
+      )}
+
+      {/* View Clients modal removed */}
+
+      {addClientModalOpen && selectedPropertyForAdd && (
+        <div className="edit-modal-overlay" onClick={closeAddClientModal}>
+          <div
+            className="edit-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 12,
+              }}
+            >
+              <h3 className="edit-modal-title" style={{ margin: 0 }}>
+                Add Client
+              </h3>
+              <button
+                className="media-remove-btn"
+                onClick={closeAddClientModal}
+              >
+                ✕
+              </button>
+            </div>
+            <div>
+              <input
+                type="text"
+                className="edit-modal-input"
+                placeholder="Client Name"
+                value={addClientForm.name}
+                onChange={(e) =>
+                  setAddClientForm((f) => ({ ...f, name: e.target.value }))
+                }
+              />
+              <input
+                type="tel"
+                inputMode="numeric"
+                className="edit-modal-input"
+                placeholder="Phone (10 digits)"
+                value={addClientForm.phone}
+                onChange={(e) => {
+                  const clean = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  setAddClientForm((f) => ({ ...f, phone: clean }));
+                }}
+              />
+              {addClientError && (
+                <div style={{ color: "#ff6b6b", marginBottom: 8 }}>
+                  {addClientError}
+                </div>
+              )}
+              <div className="edit-modal-actions">
+                <button
+                  className="edit-modal-btn edit-modal-btn-save"
+                  onClick={createClientAndAttach}
+                  disabled={addClientSubmitting}
+                >
+                  {addClientSubmitting ? "Adding..." : "Add Client"}
+                </button>
+                <button
+                  className="edit-modal-btn edit-modal-btn-cancel"
+                  onClick={closeAddClientModal}
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
