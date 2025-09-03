@@ -2,59 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./PropertiView.css";
 
 // Dummy properties (you can later fetch from backend or use properties.js)
-const dummyProperties = [
-  {
-    title: "Luxury Apartment in Sector 62",
-    description: "3BHK fully furnished apartment with modern amenities.",
-    address: "Tower 4, Residency Complex, Sector 62, Noida",
-    price: 8500000,
-    photos: [
-      "https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg",
-      "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg",
-    ],
-    videos: ["https://www.w3schools.com/html/mov_bbb.mp4"],
-    owner_name: "Ravi Kumar",
-    owner_phone: "+91 9876543210",
-    nearest_landmark: "Electronic City Metro",
-    location: "Noida Electronic City",
-    sub_location: "sector 18",
-  },
-  {
-    title: "Luxury Apartment in Sector 62",
-    description: "3BHK fully furnished apartment with modern amenities.",
-    address: "Tower 4, Residency Complex, Sector 62, Noida",
-    price: 8500000,
-    photos: [
-      "https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg",
-      "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg",
-    ],
-    videos: ["https://www.w3schools.com/html/mov_bbb.mp4"],
-    owner_name: "Ravi Kumar",
-    owner_phone: "+91 9876543210",
-    nearest_landmark: "Electronic City Metro",
-    location: "Noida",
-    sub_location: "Sector 62",
-  },
-  {
-    title: "Luxury Apartment in Sector 62",
-    description: "3BHK fully furnished apartment with modern amenities.",
-    address: "Tower 4, Residency Complex, Sector 62, Noida",
-    price: 8500000,
-    photos: [
-      "https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg",
-      "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg",
-    ],
-    videos: ["https://www.w3schools.com/html/mov_bbb.mp4"],
-    owner_name: "Ravi Kumar",
-    owner_phone: "+91 9876543210",
-    nearest_landmark: "Electronic City Metro",
-    location: "Noida",
-    sub_location: "Sector 62",
-  },
-];
+
 
 export default function SearchProperty() {
-  const [properties, setProperties] = useState(dummyProperties);
+  const [properties, setProperties] = useState([]);
   const [showOwner, setShowOwner] = useState({});
 
   useEffect(() => {
