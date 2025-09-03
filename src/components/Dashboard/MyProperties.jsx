@@ -19,7 +19,20 @@ export default function MyProperties() {
   const [addClientSubmitting, setAddClientSubmitting] = useState(false);
   const [addClientError, setAddClientError] = useState("");
 
-  // View clients removed per request
+  // View clients modal state
+  const [viewClientsModalOpen, setViewClientsModalOpen] = useState(false);
+  const [selectedPropertyForView, setSelectedPropertyForView] = useState(null);
+  const [propertyClients, setPropertyClients] = useState([]);
+  const [editingClient, setEditingClient] = useState(null);
+  const [editClientForm, setEditClientForm] = useState({ name: "", phone: "", status: "", note: "" });
+
+  // Dummy data for testing
+  const dummyClients = [
+    { id: 1, name: "John Doe", phone: "9876543210", status: "marked", note: "Interested in 2BHK" },
+    { id: 2, name: "Jane Smith", phone: "9876543211", status: "unmarked", note: "Looking for investment property" },
+    { id: 3, name: "Mike Johnson", phone: "9876543212", status: "marked", note: "Budget: 50L-70L" },
+    { id: 4, name: "Sarah Wilson", phone: "9876543213", status: "unmarked", note: "First time buyer" }
+  ];
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -183,7 +196,73 @@ export default function MyProperties() {
     }
   };
 
-  // View clients helpers removed
+  // View clients helpers
+  const openViewClientsModal = (property) => {
+    setSelectedPropertyForView(property);
+    setPropertyClients(dummyClients); // Using dummy data for testing
+    setViewClientsModalOpen(true);
+  };
+
+  const closeViewClientsModal = () => {
+    setViewClientsModalOpen(false);
+    setSelectedPropertyForView(null);
+    setPropertyClients([]);
+    setEditingClient(null);
+    setEditClientForm({ name: "", phone: "", status: "", note: "" });
+  };
+
+  const handleEditClient = (client) => {
+    setEditingClient(client);
+    setEditClientForm({
+      name: client.name,
+      phone: client.phone,
+      status: client.status,
+      note: client.note
+    });
+  };
+
+  const handleSaveClientEdit = () => {
+    if (!editingClient) return;
+    
+    // Validate phone number
+    const cleanPhone = editClientForm.phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
+    
+    // Validate name
+    if (!editClientForm.name.trim()) {
+      alert("Please enter a valid name");
+      return;
+    }
+    
+    const updatedClients = propertyClients.map(client =>
+      client.id === editingClient.id
+        ? { ...client, ...editClientForm, phone: cleanPhone }
+        : client
+    );
+    setPropertyClients(updatedClients);
+    setEditingClient(null);
+    setEditClientForm({ name: "", phone: "", status: "", note: "" });
+  };
+
+  const handleDeleteClient = (clientId) => {
+    if (window.confirm("Are you sure you want to delete this client?")) {
+      const updatedClients = propertyClients.filter(client => client.id !== clientId);
+      setPropertyClients(updatedClients);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingClient(null);
+    setEditClientForm({ name: "", phone: "", status: "", note: "" });
+  };
+
+  const handlePhoneInputChange = (value) => {
+    const clean = value.replace(/\D/g, "").slice(0, 10);
+    setEditClientForm(prev => ({ ...prev, phone: clean }));
+  };
 
   return (
     <div className="my-properties-container">
@@ -270,6 +349,14 @@ export default function MyProperties() {
               onClick={() => openAddClientModal(prop)}
             >
               Add Client
+            </button>
+            
+            {/* View Client button below Add Client */}
+            <button
+              className="property-btn property-btn-view-clients"
+              onClick={() => openViewClientsModal(prop)}
+            >
+              View Clients
             </button>
           </div>
         ))}
@@ -550,6 +637,142 @@ export default function MyProperties() {
                 >
                   Cancel
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Clients Modal */}
+      {viewClientsModalOpen && selectedPropertyForView && (
+        <div className="edit-modal-overlay" onClick={closeViewClientsModal}>
+          <div
+            className="view-clients-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="view-clients-modal-header">
+              <h3 className="edit-modal-title" style={{ margin: 0 }}>
+                Clients for {selectedPropertyForView.title}
+              </h3>
+              <button
+                className="modal-close-button"
+                onClick={closeViewClientsModal}
+              >
+                Close
+              </button>
+            </div>
+            
+            <div className="view-clients-modal-body">
+              <div className="clients-table-container">
+                <table className="clients-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Phone</th>
+                      <th>Status</th>
+                      <th>Note</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {propertyClients.map((client) => (
+                      <tr 
+                        key={client.id} 
+                        className={`client-row ${client.status === 'marked' ? 'marked-row' : 'unmarked-row'}`}
+                      >
+                        <td>
+                          {editingClient?.id === client.id ? (
+                            <input
+                              type="text"
+                              className="client-edit-input"
+                              placeholder="Enter client name"
+                              value={editClientForm.name}
+                              onChange={(e) => setEditClientForm(prev => ({ ...prev, name: e.target.value }))}
+                            />
+                          ) : (
+                            client.name
+                          )}
+                        </td>
+                        <td>
+                          {editingClient?.id === client.id ? (
+                            <input
+                              type="tel"
+                              inputMode="numeric"
+                              className="client-edit-input"
+                              placeholder="Enter 10-digit phone"
+                              value={editClientForm.phone}
+                              onChange={(e) => handlePhoneInputChange(e.target.value)}
+                            />
+                          ) : (
+                            client.phone
+                          )}
+                        </td>
+                        <td>
+                          {editingClient?.id === client.id ? (
+                            <select
+                              className="client-edit-select"
+                              value={editClientForm.status}
+                              onChange={(e) => setEditClientForm(prev => ({ ...prev, status: e.target.value }))}
+                            >
+                              <option value="marked">Marked</option>
+                              <option value="unmarked">Unmarked</option>
+                            </select>
+                          ) : (
+                            <span className={`status-badge ${client.status}`}>
+                              {client.status}
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          {editingClient?.id === client.id ? (
+                            <input
+                              type="text"
+                              className="client-edit-input"
+                              placeholder="Enter note"
+                              value={editClientForm.note}
+                              onChange={(e) => setEditClientForm(prev => ({ ...prev, note: e.target.value }))}
+                            />
+                          ) : (
+                            client.note
+                          )}
+                        </td>
+                        <td className="client-actions">
+                          {editingClient?.id === client.id ? (
+                            <>
+                              <button
+                                className="client-action-btn client-save-btn"
+                                onClick={handleSaveClientEdit}
+                              >
+                                Save
+                              </button>
+                              <button
+                                className="client-action-btn client-cancel-btn"
+                                onClick={handleCancelEdit}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className="client-action-btn client-edit-btn"
+                                onClick={() => handleEditClient(client)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="client-action-btn client-delete-btn"
+                                onClick={() => handleDeleteClient(client.id)}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
