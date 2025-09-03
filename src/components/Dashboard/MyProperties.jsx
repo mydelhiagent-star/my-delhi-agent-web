@@ -146,36 +146,7 @@ export default function MyProperties() {
     setAddClientError("");
   };
 
-  const attachPropertyToClient = async (client, property) => {
-    if (!client) return;
-    try {
-      const body = {
-        property_id: property._id || property.id,
-        dealer_id: property.dealer_id,
-      };
-      const response = await fetch(
-        `${API_ENDPOINTS.LEADS_ADMIN}${client.id}/properties`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(body),
-        }
-      );
-      if (response.ok) {
-        const result = await response.json();
-        alert(result.message || "Property added to client");
-      } else {
-        await response.json();
-        alert("Failed to add property to client");
-      }
-    } catch (err) {
-      console.error("Attach property error:", err);
-      alert("Failed to add property. Please try again.");
-    }
-  };
+ 
 
   const createClientAndAttach = async () => {
     if (!selectedPropertyForAdd) return;
@@ -190,22 +161,19 @@ export default function MyProperties() {
     try {
       const token = localStorage.getItem("token");
       // Create client
-      const createRes = await fetch(API_ENDPOINTS.LEADS_ADMIN, {
+      const createRes = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name: name.trim(), phone: cleanPhone }),
+        body: JSON.stringify({ name: name.trim(), phone: cleanPhone, property_id : selectedPropertyForAdd.id, dealer_id : selectedPropertyForAdd.dealer_id }),
       });
       if (!createRes.ok) {
         const err = await createRes.json().catch(() => ({}));
         throw new Error(err.error || "Failed to create client");
       }
-      const created = await createRes.json();
-      const client = created.lead || created.client || created; // backend may return lead
-      // Attach to property
-      await attachPropertyToClient(client, selectedPropertyForAdd);
+      
       closeAddClientModal();
     } catch (e) {
       console.error(e);
