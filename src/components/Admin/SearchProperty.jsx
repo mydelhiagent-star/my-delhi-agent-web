@@ -75,8 +75,26 @@ export default function SearchProperty({ properties = [] }) {
     setSelectedProperty(null);
   };
 
-  const changeClientStatus = async (propertyId, clientId, newStatus) => {
-    console.log(newStatus);
+  const changeClientStatus = async (propertyId, clientId, currentStatus, newStatus) => {
+    if (currentStatus === newStatus) return;
+    const confirmChange = window.confirm(`Are you sure you want to change status from "${currentStatus}" to "${newStatus}"?`);
+    if (!confirmChange) return;
+
+    let sellingPrice = undefined;
+    if (newStatus === "converted") {
+      const input = window.prompt("Enter the selling price for this conversion (numbers only):");
+      if (input === null) {
+        return; // user cancelled
+      }
+      const normalized = input.replace(/[^0-9.]/g, "");
+      const priceValue = Number(normalized);
+      if (!Number.isFinite(priceValue) || priceValue <= 0) {
+        alert("Please enter a valid selling price.");
+        return;
+      }
+      sellingPrice = priceValue;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -84,10 +102,12 @@ export default function SearchProperty({ properties = [] }) {
         {
           method: "PUT",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             status: newStatus,
+            ...(sellingPrice !== undefined ? { selling_price: sellingPrice } : {}),
           }),
         }
       );
@@ -100,7 +120,7 @@ export default function SearchProperty({ properties = [] }) {
                   ...client,
                   properties: client.properties.map((prop) =>
                     prop.property_id === propertyId
-                      ? { ...prop, status: newStatus }
+                      ? { ...prop, status: newStatus, ...(sellingPrice !== undefined ? { selling_price: sellingPrice } : {}) }
                       : prop
                   ),
                 }
@@ -392,21 +412,20 @@ export default function SearchProperty({ properties = [] }) {
                         <td>{formatDate(client.properties[0].created_at)}</td>
                         <td>
                           <span
-                            className={`status-badge status-${client.status}`}
+                            className={`status-badge status-${client.properties[0].status}`}
                           >
                             {client.properties[0].status}
                           </span>
                         </td>
                         <td className="status-actions">
                           <select
-                            value={client.status}
-                            onChange={(e) =>
-                              changeClientStatus(
-                                selectedProperty._id || selectedProperty.id,
-                                client.id,
-                                e.target.value
-                              )
-                            }
+                            value={client.properties[0].status}
+                            onChange={(e) => {
+                              const propertyId = selectedProperty._id || selectedProperty.id;
+                              const current = client.properties[0].status;
+                              const next = e.target.value;
+                              changeClientStatus(propertyId, client.id, current, next);
+                            }}
                             className="status-dropdown"
                           >
                             <option value="view">View</option>
