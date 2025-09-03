@@ -15,7 +15,7 @@ const formatDate = (dateString) => {
   });
 };
 
-export default function SearchProperty({ properties = [] }) {
+export default function SearchProperty({ properties = [], onPropertyConverted }) {
   const [showDetails, setShowDetails] = useState({});
   const navigate = useNavigate();
   const [previewProperty, setPreviewProperty] = useState(null);
@@ -128,6 +128,9 @@ export default function SearchProperty({ properties = [] }) {
           )
         );
         if(newStatus === "converted") {
+          if(onPropertyConverted) {
+            onPropertyConverted(propertyId);
+          }
           closeClientModal()
         }
       } else {

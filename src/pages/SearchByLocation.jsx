@@ -72,6 +72,14 @@ export default function SearchByLocation() {
     fetchDealersAndProperties();
   }, [selected.sub_location]);
 
+  const handlePropertyConverted = (propertyId) => {
+    setDealers(prevDealers => 
+      prevDealers.map(dealer => 
+        dealer.properties.find(prop => prop._id === propertyId) ? { ...dealer, properties: dealer.properties.filter(prop => prop._id !== propertyId) } : dealer
+      )
+    );
+  };
+
   return (
     <div className="search-location-container">
       <h2 className="search-location-title">Search Dealers & Properties</h2>
@@ -122,6 +130,7 @@ export default function SearchByLocation() {
             <div key={dealer.id} className="search-location-dealer-section">
               <h3 className="search-location-dealer-properties-title">{dealer.name} – Properties</h3>
               <SearchProperties
+                onPropertyConverted={handlePropertyConverted}
                 properties={
                   Array.isArray(dealer.properties) ? dealer.properties : []
                 }
