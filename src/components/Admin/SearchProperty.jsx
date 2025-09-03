@@ -127,8 +127,8 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
               : client
           )
         );
-        if(newStatus === "converted") {
-          if(onPropertyConverted) {
+        if(newStatus === "converted" || newStatus === "closed") {
+          if(newStatus === "converted" && onPropertyConverted) {
             onPropertyConverted(propertyId);
           }
           closeClientModal()
