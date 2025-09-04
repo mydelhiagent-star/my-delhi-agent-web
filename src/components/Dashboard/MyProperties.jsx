@@ -231,11 +231,32 @@ export default function MyProperties() {
   };
 
   // View clients helpers
-  const openViewClientsModal = (property) => {
+  const openViewClientsModal = async (property) => {
     setSelectedPropertyForView(property);
-    setPropertyClients(dummyClients); // Using dummy data for testing
+    try{
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${property.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if(response.ok) {
+        const data = await response.json();
+        data != null ? setPropertyClients(data) : setPropertyClients([]);
+      }
+      else {
+        throw new Error("Failed to fetch clients");
+      }
+    }
+    catch(error) {
+      console.error("Error fetching clients:", error);
+      setPropertyClients([]);
+    }
     setViewClientsModalOpen(true);
   };
+   
+   
+  
 
   const closeViewClientsModal = () => {
     setViewClientsModalOpen(false);
@@ -255,10 +276,10 @@ export default function MyProperties() {
     });
   };
 
-  const handleSaveClientEdit = () => {
+  const handleSaveClientEdit = async () => {
+   
     if (!editingClient) return;
     
-    // Validate phone number
     const cleanPhone = editClientForm.phone.replace(/\D/g, "");
     if (cleanPhone.length !== 10) {
       alert("Please enter a valid 10-digit phone number");
@@ -270,13 +291,40 @@ export default function MyProperties() {
       alert("Please enter a valid name");
       return;
     }
+    try{
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${editingClient.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: editClientForm.name,
+          phone: cleanPhone,
+          status: editClientForm.status,
+          note: editClientForm.note
+        }),
+      });
+      if(response.ok) {
+        alert("Client updated successfully!");
+        const updatedClients = propertyClients.map(client =>
+          client.id === editingClient.id
+            ? { ...client, ...editClientForm, phone: cleanPhone }
+            : client
+        );
+        setPropertyClients(updatedClients);
+      }
+      else {
+        alert("Failed to save client edit");
+        throw new Error("Failed to save client edit");
+      }
+    }
+    catch(error) {
+      alert("Failed to save client edit");
+      console.error("Error saving client edit:", error);
+    }
     
-    const updatedClients = propertyClients.map(client =>
-      client.id === editingClient.id
-        ? { ...client, ...editClientForm, phone: cleanPhone }
-        : client
-    );
-    setPropertyClients(updatedClients);
+  
     setEditingClient(null);
     setEditClientForm({ name: "", phone: "", status: "", note: "" });
   };

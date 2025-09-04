@@ -116,8 +116,8 @@ export default function PostProperty() {
 
     if (!property.description.trim()) {
       newErrors.description = "Description is required";
-    } else if (property.description.trim().length < 20) {
-      newErrors.description = "Description must be at least 20 characters long";
+    } else if (property.description.trim().length < 10) {
+      newErrors.description = "Description must be at least 10 characters long";
     }
 
     if (!property.address.trim()) {
