@@ -76,8 +76,8 @@ export default function PropertyPreview({ property, onClose }) {
         style={{
           background: "#0d1a26",
           color: "#fff",
-          width: "min(1000px, 96vw)",
-          maxHeight: "92vh",
+          width: "min(1200px, 98vw)",
+          maxHeight: "95vh",
           borderRadius: 14,
           border: "1px solid rgba(0,188,212,0.2)",
           overflow: "hidden",
@@ -124,7 +124,7 @@ export default function PropertyPreview({ property, onClose }) {
           style={{
             position: "relative",
             width: "100%",
-            height: "60vh",
+            height: "75vh",
             background: "#000",
           }}
         >
@@ -147,10 +147,20 @@ export default function PropertyPreview({ property, onClose }) {
                     maxHeight: "100%",
                     maxWidth: "100%",
                     objectFit: "contain",
+                    imageRendering: "high-quality",
+                    filter: "none",
                   }}
+                  loading="eager"
                 />
               ) : (
-                <video controls style={{ maxHeight: "100%", maxWidth: "100%" }}>
+                <video 
+                  controls 
+                  style={{ 
+                    maxHeight: "100%", 
+                    maxWidth: "100%",
+                    objectFit: "contain"
+                  }}
+                >
                   <source src={activeMedia.src} type="video/mp4" />
                 </video>
               )
@@ -169,11 +179,23 @@ export default function PropertyPreview({ property, onClose }) {
                   top: "50%",
                   left: 12,
                   transform: "translateY(-50%)",
-                  background: "rgba(255,255,255,0.15)",
-                  border: "1px solid rgba(255,255,255,0.3)",
+                  background: "rgba(0,0,0,0.6)",
+                  border: "1px solid rgba(255,255,255,0.4)",
                   color: "#fff",
-                  padding: "8px 10px",
+                  padding: "12px 14px",
                   borderRadius: 8,
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "rgba(0,0,0,0.8)";
+                  e.target.style.borderColor = "rgba(255,255,255,0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "rgba(0,0,0,0.6)";
+                  e.target.style.borderColor = "rgba(255,255,255,0.4)";
                 }}
               >
                 ‹
@@ -186,11 +208,23 @@ export default function PropertyPreview({ property, onClose }) {
                   top: "50%",
                   right: 12,
                   transform: "translateY(-50%)",
-                  background: "rgba(255,255,255,0.15)",
-                  border: "1px solid rgba(255,255,255,0.3)",
+                  background: "rgba(0,0,0,0.6)",
+                  border: "1px solid rgba(255,255,255,0.4)",
                   color: "#fff",
-                  padding: "8px 10px",
+                  padding: "12px 14px",
                   borderRadius: 8,
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "rgba(0,0,0,0.8)";
+                  e.target.style.borderColor = "rgba(255,255,255,0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "rgba(0,0,0,0.6)";
+                  e.target.style.borderColor = "rgba(255,255,255,0.4)";
                 }}
               >
                 ›
