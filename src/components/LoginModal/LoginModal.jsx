@@ -103,6 +103,10 @@ export default function LoginModal({ isOpen, onClose }) {
     }
   };
 
+  const handleForgotPassword = () => {
+    alert("Please contact us on WhatsApp for password recovery assistance. Our support team will help you reset your password.");
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -113,6 +117,9 @@ export default function LoginModal({ isOpen, onClose }) {
         </button>
         
         <div className="mda-modal-header">
+          <div className="mda-broker-notice">
+            This login is only for registered brokers. If you want to register as a broker, contact us.
+          </div>
           <h2>Broker Login</h2>
           <p>Sign in to access your dashboard</p>
         </div>
@@ -169,6 +176,16 @@ export default function LoginModal({ isOpen, onClose }) {
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </button>
+
+          <div className="mda-forgot-password-section">
+            <button 
+              type="button" 
+              className="mda-forgot-password-btn"
+              onClick={handleForgotPassword}
+            >
+              Forgot Password? Contact us on WhatsApp
+            </button>
+          </div>
         </form>
       </div>
     </div>

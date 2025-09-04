@@ -57,8 +57,15 @@ export default function LoginForm() {
     }
   };
 
+  const handleForgotPassword = () => {
+    alert("Please contact us on WhatsApp for password recovery assistance. Our support team will help you reset your password.");
+  };
+
   return (
     <form className="login-form" onSubmit={handleSubmit}>
+      <div className="broker-notice">
+        This login is only for registered brokers. If you want to register as a broker, contact us.
+      </div>
       <h2>Broker / Builder Login</h2>
 
       <div className="phone-input-wrapper">
@@ -83,9 +90,16 @@ export default function LoginForm() {
       />
 
       <button type="submit">Login</button>
-      <a href="/forgot-password" className="forgot-link">
-        Forgot Password?
-      </a>
+      
+      <div className="forgot-password-section">
+        <button 
+          type="button" 
+          className="forgot-password-btn"
+          onClick={handleForgotPassword}
+        >
+          Forgot Password? Contact us on WhatsApp
+        </button>
+      </div>
     </form>
   );
 }

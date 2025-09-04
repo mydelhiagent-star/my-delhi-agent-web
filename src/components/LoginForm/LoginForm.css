@@ -12,6 +12,19 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.broker-notice {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
 .login-form h2 {
   text-align: center;
   margin-bottom: 2rem;
@@ -121,6 +134,70 @@
 .forgot-link:hover {
   color: #00acc1;
   text-decoration: underline;
+}
+
+/* Forgot Password Section */
+.forgot-password-section {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+  padding: 0.5rem;
+}
+
+.forgot-password-btn:hover {
+  color: #ff5252;
+  text-decoration: none;
+}
+
+/* Contact Registration Section */
+.contact-registration {
+  margin-top: 1.5rem;
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 188, 212, 0.2);
+}
+
+.contact-registration p {
+  color: #b0bec5;
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.contact-us-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-us-btn:hover {
+  background: linear-gradient(135deg, #ff5252 0%, #e53935 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+}
+
+.contact-us-btn:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 768px) {
