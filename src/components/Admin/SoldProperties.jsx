@@ -158,12 +158,12 @@ export default function SoldProperties() {
     try {
       const token = localStorage.getItem("token");
       console.log(token);
-      const response = await fetch(`${API_ENDPOINTS.PROPERTIES_ADMIN}/search?sold=true`, {
+      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}/properties-details?sold=true`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if(response.ok) {
         const data = await response.json();
-        setSoldProperties(data.properties || []);
+        setSoldProperties(data || []);
       }
       else {
         throw new Error("Failed to fetch sold properties");
@@ -289,15 +289,10 @@ export default function SoldProperties() {
         <div className="summary-card">
           <h4>Total Revenue</h4>
           <p className="summary-number">
-            {formatPrice(filteredProperties.reduce((sum, prop) => sum + prop.sold_price, 0))}
+            {formatPrice(filteredProperties.reduce((sum, prop) => sum + prop.populated_properties.sold_price, 0))}
           </p>
         </div>
-        <div className="summary-card">
-          <h4>Total Commission</h4>
-          <p className="summary-number">
-            {formatPrice(filteredProperties.reduce((sum, prop) => sum + prop.commission, 0))}
-          </p>
-        </div>
+       
       </div>
       
       <div className="sold-properties-table-container">
@@ -308,7 +303,6 @@ export default function SoldProperties() {
               <th>Client</th>
               <th>Dealer</th>
               <th>Sold Price</th>
-              <th>Commission</th>
               <th>Sold Date</th>
               <th>Actions</th>
             </tr>
@@ -318,35 +312,34 @@ export default function SoldProperties() {
               <tr key={property.id} className="sold-property-row">
                 <td>
                   <div className="property-info">
-                    <div className="property-title">{property.title}</div>
-                    <div className="property-number">{property.property_number}</div>
-                    <div className="property-location">{property.location}</div>
+                    <div className="property-title">{property.populated_properties.title}</div>
+                    <div className="property-location">{property.dealer_info.location}</div>
                   </div>
                 </td>
                 <td>
                   <div className="client-info">
-                    <div className="client-name">{property.client_name}</div>
-                    <div className="client-phone">{property.client_phone}</div>
+                    <div className="client-name">{property.name}</div>
+                    <div className="client-phone">{property.phone}</div>
                   </div>
                 </td>
                 <td>
                   <div className="dealer-info">
-                    <div className="dealer-name">{property.dealer_name}</div>
-                    <div className="dealer-phone">{property.dealer_phone}</div>
+                    <div className="dealer-name">{property.dealer_info.name}</div>
+                    <div className="dealer-phone">{property.dealer_info.phone}</div>
                   </div>
                 </td>
                 <td className="price-cell">
-                  <div className="sold-price">{formatPrice(property.sold_price)}</div>
+                  <div className="sold-price">{formatPrice(property.populated_properties.sold_price)}</div>
                   <div className="original-price">
-                    {formatPrice(property.min_price)} - {formatPrice(property.max_price)}
+                    {formatPrice(property.populated_properties.min_price)} - {formatPrice(property.populated_properties.max_price)}
                   </div>
                 </td>
-                <td className="commission-cell">
+                {/* <td className="commission-cell">
                   <div className="commission-amount">{formatPrice(property.commission)}</div>
                   <div className="commission-percentage">
                     {((property.commission / property.sold_price) * 100).toFixed(1)}%
                   </div>
-                </td>
+                </td> */}
                 <td className="date-cell">
                   {formatDate(property.sold_date)}
                 </td>

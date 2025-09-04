@@ -15,7 +15,7 @@ export default function ConflictingProperties() {
       setLoading(true);
       const token = localStorage.getItem("token");
       
-      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}/conflicting-properties`, {
+      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}properties-details?deleted=true`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
