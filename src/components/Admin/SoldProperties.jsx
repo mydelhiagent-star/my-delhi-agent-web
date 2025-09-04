@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./SoldProperties.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function SoldProperties() {
   const [soldProperties, setSoldProperties] = useState([]);
@@ -150,12 +151,31 @@ export default function SoldProperties() {
   ];
 
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      setSoldProperties(dummySoldProperties);
-      setLoading(false);
-    }, 1000);
+    fetchSoldProperties();
   }, []);
+
+  const fetchSoldProperties = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log(token);
+      const response = await fetch(`${API_ENDPOINTS.PROPERTIES_ADMIN}/search?sold=true`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if(response.ok) {
+        const data = await response.json();
+        setSoldProperties(data.properties || []);
+      }
+      else {
+        throw new Error("Failed to fetch sold properties");
+      }
+    }
+    catch(error) {
+      console.error("Error fetching sold properties:", error);
+    }
+    finally {
+      setLoading(false);
+    }
+  }
 
   // Handle search and filter
   useEffect(() => {

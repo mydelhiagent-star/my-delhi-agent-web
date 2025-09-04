@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   // Properties
   PROPERTIES: `${API_BASE_URL}/properties/`,
   PROPERTIES_DEALER: `${API_BASE_URL}/properties/dealer/`,
+  PROPERTIES_ADMIN: `${API_BASE_URL}/properties/admin/`,
 
   // Upload
   PRESIGNED_URLS: `${API_BASE_URL}/cloudfare/presigned-urls`,
