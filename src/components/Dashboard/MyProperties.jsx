@@ -197,11 +197,32 @@ export default function MyProperties() {
   };
 
   // View clients helpers
-  const openViewClientsModal = (property) => {
+  const openViewClientsModal = async (property) => {
     setSelectedPropertyForView(property);
-    setPropertyClients(dummyClients); // Using dummy data for testing
+    try{
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${property.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if(response.ok) {
+        const data = await response.json();
+        setPropertyClients(data);
+      }
+      else {
+        throw new Error("Failed to fetch clients");
+      }
+    }
+    catch(error) {
+      console.error("Error fetching clients:", error);
+      setPropertyClients([]);
+    }
     setViewClientsModalOpen(true);
   };
+   
+   
+  
 
   const closeViewClientsModal = () => {
     setViewClientsModalOpen(false);
