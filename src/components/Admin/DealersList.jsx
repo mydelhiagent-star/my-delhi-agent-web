@@ -28,15 +28,10 @@ export default function DealersList() {
         : Array.isArray(data.dealers)
         ? data.dealers
         : [];
-      if (list.length === 0) {
-        // seed dummy with synthetic ids for actions
-        setDealers(dummyDealers.map((d, i) => ({ id: i + 1, ...d })));
-      } else {
-        setDealers(list);
-      }
+      setDealers(list);
     } catch (err) {
       console.error("Error fetching dealers:", err);
-      setDealers(dummyDealers.map((d, i) => ({ id: i + 1, ...d })));
+      setDealers([]);
     } finally {
       setLoading(false);
     }
