@@ -164,6 +164,12 @@ export default function MyProperties() {
       alert("Please enter a valid owner name");
       return;
     }
+
+    const cleanPhone = editingProperty.owner_phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
    
     
     
@@ -182,7 +188,7 @@ export default function MyProperties() {
         max_price: Number(editingProperty.max_price),
         nearest_landmark: editingProperty.nearest_landmark,
         owner_name: editingProperty.owner_name,
-        owner_phone: editingProperty.owner_phone,
+        owner_phone: cleanPhone,
         photos: editingProperty.photos,
         videos: editingProperty.videos,
       }),
