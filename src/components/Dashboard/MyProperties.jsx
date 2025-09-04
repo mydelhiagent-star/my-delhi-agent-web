@@ -315,8 +315,9 @@ export default function MyProperties() {
         setPropertyClients(updatedClients);
       }
       else {
-        alert("Failed to save client edit");
-        throw new Error("Failed to save client edit");
+        const errorMessage = await response.text();
+        alert(errorMessage || "Failed to save client edit");
+        //throw new Error("Failed to save client edit");
       }
     }
     catch(error) {
@@ -329,8 +330,27 @@ export default function MyProperties() {
     setEditClientForm({ name: "", phone: "", status: "", note: "" });
   };
 
-  const handleDeleteClient = (clientId) => {
+  const handleDeleteClient = async(clientId) => {
     if (window.confirm("Are you sure you want to delete this client?")) {
+      try{
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${clientId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if(response.ok) {
+          const updatedClients = propertyClients.filter(client => client.id !== clientId);
+          setPropertyClients(updatedClients);
+        }
+        else {
+          throw new Error("Failed to delete client");
+        }
+      }
+      catch(error) {
+        console.error("Error deleting client:", error);
+      }
       const updatedClients = propertyClients.filter(client => client.id !== clientId);
       setPropertyClients(updatedClients);
     }
