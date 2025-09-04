@@ -217,8 +217,8 @@ export default function MyProperties() {
         }),
       });
       if (!createRes.ok) {
-        const err = await createRes.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to create client");
+        const errorMessage = await createRes.text();  
+        throw new Error(errorMessage || "Failed to add client");
       }
       
       closeAddClientModal();
