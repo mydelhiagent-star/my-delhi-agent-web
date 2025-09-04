@@ -242,10 +242,10 @@ export default function MyProperties() {
     });
   };
 
-  const handleSaveClientEdit = () => {
+  const handleSaveClientEdit = async () => {
+   
     if (!editingClient) return;
     
-    // Validate phone number
     const cleanPhone = editClientForm.phone.replace(/\D/g, "");
     if (cleanPhone.length !== 10) {
       alert("Please enter a valid 10-digit phone number");
@@ -257,13 +257,34 @@ export default function MyProperties() {
       alert("Please enter a valid name");
       return;
     }
+    try{
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${editingClient.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if(response.ok) {
+        alert("Client updated successfully!");
+        const updatedClients = propertyClients.map(client =>
+          client.id === editingClient.id
+            ? { ...client, ...editClientForm, phone: cleanPhone }
+            : client
+        );
+        setPropertyClients(updatedClients);
+      }
+      else {
+        alert("Failed to save client edit");
+        throw new Error("Failed to save client edit");
+      }
+    }
+    catch(error) {
+      alert("Failed to save client edit");
+      console.error("Error saving client edit:", error);
+    }
     
-    const updatedClients = propertyClients.map(client =>
-      client.id === editingClient.id
-        ? { ...client, ...editClientForm, phone: cleanPhone }
-        : client
-    );
-    setPropertyClients(updatedClients);
+  
     setEditingClient(null);
     setEditClientForm({ name: "", phone: "", status: "", note: "" });
   };
