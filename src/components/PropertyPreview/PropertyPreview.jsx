@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { API_ENDPOINTS } from "../../config/api";
+import React, { useMemo, useState } from "react";
 
 export default function PropertyPreview({ property, onClose }) {
   const mediaItems = useMemo(() => {
@@ -14,8 +13,6 @@ export default function PropertyPreview({ property, onClose }) {
 
   const [mediaIndex, setMediaIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
-  const [clients, setClients] = useState([]);
-  const [loadingClients, setLoadingClients] = useState(false);
 
   const canShowMedia = mediaItems.length > 0;
   const activeMedia = canShowMedia
@@ -33,29 +30,6 @@ export default function PropertyPreview({ property, onClose }) {
       mediaItems.length === 0 ? 0 : (i + 1) % mediaItems.length
     );
 
-  useEffect(() => {
-    const pid = property?._id || property?.id;
-    if (!pid) return;
-    const fetchClients = async () => {
-      try {
-        setLoadingClients(true);
-        const token = localStorage.getItem("token");
-        const res = await fetch(
-          `${API_ENDPOINTS.LEADS_SEARCH}?property_id=${pid}`,
-          { headers: token ? { Authorization: `Bearer ${token}` } : {} }
-        );
-        if (!res.ok) throw new Error("Failed to load clients");
-        const data = await res.json();
-        setClients(Array.isArray(data.leads) ? data.leads : []);
-      } catch (e) {
-        console.error("Failed to load clients for preview:", e);
-        setClients([]);
-      } finally {
-        setLoadingClients(false);
-      }
-    };
-    fetchClients();
-  }, [property]);
 
   return (
     <div
@@ -267,49 +241,10 @@ export default function PropertyPreview({ property, onClose }) {
         {showDetails && (
           <div style={{ padding: "0 14px 16px" }}>
             <div style={{ marginBottom: 10 }}>
-              <h3 style={{ margin: "0 0 .5rem" }}>Overview</h3>
+              <h3 style={{ margin: "0 0 .5rem" }}>Title</h3>
               <p style={{ margin: 0, color: "#b0bec5" }}>
                 {property?.description}
               </p>
-            </div>
-            <div style={{ marginBottom: 10 }}>
-              <h3 style={{ margin: "0 0 .5rem" }}>Clients</h3>
-              {loadingClients ? (
-                <div style={{ color: "#90a4ae" }}>Loading clients...</div>
-              ) : clients.length === 0 ? (
-                <div style={{ color: "#90a4ae" }}>No clients yet.</div>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                    gap: 12,
-                  }}
-                >
-                  {clients.map((c) => (
-                    <div
-                      key={c.id}
-                      style={{
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(0,188,212,0.2)",
-                        borderRadius: 12,
-                        padding: "0.75rem 1rem",
-                      }}
-                    >
-                      <div style={{ fontWeight: 600 }}>{c.name}</div>
-                      <div style={{ color: "#b0bec5" }}>{c.phone}</div>
-                      <div
-                        style={{ marginTop: 4, fontSize: 12, color: "#90a4ae" }}
-                      >
-                        Status:{" "}
-                        {c.properties && c.properties[0]
-                          ? c.properties[0].status
-                          : "-"}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
             <div
               style={{
