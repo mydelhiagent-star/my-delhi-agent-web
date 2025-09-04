@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./ClientsList.css";
 import { API_ENDPOINTS } from "../../config/api";
 import { dealers as dummyDealers } from "../../constants/dealers";
+import { locations } from "../../constants/locations";
 
 export default function DealersList() {
   const [dealers, setDealers] = useState([]);
@@ -250,9 +251,7 @@ export default function DealersList() {
                   }
                   required
                 />
-                <input
-                  type="text"
-                  placeholder="Location"
+                <select
                   value={editingDealer.location || ""}
                   onChange={(e) =>
                     setEditingDealer({
@@ -260,7 +259,15 @@ export default function DealersList() {
                       location: e.target.value,
                     })
                   }
-                />
+                  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+                >
+                  <option value="">Select Location</option>
+                  {locations.map((location) => (
+                    <option key={location} value={location}>
+                      {location}
+                    </option>
+                  ))}
+                </select>
                 <input
                   type="text"
                   placeholder="Sub Location"
