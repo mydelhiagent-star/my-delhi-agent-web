@@ -211,7 +211,7 @@ export default function MyProperties() {
         body: JSON.stringify({ 
           name: name.trim(), 
           phone: cleanPhone, 
-          notes: notes.trim(),
+          note: notes.trim(),
           property_id: selectedPropertyForAdd.id, 
           dealer_id: selectedPropertyForAdd.dealer_id 
         }),
