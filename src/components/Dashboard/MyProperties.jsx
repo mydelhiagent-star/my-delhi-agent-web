@@ -503,6 +503,8 @@ export default function MyProperties() {
               name="title"
               className="edit-modal-input"
               value={editingProperty.title}
+              placeholder="Title"
+              required
               onChange={(e) =>
                 setEditingProperty({
                   ...editingProperty,
@@ -514,6 +516,8 @@ export default function MyProperties() {
               name="description"
               className="edit-modal-textarea"
               value={editingProperty.description}
+              placeholder="Description"
+              required
               onChange={(e) =>
                 setEditingProperty({
                   ...editingProperty,
@@ -526,6 +530,8 @@ export default function MyProperties() {
               name="address"
               className="edit-modal-input"
               value={editingProperty.address}
+              placeholder="Address"
+              required
               onChange={(e) =>
                 setEditingProperty({
                   ...editingProperty,
@@ -537,6 +543,8 @@ export default function MyProperties() {
               type="number"
               name="price"
               className="edit-modal-input"
+              placeholder="Min Price"
+              required
               value={editingProperty.min_price}
               onChange={(e) =>
                 setEditingProperty({
@@ -549,6 +557,8 @@ export default function MyProperties() {
               type="number"
               name="max_price"
               className="edit-modal-input"
+              placeholder="Max Price"
+              required
               value={editingProperty.max_price}
               onChange={(e) =>
                 setEditingProperty({
@@ -561,6 +571,8 @@ export default function MyProperties() {
               type="text"
               name="nearest_landmark"
               className="edit-modal-input"
+              placeholder="Nearest Landmark"
+              required
               value={editingProperty.nearest_landmark}
               onChange={(e) =>
                 setEditingProperty({
