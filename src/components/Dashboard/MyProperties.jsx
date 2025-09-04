@@ -135,15 +135,14 @@ export default function MyProperties() {
     const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         title: editingProperty.title,
         description: editingProperty.description,
         address: editingProperty.address,
-        min_price: editingProperty.min_price,
-        max_price: editingProperty.max_price,
+        min_price: Number(editingProperty.min_price),
+        max_price: Number(editingProperty.max_price),
         nearest_landmark: editingProperty.nearest_landmark,
         photos: editingProperty.photos,
         videos: editingProperty.videos,
