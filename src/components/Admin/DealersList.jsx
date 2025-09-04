@@ -75,6 +75,16 @@ export default function DealersList() {
   };
 
   const onSaveEdit = async () => {
+    if (!editingDealer) return;
+    if (!editingDealer.name.trim()) {
+      alert("Please enter a valid name");
+      return;
+    }
+    const cleanPhone = editingDealer.phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -87,7 +97,7 @@ export default function DealersList() {
           },
           body: JSON.stringify({
             name: editingDealer.name,
-            phone: editingDealer.phone,
+            phone: cleanPhone,
             location: editingDealer.location,
             sub_location: editingDealer.sub_location,
           }),
