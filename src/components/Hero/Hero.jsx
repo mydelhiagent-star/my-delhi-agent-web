@@ -1,11 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Hero.css";
 import LoginModal from "../LoginModal/LoginModal";
 
 export default function Hero() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const openModal = () => setIsModalOpen(true);
+  useEffect(() => {
+    // If already logged in as broker, clicking login should redirect
+  }, []);
+
+  const openModal = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.role === "dealer") {
+          navigate("/dashboard");
+          return;
+        }
+      } catch (_) {}
+    }
+    setIsModalOpen(true);
+  };
   const closeModal = () => setIsModalOpen(false);
 
   return (
