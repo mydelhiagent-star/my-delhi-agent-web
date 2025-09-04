@@ -129,18 +129,42 @@ export default function ClientsList() {
     setAdminNotesDraft((prev) => ({ ...(prev || {}), [key]: value }));
   };
 
-  const setAdminNote = (property, value) => {
+  const setAdminNote = async (property, value) => {
     const key = getPropertyKey(property);
     if (!key) return;
-    setAdminNotes((prev) => {
-      const next = { ...(prev || {}), [key]: value };
-      try {
-        localStorage.setItem("propertyAdminNotes", JSON.stringify(next));
-      } catch (_) {}
-      return next;
-    });
-    // keep draft in sync after save
-    setAdminNotesDraft((prev) => ({ ...(prev || {}), [key]: value }));
+    
+    // Get client ID from selected client
+    const clientId = selectedClient?.id;
+    if (!clientId) {
+      console.error("No client selected for saving note");
+      return;
+    }
+    
+    try {
+      // Save to backend first
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${clientId}/properties/${key}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ note: value, status: "ongoing" }),
+      });
+      
+      if (response.ok) {
+        setAdminNotes((prev) => ({ ...(prev || {}), [key]: value }));
+      
+      // Keep draft in sync after save
+       setAdminNotesDraft((prev) => ({ ...(prev || {}), [key]: value }));
+       alert("Note saved successfully!");
+      } else {
+        alert("Failed to save note to backend. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error saving note:", error);
+      alert("Error saving note. Please try again.");
+    }
   };
 
   const fetchClientProperties = async (id, status) => {
@@ -441,7 +465,7 @@ export default function ClientsList() {
                               <textarea
                                 className="client-edit-textarea"
                                 placeholder="Write a note for this ongoing property..."
-                                value={getAdminNoteDraft(property)}
+                                value={property.note || ""}
                                 onChange={(e) => setAdminNoteDraft(property, e.target.value)}
                                 rows={3}
                                 style={{ width: "100%" }}
@@ -454,13 +478,7 @@ export default function ClientsList() {
                                 >
                                   Save Note
                                 </button>
-                                <button
-                                  className="client-btn client-btn-delete"
-                                  type="button"
-                                  onClick={() => setAdminNoteDraft(property, getAdminNote(property))}
-                                >
-                                  Reset
-                                </button>
+                               
                               </div>
                             </div>
                           ) : (
