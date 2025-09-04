@@ -9,9 +9,23 @@ export default function MyClients() {
   const [showClientModal, setShowClientModal] = useState(false);
   const [clientProperties, setClientProperties] = useState([]);
   const [loadingProperties, setLoadingProperties] = useState(false);
+  const [adminNotes, setAdminNotes] = useState({});
 
   useEffect(() => {
     fetchMyClients();
+  }, []);
+
+  // Load admin notes written from Admin > All Clients (ongoing status)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("propertyAdminNotes");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          setAdminNotes(parsed);
+        }
+      }
+    } catch (_) {}
   }, []);
 
   useEffect(()=>{
@@ -92,6 +106,27 @@ export default function MyClients() {
     finally {
         setLoadingProperties(false);
     }
+  };
+
+  const getPropertyKey = (property) => {
+    if (!property) return undefined;
+    const candidates = [
+      property.property_id,
+      property.propertyId,
+      property._id,
+      property.id,
+      property.property_number,
+    ];
+    const key = candidates.find((v) => v !== undefined && v !== null && String(v).trim() !== "");
+    return key !== undefined ? String(key) : undefined;
+  };
+
+  const getAdminNote = (property) => {
+    const key = getPropertyKey(property);
+    if (!key) return "";
+    return adminNotes && Object.prototype.hasOwnProperty.call(adminNotes, key)
+      ? adminNotes[key] || ""
+      : "";
   };
 
   const formatDate = (dateString) => {
@@ -222,9 +257,19 @@ export default function MyClients() {
                           <b>Date:</b> {formatDate(property.created_at)}
                         </p>
                         {property.status && (
-                          <p className="property-status">
-                            Status: {property.status}
-                          </p>
+                          <div style={{ marginTop: 6 }}>
+                            <p className="property-status" style={{ marginBottom: 6 }}>
+                              Status: {property.status}
+                            </p>
+                            {(() => {
+                              const note = getAdminNote(property);
+                              return note ? (
+                                <div style={{ fontSize: 14, color: "#555" }}>
+                                  <b style={{ color: "#333" }}>Admin Note:</b> {note}
+                                </div>
+                              ) : null;
+                            })()}
+                          </div>
                         )}
                       </div>
                     ))}

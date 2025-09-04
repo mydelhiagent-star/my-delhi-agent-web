@@ -10,12 +10,13 @@ export default function MyProperties() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [previewProperty, setPreviewProperty] = useState(null);
+  const [adminNotes, setAdminNotes] = useState({});
 
   // Add/attach client inline state per property
   // Add client modal
   const [addClientModalOpen, setAddClientModalOpen] = useState(false);
   const [selectedPropertyForAdd, setSelectedPropertyForAdd] = useState(null);
-  const [addClientForm, setAddClientForm] = useState({ name: "", phone: "" });
+  const [addClientForm, setAddClientForm] = useState({ name: "", phone: "", notes: "" });
   const [addClientSubmitting, setAddClientSubmitting] = useState(false);
   const [addClientError, setAddClientError] = useState("");
 
@@ -72,6 +73,33 @@ export default function MyProperties() {
 
     fetchProperties();
   }, []);
+
+  // Load admin notes that admin wrote for ongoing properties
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("propertyAdminNotes");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          setAdminNotes(parsed);
+        }
+      }
+    } catch (_) {}
+  }, []);
+
+  const getAdminNote = (property) => {
+    if (!property) return "";
+    const candidateKeys = [];
+    if (property.id) candidateKeys.push(property.id);
+    if (property._id) candidateKeys.push(property._id);
+    if (property.property_id) candidateKeys.push(property.property_id);
+    for (const key of candidateKeys) {
+      if (adminNotes && Object.prototype.hasOwnProperty.call(adminNotes, key)) {
+        return adminNotes[key] || "";
+      }
+    }
+    return "";
+  };
 
   const handleDelete = async (id) => {
     console.log(id);
@@ -147,7 +175,7 @@ export default function MyProperties() {
 
   const openAddClientModal = (property) => {
     setSelectedPropertyForAdd(property);
-    setAddClientForm({ name: "", phone: "" });
+    setAddClientForm({ name: "", phone: "", notes: "" });
     setAddClientError("");
     setAddClientModalOpen(true);
   };
@@ -155,7 +183,7 @@ export default function MyProperties() {
   const closeAddClientModal = () => {
     setAddClientModalOpen(false);
     setSelectedPropertyForAdd(null);
-    setAddClientForm({ name: "", phone: "" });
+    setAddClientForm({ name: "", phone: "", notes: "" });
     setAddClientError("");
   };
 
@@ -163,7 +191,7 @@ export default function MyProperties() {
 
   const createClientAndAttach = async () => {
     if (!selectedPropertyForAdd) return;
-    const { name, phone } = addClientForm;
+    const { name, phone, notes } = addClientForm;
     const cleanPhone = (phone || "").replace(/\D/g, "");
     if (!name.trim() || cleanPhone.length !== 10) {
       setAddClientError("Enter a valid name and 10-digit phone");
@@ -180,7 +208,13 @@ export default function MyProperties() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name: name.trim(), phone: cleanPhone, property_id : selectedPropertyForAdd.id, dealer_id : selectedPropertyForAdd.dealer_id }),
+        body: JSON.stringify({ 
+          name: name.trim(), 
+          phone: cleanPhone, 
+          notes: notes.trim(),
+          property_id: selectedPropertyForAdd.id, 
+          dealer_id: selectedPropertyForAdd.dealer_id 
+        }),
       });
       if (!createRes.ok) {
         const err = await createRes.json().catch(() => ({}));
@@ -617,6 +651,15 @@ export default function MyProperties() {
                   setAddClientForm((f) => ({ ...f, phone: clean }));
                 }}
               />
+              <textarea
+                className="edit-modal-textarea"
+                placeholder="Notes (optional)"
+                value={addClientForm.notes}
+                onChange={(e) =>
+                  setAddClientForm((f) => ({ ...f, notes: e.target.value }))
+                }
+                rows={3}
+              />
               {addClientError && (
                 <div style={{ color: "#ff6b6b", marginBottom: 8 }}>
                   {addClientError}
@@ -718,9 +761,19 @@ export default function MyProperties() {
                               <option value="unmarked">Unmarked</option>
                             </select>
                           ) : (
-                            <span className={`status-badge ${client.status}`}>
-                              {client.status}
-                            </span>
+                            <>
+                              <span className={`status-badge ${client.status}`}>
+                                {client.status}
+                              </span>
+                              {(() => {
+                                const note = getAdminNote(selectedPropertyForView);
+                                return note ? (
+                                  <div style={{ marginTop: 6, fontSize: 12, color: '#b0bec5' }}>
+                                    <b style={{ color: '#ffffff' }}>Admin Note:</b> {note}
+                                  </div>
+                                ) : null;
+                              })()}
+                            </>
                           )}
                         </td>
                         <td>

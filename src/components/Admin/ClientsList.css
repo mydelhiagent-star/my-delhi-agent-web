@@ -18,6 +18,124 @@
   color: #666;
 }
 
+/* Search and Filter Container */
+.search-filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Search Container (Left Side) */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.search-label {
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: white;
+  color: #333;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+/* Status Filter Container (Right Side) */
+.status-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.status-filter-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.status-filter-dropdown {
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.status-filter-dropdown:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.status-filter-dropdown option {
+  background: white;
+  color: #333;
+  padding: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .search-container {
+    min-width: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .status-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .search-label,
+  .status-filter-label {
+    font-size: 13px;
+  }
+  
+  .search-input,
+  .status-filter-dropdown {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}
+
 .clients-table-container {
   overflow-x: auto;
   background: white;

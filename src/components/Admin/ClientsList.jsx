@@ -12,10 +12,51 @@ export default function ClientsList() {
   const [clientProperties, setClientProperties] = useState([]);
   const [loadingProperties, setLoadingProperties] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [adminNotes, setAdminNotes] = useState({}); // propertyId -> note
+  const [adminNotesDraft, setAdminNotesDraft] = useState({}); // un-saved edits per property
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchClients();
   }, []);
+
+  // Load admin notes from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("propertyAdminNotes");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          setAdminNotes(parsed);
+        }
+      }
+    } catch (_) {}
+  }, []);
+
+  // Handle search and filter
+  useEffect(() => {
+    let filtered = clients;
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(client => 
+        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.phone.includes(searchTerm)
+      );
+    }
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(client => {
+        if (!client.properties || client.properties.length === 0) {
+          return false;
+        }
+        return client.properties.some(property => property.status === statusFilter);
+      });
+    }
+
+    setFilteredClients(filtered);
+  }, [clients, searchTerm, statusFilter]);
 
   const fetchClients = async () => {
     try {
@@ -33,7 +74,6 @@ export default function ClientsList() {
 
       const data = await response.json();
       setClients(Array.isArray(data.leads) ? data.leads : []);
-      setFilteredClients(Array.isArray(data.leads) ? data.leads : []);
     } catch (error) {
       console.error("Error fetching clients:", error);
       setClients([]);
@@ -50,6 +90,57 @@ export default function ClientsList() {
     if (client.properties && client.properties.length > 0) {
       await fetchClientProperties(client.id, statusFilter);
     }
+  };
+
+  const getPropertyKey = (property) => {
+    if (!property) return undefined;
+    const candidates = [
+      property.property_id,
+      property.propertyId,
+      property._id,
+      property.id,
+      property.property_number,
+    ];
+    const key = candidates.find((v) => v !== undefined && v !== null && String(v).trim() !== "");
+    return key !== undefined ? String(key) : undefined;
+  };
+
+  const getAdminNote = (property) => {
+    const key = getPropertyKey(property);
+    if (!key) return "";
+    return adminNotes && Object.prototype.hasOwnProperty.call(adminNotes, key)
+      ? adminNotes[key] || ""
+      : "";
+  };
+
+  const getAdminNoteDraft = (property) => {
+    const key = getPropertyKey(property);
+    if (!key) return "";
+    if (adminNotesDraft && Object.prototype.hasOwnProperty.call(adminNotesDraft, key)) {
+      return adminNotesDraft[key] ?? "";
+    }
+    // fallback to saved note if draft not created yet
+    return getAdminNote(property);
+  };
+
+  const setAdminNoteDraft = (property, value) => {
+    const key = getPropertyKey(property);
+    if (!key) return;
+    setAdminNotesDraft((prev) => ({ ...(prev || {}), [key]: value }));
+  };
+
+  const setAdminNote = (property, value) => {
+    const key = getPropertyKey(property);
+    if (!key) return;
+    setAdminNotes((prev) => {
+      const next = { ...(prev || {}), [key]: value };
+      try {
+        localStorage.setItem("propertyAdminNotes", JSON.stringify(next));
+      } catch (_) {}
+      return next;
+    });
+    // keep draft in sync after save
+    setAdminNotesDraft((prev) => ({ ...(prev || {}), [key]: value }));
   };
 
   const fetchClientProperties = async (id, status) => {
@@ -90,20 +181,11 @@ export default function ClientsList() {
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   const handleStatusFilterChange = (newStatus) => {
-    if(newStatus === "all") {
-      setFilteredClients(clients);
-      setStatusFilter(newStatus);
-      return;
-    }
-    const filteredClients = clients.filter(client => {
-      if (!client.properties || client.properties.length === 0) {
-        return false;
-      }
-      return client.properties.some(property => property.status === newStatus);
-    });
-    console.log(filteredClients);
-    setFilteredClients(filteredClients);
     setStatusFilter(newStatus);
   };
 
@@ -187,23 +269,41 @@ export default function ClientsList() {
     <div className="clients-container">
       <h3 className="clients-title">All Clients</h3>
       
-      {/* Status Filter */}
-      <div className="status-filter-container">
-        <label htmlFor="status-filter" className="status-filter-label">
-          Filter by Status:
-        </label>
-        <select
-          id="status-filter"
-          value={statusFilter}
-          onChange={(e) => handleStatusFilterChange(e.target.value)}
-          className="status-filter-dropdown"
-        >
-          <option value="all">All Statuses</option>
-          <option value="view">View</option>
-          <option value="ongoing">Ongoing</option>
-          <option value="closed">Closed</option>
-          <option value="converted">Converted</option>
-        </select>
+      {/* Search and Filter Controls */}
+      <div className="search-filter-container">
+        {/* Search on the left */}
+        <div className="search-container">
+          <label htmlFor="client-search" className="search-label">
+            Search Clients:
+          </label>
+          <input
+            id="client-search"
+            type="text"
+            placeholder="Search by name or phone..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="search-input"
+          />
+        </div>
+        
+        {/* Filter on the right */}
+        <div className="status-filter-container">
+          <label htmlFor="status-filter" className="status-filter-label">
+            Filter by Status:
+          </label>
+          <select
+            id="status-filter"
+            value={statusFilter}
+            onChange={(e) => handleStatusFilterChange(e.target.value)}
+            className="status-filter-dropdown"
+          >
+            <option value="all">All Statuses</option>
+            <option value="view">View</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="closed">Closed</option>
+            <option value="converted">Converted</option>
+          </select>
+        </div>
       </div>
       
       <div className="clients-table-container">
@@ -330,6 +430,50 @@ export default function ClientsList() {
                             Status: {property.status}
                           </p>
                         )}
+
+                        {/* Admin Note: editable only if ongoing */}
+                        <div style={{ marginTop: 8 }}>
+                          {property.status === "ongoing" ? (
+                            <div>
+                              <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>
+                                Admin Note (visible to dealer):
+                              </label>
+                              <textarea
+                                className="client-edit-textarea"
+                                placeholder="Write a note for this ongoing property..."
+                                value={getAdminNoteDraft(property)}
+                                onChange={(e) => setAdminNoteDraft(property, e.target.value)}
+                                rows={3}
+                                style={{ width: "100%" }}
+                              />
+                              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                                <button
+                                  className="client-btn client-btn-edit"
+                                  type="button"
+                                  onClick={() => setAdminNote(property, getAdminNoteDraft(property))}
+                                >
+                                  Save Note
+                                </button>
+                                <button
+                                  className="client-btn client-btn-delete"
+                                  type="button"
+                                  onClick={() => setAdminNoteDraft(property, getAdminNote(property))}
+                                >
+                                  Reset
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            (() => {
+                              const note = getAdminNote(property);
+                              return note ? (
+                                <div style={{ marginTop: 6, fontSize: 14 }}>
+                                  <b>Admin Note:</b> {note}
+                                </div>
+                              ) : null;
+                            })()
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

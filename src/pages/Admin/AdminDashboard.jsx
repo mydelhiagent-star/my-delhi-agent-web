@@ -6,6 +6,7 @@ import ClientsList from "../../components/Admin/ClientsList";
 import ConflictingProperties from "../../components/Dashboard/ConflictingProperties";
 import DealersList from "../../components/Admin/DealersList";
 import Statistics from "../../components/Admin/Statistics";
+import SoldProperties from "../../components/Admin/SoldProperties";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
@@ -73,6 +74,14 @@ export default function AdminDashboard() {
         >
           Statistics
         </button>
+        <button
+          className={`admin-dashboard-menu-btn ${
+            activeTab === "sold" ? "active" : ""
+          }`}
+          onClick={() => setActiveTab("sold")}
+        >
+          Sold Properties
+        </button>
       </div>
 
       {/* Render Selected Component */}
@@ -84,6 +93,7 @@ export default function AdminDashboard() {
         {activeTab === "dealers_list" && <DealersList />}
         {activeTab === "conflicts" && <ConflictingProperties />}
         {activeTab === "stats" && <Statistics />}
+        {activeTab === "sold" && <SoldProperties />}
       </div>
     </div>
   );
