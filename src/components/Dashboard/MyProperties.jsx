@@ -454,9 +454,6 @@ export default function MyProperties() {
             </p>
 
             <p className="property-detail">
-              <b>Price:</b> ₹{prop.min_price} - ₹{prop.max_price}
-            </p>
-            <p className="property-detail">
               <b>Nearest Landmark:</b> {prop.nearest_landmark}
             </p>
             {prop.status && (

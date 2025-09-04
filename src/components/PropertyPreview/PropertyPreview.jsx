@@ -318,17 +318,17 @@ export default function PropertyPreview({ property, onClose }) {
                 gap: 12,
               }}
             >
+              {(property?.min_price !== undefined || property?.max_price !== undefined) && (
+                <Info
+                  label="Price"
+                  value={`₹${Number(property.min_price || 0).toLocaleString()} - ₹${Number(property.max_price || 0).toLocaleString()}`}
+                />
+              )}
               <Info label="Address" value={property?.address} />
               <Info
                 label="Nearest Landmark"
                 value={property?.nearest_landmark}
               />
-              {property?.price !== undefined && (
-                <Info
-                  label="Price"
-                  value={`₹${Number(property.price).toLocaleString()}`}
-                />
-              )}
               {property?.status && (
                 <Info label="Status" value={property.status} />
               )}
