@@ -242,6 +242,21 @@ export default function ClientsList() {
   };
 
   const handleEditSave = async () => {
+    if (!editingClient) return;
+    if (!editingClient.name.trim()) {
+      alert("Please enter a valid name");
+      return;
+    }
+    const cleanPhone = editingClient.phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
+  
+    if (editingClient.aadhar_number.length !== 12) {
+      alert("Please enter a valid aadhar number");
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}${editingClient.id}`, {
@@ -252,8 +267,7 @@ export default function ClientsList() {
         },
         body: JSON.stringify({
           name: editingClient.name,
-          phone: editingClient.phone,
-          email: editingClient.email,
+          phone: cleanPhone,
           requirement: editingClient.requirement,
           aadhar_number: editingClient.aadhar_number,
         }),
@@ -540,15 +554,7 @@ export default function ClientsList() {
                   })}
                   required
                 />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={editingClient.email || ""}
-                  onChange={(e) => setEditingClient({
-                    ...editingClient,
-                    email: e.target.value
-                  })}
-                />
+               
                 <textarea
                   placeholder="Requirement"
                   value={editingClient.requirement || ""}
