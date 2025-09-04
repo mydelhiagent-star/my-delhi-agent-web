@@ -160,6 +160,13 @@ export default function MyProperties() {
       alert("Minimum price must be less than maximum price");
       return;
     }
+    if (!editingProperty.owner_name.trim()) {
+      alert("Please enter a valid owner name");
+      return;
+    }
+   
+    
+    
     const id = editingProperty.id;
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
@@ -174,6 +181,8 @@ export default function MyProperties() {
         min_price: Number(editingProperty.min_price),
         max_price: Number(editingProperty.max_price),
         nearest_landmark: editingProperty.nearest_landmark,
+        owner_name: editingProperty.owner_name,
+        owner_phone: editingProperty.owner_phone,
         photos: editingProperty.photos,
         videos: editingProperty.videos,
       }),
@@ -581,6 +590,37 @@ export default function MyProperties() {
                 })
               }
             />
+            <input
+              type="text"
+              name="owner_name"
+              className="edit-modal-input"
+              placeholder="Owner Name"
+              required
+              value={editingProperty.owner_name}
+              onChange={(e) =>
+                setEditingProperty({
+                  ...editingProperty,
+                  owner_name: e.target.value,
+                })
+              }
+            />
+            <input
+              type="text"
+              name="owner_phone"
+              className="edit-modal-input"
+              placeholder="Owner Phone"
+              required
+              value={editingProperty.owner_phone}
+              onChange={(e) =>
+                setEditingProperty({
+                  ...editingProperty,
+                  owner_phone: e.target.value,
+                })
+              }
+            />
+
+            
+
 
             {/* Photos */}
             <div style={{ marginBottom: "15px" }}>
