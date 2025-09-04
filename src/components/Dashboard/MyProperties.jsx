@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from "../../config/api";
 
 export default function MyProperties() {
   const [properties, setProperties] = useState([]);
-  const [editingProperty, setEditingProperty] = useState(null);
+  const [editingProperty, setEdinptingProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [previewProperty, setPreviewProperty] = useState(null);
@@ -27,13 +27,7 @@ export default function MyProperties() {
   const [editingClient, setEditingClient] = useState(null);
   const [editClientForm, setEditClientForm] = useState({ name: "", phone: "", status: "", note: "" });
 
-  // Dummy data for testing
-  const dummyClients = [
-    { id: 1, name: "John Doe", phone: "9876543210", status: "marked", note: "Interested in 2BHK" },
-    { id: 2, name: "Jane Smith", phone: "9876543211", status: "unmarked", note: "Looking for investment property" },
-    { id: 3, name: "Mike Johnson", phone: "9876543212", status: "marked", note: "Budget: 50L-70L" },
-    { id: 4, name: "Sarah Wilson", phone: "9876543213", status: "unmarked", note: "First time buyer" }
-  ];
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
