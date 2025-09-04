@@ -11,144 +11,7 @@ export default function SoldProperties() {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showPropertyModal, setShowPropertyModal] = useState(false);
 
-  // Dummy data for sold properties
-  const dummySoldProperties = [
-    {
-      id: 1,
-      property_number: "PROP001",
-      title: "Luxury 3BHK Apartment",
-      description: "Beautiful 3BHK apartment with modern amenities in prime location",
-      address: "Sector 15, Gurgaon",
-      min_price: 7500000,
-      max_price: 8500000,
-      sold_price: 8000000,
-      nearest_landmark: "Metro Station",
-      photos: [
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500",
-        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=500"
-      ],
-      videos: [],
-      owner_name: "Rajesh Kumar",
-      owner_phone: "9876543210",
-      dealer_name: "ABC Properties",
-      dealer_phone: "9876543211",
-      client_name: "Priya Sharma",
-      client_phone: "9876543212",
-      sold_date: "2024-01-15",
-      status: "converted",
-      commission: 240000,
-      location: "Gurgaon",
-      sub_location: "Sector 15"
-    },
-    {
-      id: 2,
-      property_number: "PROP002",
-      title: "2BHK Independent House",
-      description: "Spacious 2BHK independent house with garden",
-      address: "Vasant Kunj, Delhi",
-      min_price: 12000000,
-      max_price: 14000000,
-      sold_price: 13500000,
-      nearest_landmark: "Shopping Mall",
-      photos: [
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=500",
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500"
-      ],
-      videos: [],
-      owner_name: "Suresh Agarwal",
-      owner_phone: "9876543213",
-      dealer_name: "XYZ Realty",
-      dealer_phone: "9876543214",
-      client_name: "Amit Singh",
-      client_phone: "9876543215",
-      sold_date: "2024-01-20",
-      status: "converted",
-      commission: 405000,
-      location: "Delhi",
-      sub_location: "Vasant Kunj"
-    },
-    {
-      id: 3,
-      property_number: "PROP003",
-      title: "1BHK Studio Apartment",
-      description: "Modern 1BHK studio apartment perfect for young professionals",
-      address: "Cyber City, Gurgaon",
-      min_price: 4500000,
-      max_price: 5500000,
-      sold_price: 5000000,
-      nearest_landmark: "IT Park",
-      photos: [
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500",
-        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500"
-      ],
-      videos: [],
-      owner_name: "Meera Patel",
-      owner_phone: "9876543216",
-      dealer_name: "ABC Properties",
-      dealer_phone: "9876543211",
-      client_name: "Rohit Verma",
-      client_phone: "9876543217",
-      sold_date: "2024-02-01",
-      status: "converted",
-      commission: 150000,
-      location: "Gurgaon",
-      sub_location: "Cyber City"
-    },
-    {
-      id: 4,
-      property_number: "PROP004",
-      title: "4BHK Villa",
-      description: "Luxurious 4BHK villa with private pool and garden",
-      address: "DLF Phase 2, Gurgaon",
-      min_price: 25000000,
-      max_price: 30000000,
-      sold_price: 28000000,
-      nearest_landmark: "Golf Course",
-      photos: [
-        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=500",
-        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=500"
-      ],
-      videos: [],
-      owner_name: "Vikram Malhotra",
-      owner_phone: "9876543218",
-      dealer_name: "Premium Properties",
-      dealer_phone: "9876543219",
-      client_name: "Anita Gupta",
-      client_phone: "9876543220",
-      sold_date: "2024-02-10",
-      status: "converted",
-      commission: 840000,
-      location: "Gurgaon",
-      sub_location: "DLF Phase 2"
-    },
-    {
-      id: 5,
-      property_number: "PROP005",
-      title: "3BHK Penthouse",
-      description: "Exclusive 3BHK penthouse with city view",
-      address: "Connaught Place, Delhi",
-      min_price: 18000000,
-      max_price: 22000000,
-      sold_price: 20000000,
-      nearest_landmark: "Central Park",
-      photos: [
-        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=500",
-        "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=500"
-      ],
-      videos: [],
-      owner_name: "Deepak Jain",
-      owner_phone: "9876543221",
-      dealer_name: "Elite Realty",
-      dealer_phone: "9876543222",
-      client_name: "Sunita Reddy",
-      client_phone: "9876543223",
-      sold_date: "2024-02-15",
-      status: "converted",
-      commission: 600000,
-      location: "Delhi",
-      sub_location: "Connaught Place"
-    }
-  ];
+
 
   useEffect(() => {
     fetchSoldProperties();
@@ -341,7 +204,7 @@ export default function SoldProperties() {
                   </div>
                 </td> */}
                 <td className="date-cell">
-                  {formatDate(property.sold_date)}
+                  {formatDate(property.populated_properties.sold_date)}
                 </td>
                 <td className="property-actions">
                   <button
