@@ -362,7 +362,7 @@ export default function SoldProperties() {
         <div className="property-modal-overlay" onClick={closePropertyModal}>
           <div className="property-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="property-modal-header">
-              <h3>Property Details - {selectedProperty.title}</h3>
+              <h3>Property Details - {selectedProperty.populated_properties.title}</h3>
               <button className="property-modal-close" onClick={closePropertyModal}>
                 ✕
               </button>
@@ -386,62 +386,58 @@ export default function SoldProperties() {
                 <div className="detail-section">
                   <h4>Property Information</h4>
                   <div className="detail-row">
-                    <strong>Property Number:</strong> {selectedProperty.property_number}
+                    <strong>Property Number:</strong> {selectedProperty.populated_properties.property_number}
                   </div>
                   <div className="detail-row">
-                    <strong>Description:</strong> {selectedProperty.description}
+                    <strong>Description:</strong> {selectedProperty.populated_properties.description}
                   </div>
                   <div className="detail-row">
-                    <strong>Address:</strong> {selectedProperty.address}
+                    <strong>Address:</strong> {selectedProperty.populated_properties.address}
                   </div>
                   <div className="detail-row">
-                    <strong>Nearest Landmark:</strong> {selectedProperty.nearest_landmark}
+                    <strong>Nearest Landmark:</strong> {selectedProperty.populated_properties.nearest_landmark}
                   </div>
                 </div>
 
                 <div className="detail-section">
                   <h4>Pricing Information</h4>
                   <div className="detail-row">
-                    <strong>Original Price Range:</strong> {formatPrice(selectedProperty.min_price)} - {formatPrice(selectedProperty.max_price)}
+                    <strong>Original Price Range:</strong> {formatPrice(selectedProperty.populated_properties.min_price)} - {formatPrice(selectedProperty.populated_properties.max_price)}
                   </div>
                   <div className="detail-row">
-                    <strong>Sold Price:</strong> {formatPrice(selectedProperty.sold_price)}
+                    <strong>Sold Price:</strong> {formatPrice(selectedProperty.populated_properties.sold_price)}
                   </div>
-                  <div className="detail-row">
-                    <strong>Commission:</strong> {formatPrice(selectedProperty.commission)}
-                  </div>
-                  <div className="detail-row">
-                    <strong>Commission %:</strong> {((selectedProperty.commission / selectedProperty.sold_price) * 100).toFixed(1)}%
-                  </div>
+                 
+                 
                 </div>
 
                 <div className="detail-section">
                   <h4>Owner Information</h4>
                   <div className="detail-row">
-                    <strong>Name:</strong> {selectedProperty.owner_name}
+                    <strong>Name:</strong> {selectedProperty.populated_properties.owner_name}
                   </div>
                   <div className="detail-row">
-                    <strong>Phone:</strong> {selectedProperty.owner_phone}
+                    <strong>Phone:</strong> {selectedProperty.populated_properties.owner_phone}
                   </div>
                 </div>
 
                 <div className="detail-section">
                   <h4>Client Information</h4>
                   <div className="detail-row">
-                    <strong>Name:</strong> {selectedProperty.client_name}
+                    <strong>Name:</strong> {selectedProperty.name}
                   </div>
                   <div className="detail-row">
-                    <strong>Phone:</strong> {selectedProperty.client_phone}
+                    <strong>Phone:</strong> {selectedProperty.phone}
                   </div>
                 </div>
 
                 <div className="detail-section">
                   <h4>Dealer Information</h4>
                   <div className="detail-row">
-                    <strong>Name:</strong> {selectedProperty.dealer_name}
+                    <strong>Name:</strong> {selectedProperty.dealer_info.name}
                   </div>
                   <div className="detail-row">
-                    <strong>Phone:</strong> {selectedProperty.dealer_phone}
+                    <strong>Phone:</strong> {selectedProperty.dealer_info.phone}
                   </div>
                 </div>
 
@@ -449,9 +445,6 @@ export default function SoldProperties() {
                   <h4>Transaction Information</h4>
                   <div className="detail-row">
                     <strong>Sold Date:</strong> {formatDate(selectedProperty.sold_date)}
-                  </div>
-                  <div className="detail-row">
-                    <strong>Status:</strong> <span className="status-badge converted">{selectedProperty.status}</span>
                   </div>
                 </div>
               </div>
