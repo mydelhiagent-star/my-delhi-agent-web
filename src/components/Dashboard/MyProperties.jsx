@@ -208,7 +208,7 @@ export default function MyProperties() {
       });
       if(response.ok) {
         const data = await response.json();
-        setPropertyClients(data);
+        data != null ? setPropertyClients(data) : setPropertyClients([]);
       }
       else {
         throw new Error("Failed to fetch clients");
@@ -264,6 +264,12 @@ export default function MyProperties() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          name: editClientForm.name,
+          phone: cleanPhone,
+          status: editClientForm.status,
+          note: editClientForm.note
+        }),
       });
       if(response.ok) {
         alert("Client updated successfully!");
