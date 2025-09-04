@@ -130,6 +130,36 @@ export default function MyProperties() {
 
   const handleEditSave = async (e) => {
     e.preventDefault();
+    if (!editingProperty) return;
+    
+    if (!editingProperty.title.trim()) {
+      alert("Please enter a valid title");
+      return;
+    }
+    if (!editingProperty.description.trim()) {
+      alert("Please enter a valid description");
+      return;
+    }
+    if (!editingProperty.address.trim()) {
+      alert("Please enter a valid address");
+      return;
+    }
+    if (!editingProperty.min_price) {
+      alert("Please enter a valid minimum price");
+      return;
+    }
+    if (!editingProperty.max_price) {
+      alert("Please enter a valid maximum price");
+      return;
+    }
+    if (!editingProperty.nearest_landmark.trim()) {
+      alert("Please enter a valid nearest landmark");
+      return;
+    }
+    if (Number(editingProperty.min_price) > Number(editingProperty.max_price)) {
+      alert("Minimum price must be less than maximum price");
+      return;
+    }
     const id = editingProperty.id;
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
