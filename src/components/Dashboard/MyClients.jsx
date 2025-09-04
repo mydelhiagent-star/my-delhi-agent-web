@@ -121,13 +121,7 @@ export default function MyClients() {
     return key !== undefined ? String(key) : undefined;
   };
 
-  const getAdminNote = (property) => {
-    const key = getPropertyKey(property);
-    if (!key) return "";
-    return adminNotes && Object.prototype.hasOwnProperty.call(adminNotes, key)
-      ? adminNotes[key] || ""
-      : "";
-  };
+ 
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -261,14 +255,11 @@ export default function MyClients() {
                             <p className="property-status" style={{ marginBottom: 6 }}>
                               Status: {property.status}
                             </p>
-                            {(() => {
-                              const note = getAdminNote(property);
-                              return note ? (
-                                <div style={{ fontSize: 14, color: "#555" }}>
-                                  <b style={{ color: "#333" }}>Admin Note:</b> {note}
-                                </div>
-                              ) : null;
-                            })()}
+                            {property.note && (
+                              <div style={{ fontSize: 14, color: "#555" }}>
+                                <b style={{ color: "#333" }}>Admin Note:</b> {property.note || ""}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
