@@ -131,7 +131,7 @@ export default function MyProperties() {
   const handleEditSave = async (e) => {
     e.preventDefault();
     if (!editingProperty) return;
-    
+
     if (!editingProperty.title.trim()) {
       alert("Please enter a valid title");
       return;
@@ -144,11 +144,11 @@ export default function MyProperties() {
       alert("Please enter a valid address");
       return;
     }
-    if (!editingProperty.min_price) {
+    if (!editingProperty.min_price || Number(editingProperty.min_price) < 0) {
       alert("Please enter a valid minimum price");
       return;
     }
-    if (!editingProperty.max_price) {
+    if (!editingProperty.max_price || Number(editingProperty.max_price) < 0) {
       alert("Please enter a valid maximum price");
       return;
     }
