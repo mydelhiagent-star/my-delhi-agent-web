@@ -154,6 +154,8 @@
   .whatsapp-link {
     width: 56px;
     height: 56px;
+    min-width: 56px;
+    min-height: 56px;
   }
   
   .whatsapp-icon {
@@ -164,6 +166,11 @@
   .tooltip-content {
     padding: 0.625rem 0.875rem;
     font-size: 0.8125rem;
+  }
+  
+  /* Mobile touch improvements */
+  .whatsapp-link:active {
+    transform: scale(0.95);
   }
 }
 

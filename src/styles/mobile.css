@@ -1,0 +1,183 @@
+/* Mobile-First Responsive Enhancements */
+
+/* Touch-friendly improvements */
+@media (max-width: 768px) {
+  /* Ensure all interactive elements are touch-friendly */
+  button,
+  .btn,
+  input[type="button"],
+  input[type="submit"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent zoom on form inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  
+  /* Improve touch targets */
+  .nav-link,
+  .footer-link,
+  .social-link {
+    padding: 0.75rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Better spacing for mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Improve modal mobile experience */
+  .modal-overlay {
+    padding: 1rem;
+  }
+  
+  .modal-content {
+    margin: 0;
+    border-radius: 16px;
+    max-height: calc(100vh - 2rem);
+  }
+  
+  /* Better table responsiveness */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Improve card layouts */
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Better form layouts */
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  /* Reduce padding for very small screens */
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Stack elements vertically */
+  .flex-row-mobile {
+    flex-direction: column;
+  }
+  
+  /* Reduce font sizes for better fit */
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  /* Improve button sizing */
+  .btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .btn-lg {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Reduce vertical spacing in landscape */
+  .section-padding {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  /* Adjust hero height for landscape */
+  .hero {
+    min-height: 70vh;
+  }
+  
+  /* Stack navigation vertically in landscape */
+  .nav-horizontal {
+    flex-direction: column;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Ensure crisp rendering on retina displays */
+  .logo-img,
+  .property-image,
+  .avatar-img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+  .mobile-dark {
+    background-color: var(--gray-900);
+    color: var(--gray-100);
+  }
+  
+  .mobile-dark .card {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
+  }
+}
+
+/* Reduced motion for mobile */
+@media (prefers-reduced-motion: reduce) and (max-width: 768px) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles for mobile */
+@media print and (max-width: 768px) {
+  .no-print-mobile {
+    display: none !important;
+  }
+  
+  .print-mobile {
+    display: block !important;
+  }
+  
+  .container {
+    padding: 0;
+  }
+  
+  .card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}

@@ -479,6 +479,13 @@
   
   .hero-actions {
     flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .hero-actions .btn {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
   }
   
   .hero-features {
@@ -499,6 +506,17 @@
   
   .hero-indicators {
     bottom: 1rem;
+  }
+  
+  /* Mobile touch improvements */
+  .hero-actions .btn {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+  
+  .hero-indicators .indicator {
+    width: 14px;
+    height: 14px;
   }
 }
 

@@ -363,15 +363,18 @@
   
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .nav-tabs {
     flex-direction: column;
+    gap: 0.75rem;
   }
   
   .nav-tab {
     width: 100%;
     justify-content: flex-start;
+    padding: 1rem;
   }
   
   .dashboard-content {
@@ -391,10 +394,21 @@
   .quick-action-btn {
     padding: 0.875rem 1.25rem;
     font-size: 0.8125rem;
+    min-width: 60px;
+    min-height: 60px;
   }
   
   .action-text {
     display: none;
+  }
+  
+  /* Mobile touch improvements */
+  .nav-tab {
+    min-height: 60px;
+  }
+  
+  .stat-card {
+    padding: 1.25rem;
   }
 }
 

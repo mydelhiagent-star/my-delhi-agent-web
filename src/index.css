@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+@import url("./styles/mobile.css");
 
 /* CSS Reset and Base Styles */
 * {
@@ -673,17 +674,35 @@ a:hover {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 var(--space-4);
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.75rem;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 var(--space-3);
   }
 
   h1 {
-    font-size: 2.25rem;
+    font-size: 2rem;
   }
 
   h2 {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
   }
 
   h3 {
@@ -700,6 +719,18 @@ a:hover {
     padding: var(--space-3) var(--space-6);
     font-size: 0.875rem;
   }
+  
+  /* Mobile-specific improvements */
+  .btn {
+    min-height: 44px; /* Touch-friendly minimum size */
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
 }
 
 @media (max-width: 480px) {
@@ -708,7 +739,7 @@ a:hover {
   }
 
   h1 {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
   }
 
   h2 {
@@ -717,6 +748,35 @@ a:hover {
 
   h3 {
     font-size: 1.25rem;
+  }
+  
+  /* Extra small mobile optimizations */
+  .btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: 0.875rem;
+  }
+  
+  .btn-lg {
+    padding: var(--space-3) var(--space-5);
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0 var(--space-1);
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
   }
 }
 
