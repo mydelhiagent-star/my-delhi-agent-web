@@ -1,3 +1,4 @@
+import React from "react";
 import Header from "../components/Header/Header";
 import Hero from "../components/Hero/Hero";
 import WhyJoinUs from "../components/WhyJoinUs/WhyJoinUs";
@@ -8,14 +9,16 @@ import WhatsAppButton from "../components/WhatsAppButton/WhatsAppButton";
 
 export default function LandingPage() {
   return (
-    <>
+    <div className="landing-page">
       <Header />
-      <Hero />
-      <WhyJoinUs />
-      <Reviews />
-      <FAQ />
+      <main>
+        <Hero />
+        <WhyJoinUs />
+        <Reviews />
+        <FAQ />
+      </main>
       <Footer />
       <WhatsAppButton />
-    </>
+    </div>
   );
 }

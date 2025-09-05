@@ -406,98 +406,143 @@ export default function MyProperties() {
 
   return (
     <div className="my-properties-container">
-      <h3 className="my-properties-title">My Properties</h3>
-      <div className="properties-grid">
-        {(properties ?? []).map((prop) => (
-          <div key={prop.id} className="property-card">
-            {/* Carousel */}
+      <div className="properties-header">
+        <h1 className="properties-title">My Properties</h1>
+        <p className="properties-subtitle">Manage your property listings</p>
+        <div className="properties-stats">
+          <div className="stat-item">
+            <span className="stat-number">{properties.length}</span>
+            <span className="stat-label">Total Properties</span>
+          </div>
+        </div>
+      </div>
 
-            <div
-              className="property-carousel"
-              onClick={() => setPreviewProperty(prop)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="property-carousel-content">
-                {prop.photos &&
-                  prop.photos.map((photo, i) => (
-                    <img key={i} src={photo} alt={`Property ${i}`} />
-                  ))}
-                {prop.videos &&
-                  prop.videos.map((video, i) => (
-                    <video key={i} controls>
-                      <source src={video} type="video/mp4" />
-                    </video>
-                  ))}
+      {properties.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">🏠</div>
+          <h3>No Properties Yet</h3>
+          <p>Start by adding your first property listing</p>
+        </div>
+      ) : (
+        <div className="properties-grid">
+          {properties.map((prop) => (
+            <div key={prop.id} className="property-card">
+              {/* Property Image Gallery */}
+              <div className="property-image-container">
+                <div
+                  className="property-gallery"
+                  onClick={() => setPreviewProperty(prop)}
+                >
+                  {prop.photos && prop.photos.length > 0 ? (
+                    <img 
+                      src={prop.photos[0]} 
+                      alt={prop.title}
+                      className="property-main-image"
+                    />
+                  ) : (
+                    <div className="no-image-placeholder">
+                      <span className="placeholder-icon">📷</span>
+                      <span>No Image</span>
+                    </div>
+                  )}
+                  
+                  {/* Image count badge */}
+                  {prop.photos && prop.photos.length > 1 && (
+                    <div className="image-count-badge">
+                      +{prop.photos.length - 1} more
+                    </div>
+                  )}
+                  
+                  {/* Status badge */}
+                  {prop.status && (
+                    <div className={`status-badge status-${prop.status}`}>
+                      {prop.status}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="property-content">
+                <div className="property-header">
+                  <h3 className="property-title" onClick={() => setPreviewProperty(prop)}>
+                    {prop.title}
+                  </h3>
+                  <div className="property-number">#{prop.property_number}</div>
+                </div>
+
+                <div className="property-location">
+                  <span className="location-icon">📍</span>
+                  <span className="location-text">{prop.nearest_landmark}</span>
+                </div>
+
+                <div className="property-price">
+                  <span className="price-label">Price Range</span>
+                  <div className="price-range">
+                    <span className="price-amount">₹{prop.min_price?.toLocaleString()}</span>
+                    <span className="price-separator">-</span>
+                    <span className="price-amount">₹{prop.max_price?.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                {/* Admin Note Display */}
+                {(() => {
+                  const note = getAdminNote(prop);
+                  return note ? (
+                    <div className="admin-note-display">
+                      <span className="note-label">Admin Note:</span>
+                      <span className="note-text">{note}</span>
+                    </div>
+                  ) : null;
+                })()}
+
+                {/* Action Buttons */}
+                <div className="property-actions">
+                  <button
+                    className="action-btn primary-btn"
+                    onClick={() => openAddClientModal(prop)}
+                  >
+                    <span className="btn-icon">👤</span>
+                    Add Client
+                  </button>
+                  
+                  <button
+                    className="action-btn secondary-btn"
+                    onClick={() => openViewClientsModal(prop)}
+                  >
+                    <span className="btn-icon">👥</span>
+                    View Clients
+                  </button>
+                </div>
+
+                <div className="property-management">
+                  <button
+                    className="management-btn edit-btn"
+                    onClick={() =>
+                      setEditingProperty({
+                        ...prop,
+                        photosInput: prop.photos?.join(",") || "",
+                        videosInput: prop.videos?.join(",") || "",
+                      })
+                    }
+                  >
+                    <span className="btn-icon">✏️</span>
+                    Edit
+                  </button>
+                  
+                  <button
+                    className="management-btn delete-btn"
+                    onClick={() => handleDelete(prop.id)}
+                  >
+                    <span className="btn-icon">🗑️</span>
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
-
-            <h4
-              className="property-title"
-              onClick={() => setPreviewProperty(prop)}
-              style={{ cursor: "pointer" }}
-            >
-              Property Number: {prop.property_number}
-            </h4>
-
-            <p
-              className="property-detail"
-              onClick={() => setPreviewProperty(prop)}
-              style={{ cursor: "pointer" }}
-            >
-              <b>Title:</b> {prop.title}
-            </p>
-
-            <p className="property-detail">
-              <b>Nearest Landmark:</b> {prop.nearest_landmark}
-            </p>
-            {prop.status && (
-              <p className="property-status">Status: {prop.status}</p>
-            )}
-
-            <div
-              className="property-actions"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              <button
-                className="property-btn property-btn-edit"
-                onClick={() =>
-                  setEditingProperty({
-                    ...prop,
-                    photosInput: prop.photos?.join(",") || "",
-                    videosInput: prop.videos?.join(",") || "",
-                  })
-                }
-              >
-                Edit
-              </button>
-              <button
-                className="property-btn property-btn-delete"
-                onClick={() => handleDelete(prop.id)}
-              >
-                Delete
-              </button>
-              {/* View Clients removed; Add Client moved to bottom */}
-            </div>
-
-            {/* Add Client button at bottom of card */}
-            <button
-              className="property-btn property-btn-sold"
-              onClick={() => openAddClientModal(prop)}
-            >
-              Add Client
-            </button>
-            
-            {/* View Client button below Add Client */}
-            <button
-              className="property-btn property-btn-view-clients"
-              onClick={() => openViewClientsModal(prop)}
-            >
-              View Clients
-            </button>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Edit Modal */}
       {editingProperty && (
