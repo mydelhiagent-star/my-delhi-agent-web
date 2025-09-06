@@ -331,6 +331,7 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   placeholder="0"
                   min="0"
+                  step="1"
                   className={errors.bedrooms ? "error" : ""}
                   required
                 />
