@@ -1,98 +1,146 @@
-// src/pages/Dashboard.jsx
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import PostProperty from "../components/Dashboard/PostProperty";
-import MyProperties from "../components/Dashboard/MyProperties";
-import MyClients from "../components/Dashboard/MyClients";
+"use client"
 
-export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("my");
-  const navigate = useNavigate();
+import { useState, useEffect } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+
+import "./Dashboard.css"
+import MyClients from "../components/Dashboard/MyClients"
+import MyProperties from "../components/Dashboard/MyProperties"
+import PostProperty from "../components/Dashboard/PostProperty"
+
+const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState("post")
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // Sync URL with active tab
+  useEffect(() => {
+    const path = location.pathname
+    if (path.includes('/properties')) {
+      setActiveTab('properties')
+    } else if (path.includes('/clients')) {
+      setActiveTab('clients')
+    } else {
+      setActiveTab('post')
+    }
+  }, [location.pathname])
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab)
+    // Update URL based on tab
+    if (tab === 'properties') {
+      navigate('/dashboard')
+    } else if (tab === 'clients') {
+      navigate('/dashboard')
+    } else {
+      navigate('/dashboard')
+    }
+  }
+
+  const handleKeyDown = (e, tab) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      setActiveTab(tab)
+    }
+
+    // Arrow key navigation
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault()
+      const tabs = ["post", "properties", "clients"]
+      const currentIndex = tabs.indexOf(activeTab)
+      let newIndex
+
+      if (e.key === "ArrowLeft") {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1
+      } else {
+        newIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0
+      }
+
+      setActiveTab(tabs[newIndex])
+    }
+  }
 
   const handleLogout = () => {
-    try {
-      localStorage.removeItem("token");
-    } catch (_) {}
-    navigate("/");
-  };
+    // Logout logic would be handled here
+    console.log("Logout clicked")
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-        Broker Dashboard
-      </h2>
+    <div className="dashboard-container">
+      {/* Premium Top Bar */}
+      <header className="dashboard-header">
+        <div className="header-content">
+          <h1 className="dashboard-title">Broker Dashboard</h1>
+          <button className="logout-btn" onClick={handleLogout} aria-label="Logout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16,17 21,12 16,7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Logout
+          </button>
+        </div>
+      </header>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+      {/* Main Content */}
+      <main className="dashboard-main">
+        {/* Tab Navigation */}
+        <nav className="tab-navigation" role="tablist">
         <button
-          onClick={handleLogout}
-          style={{
-            padding: "8px 16px",
-            background: "#dc3545",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Logout
-        </button>
-      </div>
+            className={`tab-button ${activeTab === "post" ? "active" : ""}`}
+            onClick={() => handleTabChange("post")}
+            onKeyDown={(e) => handleKeyDown(e, "post")}
+            role="tab"
+            aria-selected={activeTab === "post"}
+            aria-controls="post-panel"
+            tabIndex={activeTab === "post" ? 0 : -1}
+          >
+            <span>Post Property</span>
+          </button>
+          <button
+            className={`tab-button ${activeTab === "properties" ? "active" : ""}`}
+            onClick={() => handleTabChange("properties")}
+            onKeyDown={(e) => handleKeyDown(e, "properties")}
+            role="tab"
+            aria-selected={activeTab === "properties"}
+            aria-controls="properties-panel"
+            tabIndex={activeTab === "properties" ? 0 : -1}
+          >
+            <span>My Properties</span>
+          </button>
+          <button
+            className={`tab-button ${activeTab === "clients" ? "active" : ""}`}
+            onClick={() => handleTabChange("clients")}
+            onKeyDown={(e) => handleKeyDown(e, "clients")}
+            role="tab"
+            aria-selected={activeTab === "clients"}
+            aria-controls="clients-panel"
+            tabIndex={activeTab === "clients" ? 0 : -1}
+          >
+            <span>My Clients</span>
+          </button>
+        </nav>
 
-      {/* Tabs */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "20px",
-          marginBottom: "20px",
-          flexWrap: "wrap"
-        }}
-      >
-        <button
-          onClick={() => setActiveTab("post")}
-          style={{
-            padding: "10px 20px",
-            background: activeTab === "post" ? "#007bff" : "#ddd",
-            color: activeTab === "post" ? "#fff" : "#000",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Post Property
-        </button>
-        <button
-          onClick={() => setActiveTab("my")}
-          style={{
-            padding: "10px 20px",
-            background: activeTab === "my" ? "#007bff" : "#ddd",
-            color: activeTab === "my" ? "#fff" : "#000",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          My Properties
-        </button>
-        <button
-          onClick={() => setActiveTab("clients")}
-          style={{
-            padding: "10px 20px",
-            background: activeTab === "clients" ? "#007bff" : "#ddd",
-            color: activeTab === "clients" ? "#fff" : "#000",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          My Clients
-        </button>
-      </div>
-
-      {/* Conditional Components */}
-      {activeTab === "post" && <PostProperty />}
-      {activeTab === "my" && <MyProperties />}
-      {activeTab === "clients" && <MyClients />}
+        {/* Tab Content Container */}
+        <div className="tab-content-container">
+          {activeTab === "post" && (
+            <div id="post-panel" role="tabpanel" aria-labelledby="post-tab">
+              <PostProperty />
+            </div>
+          )}
+          {activeTab === "properties" && (
+            <div id="properties-panel" role="tabpanel" aria-labelledby="properties-tab">
+              <MyProperties />
+            </div>
+          )}
+          {activeTab === "clients" && (
+            <div id="clients-panel" role="tabpanel" aria-labelledby="clients-tab">
+              <MyClients />
+            </div>
+          )}
+        </div>
+      </main>
     </div>
-  );
-}
+  )}
+
+export default Dashboard

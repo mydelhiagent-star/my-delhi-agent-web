@@ -1,982 +1,291 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import PropertyPreview from "../PropertyPreview/PropertyPreview";
-import "./MyProperties.css";
-import { API_ENDPOINTS } from "../../config/api";
+"use client"
 
-export default function MyProperties() {
-  const [properties, setProperties] = useState([]);
-  const [editingProperty, setEdinptingProperty] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const [previewProperty, setPreviewProperty] = useState(null);
-  const [adminNotes, setAdminNotes] = useState({});
+import { useState } from "react"
+import "./MyProperties.css"
 
-  // Add/attach client inline state per property
-  // Add client modal
-  const [addClientModalOpen, setAddClientModalOpen] = useState(false);
-  const [selectedPropertyForAdd, setSelectedPropertyForAdd] = useState(null);
-  const [addClientForm, setAddClientForm] = useState({ name: "", phone: "", notes: "" });
-  const [addClientSubmitting, setAddClientSubmitting] = useState(false);
-  const [addClientError, setAddClientError] = useState("");
+const MyProperties = () => {
+  const [properties] = useState([
+    {
+      id: 1,
+      title: "Modern Downtown Apartment",
+      location: "123 Main St, Downtown",
+      price: 450000,
+      bedrooms: 2,
+      bathrooms: 2,
+      area: 1200,
+      status: "active",
+      images: ["/modern-apartment.png"],
+      clients: ["John Doe", "Jane Smith"],
+    },
+    {
+      id: 2,
+      title: "Luxury Family Home",
+      location: "456 Oak Ave, Suburbs",
+      price: 750000,
+      bedrooms: 4,
+      bathrooms: 3,
+      area: 2500,
+      status: "pending",
+      images: ["/luxury-family-home-exterior.jpg"],
+      clients: ["Mike Johnson"],
+    },
+  ])
 
-  // View clients modal state
-  const [viewClientsModalOpen, setViewClientsModalOpen] = useState(false);
-  const [selectedPropertyForView, setSelectedPropertyForView] = useState(null);
-  const [propertyClients, setPropertyClients] = useState([]);
-  const [editingClient, setEditingClient] = useState(null);
-  const [editClientForm, setEditClientForm] = useState({ name: "", phone: "", status: "", note: "" });
+  const [selectedProperty, setSelectedProperty] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [modalType, setModalType] = useState("")
 
-
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchProperties = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(API_ENDPOINTS.PROPERTIES, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch properties");
-        }
-
-        const data = await response.json();
-        const apiProperties = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.results)
-          ? data.results
-          : Array.isArray(data?.properties)
-          ? data.properties
-          : [];
-
-        setProperties(apiProperties);
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-        setProperties([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
-  }, []);
-
-  // Load admin notes that admin wrote for ongoing properties
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("propertyAdminNotes");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          setAdminNotes(parsed);
-        }
-      }
-    } catch (_) {}
-  }, []);
-
-  const getAdminNote = (property) => {
-    if (!property) return "";
-    const candidateKeys = [];
-    if (property.id) candidateKeys.push(property.id);
-    if (property._id) candidateKeys.push(property._id);
-    if (property.property_id) candidateKeys.push(property.property_id);
-    for (const key of candidateKeys) {
-      if (adminNotes && Object.prototype.hasOwnProperty.call(adminNotes, key)) {
-        return adminNotes[key] || "";
-      }
-    }
-    return "";
-  };
-
-  const handleDelete = async (id) => {
-    console.log(id);
-    if (window.confirm("Are you sure you want to delete this property?")) {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-          `${API_ENDPOINTS.PROPERTIES_DEALER}${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to delete property");
-        }
-        const updatedProperties = properties.filter((p) => p.id !== id);
-        setProperties(updatedProperties);
-        alert("Property deleted successfully!");
-      } catch (error) {
-        console.error("Error deleting property:", error);
-        alert("Failed to delete property");
-      }
-    }
-  };
-
-  const handleEditSave = async (e) => {
-    e.preventDefault();
-    if (!editingProperty) return;
-
-    if (!editingProperty.title.trim()) {
-      alert("Please enter a valid title");
-      return;
-    }
-    if (!editingProperty.description.trim()) {
-      alert("Please enter a valid description");
-      return;
-    }
-    if (!editingProperty.address.trim()) {
-      alert("Please enter a valid address");
-      return;
-    }
-    if (!editingProperty.min_price || Number(editingProperty.min_price) < 0) {
-      alert("Please enter a valid minimum price");
-      return;
-    }
-    if (!editingProperty.max_price || Number(editingProperty.max_price) < 0) {
-      alert("Please enter a valid maximum price");
-      return;
-    }
-    if (!editingProperty.nearest_landmark.trim()) {
-      alert("Please enter a valid nearest landmark");
-      return;
-    }
-    if (Number(editingProperty.min_price) > Number(editingProperty.max_price)) {
-      alert("Minimum price must be less than maximum price");
-      return;
-    }
-    if (!editingProperty.owner_name.trim()) {
-      alert("Please enter a valid owner name");
-      return;
-    }
-
-    const cleanPhone = editingProperty.owner_phone.replace(/\D/g, "");
-    if (cleanPhone.length !== 10) {
-      alert("Please enter a valid 10-digit phone number");
-      return;
-    }
-   
-    
-    
-    const id = editingProperty.id;
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        title: editingProperty.title,
-        description: editingProperty.description,
-        address: editingProperty.address,
-        min_price: Number(editingProperty.min_price),
-        max_price: Number(editingProperty.max_price),
-        nearest_landmark: editingProperty.nearest_landmark,
-        owner_name: editingProperty.owner_name,
-        owner_phone: cleanPhone,
-        photos: editingProperty.photos,
-        videos: editingProperty.videos,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to edit property");
-    }
-
-    // Update local state with the current editingProperty data
-    const updatedProperty = {
-      ...editingProperty,
-      photos: editingProperty.photos || [], // Use current photos from state
-      videos: editingProperty.videos || [], // Use current videos from state
-    };
-
-    const updated = properties.map((p) =>
-      p.id === editingProperty.id ? updatedProperty : p
-    );
-    setProperties(updated);
-    setEditingProperty(null);
-    alert("Property updated successfully!");
-  };
-
-  if (loading) {
-    return <div>Loading properties...</div>;
+  const handleEdit = (property) => {
+    setSelectedProperty(property)
+    setModalType("edit")
+    setShowModal(true)
   }
 
-  const openAddClientModal = (property) => {
-    setSelectedPropertyForAdd(property);
-    setAddClientForm({ name: "", phone: "", notes: "" });
-    setAddClientError("");
-    setAddClientModalOpen(true);
-  };
+  const handleDelete = (property) => {
+    setSelectedProperty(property)
+    setModalType("delete")
+    setShowModal(true)
+  }
 
-  const closeAddClientModal = () => {
-    setAddClientModalOpen(false);
-    setSelectedPropertyForAdd(null);
-    setAddClientForm({ name: "", phone: "", notes: "" });
-    setAddClientError("");
-  };
+  const handleAddClient = (property) => {
+    setSelectedProperty(property)
+    setModalType("addClient")
+    setShowModal(true)
+  }
 
- 
+  const handleViewClients = (property) => {
+    setSelectedProperty(property)
+    setModalType("viewClients")
+    setShowModal(true)
+  }
 
-  const createClientAndAttach = async () => {
-    if (!selectedPropertyForAdd) return;
-    const { name, phone, notes } = addClientForm;
-    const cleanPhone = (phone || "").replace(/\D/g, "");
-    if (!name.trim() || cleanPhone.length !== 10) {
-      setAddClientError("Enter a valid name and 10-digit phone");
-      return;
+  const closeModal = () => {
+    setShowModal(false)
+    setSelectedProperty(null)
+    setModalType("")
+  }
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+    }).format(price)
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "active":
+        return "status-active"
+      case "pending":
+        return "status-pending"
+      case "sold":
+        return "status-sold"
+      default:
+        return "status-active"
     }
-    setAddClientSubmitting(true);
-    setAddClientError("");
-    try {
-      const token = localStorage.getItem("token");
-      // Create client
-      const createRes = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ 
-          name: name.trim(), 
-          phone: cleanPhone, 
-          note: notes.trim(),
-          property_id: selectedPropertyForAdd.id, 
-          dealer_id: selectedPropertyForAdd.dealer_id 
-        }),
-      });
-      if (!createRes.ok) {
-        const errorMessage = await createRes.text();  
-        throw new Error(errorMessage || "Failed to add client");
-      }
-      
-      closeAddClientModal();
-    } catch (e) {
-      console.error(e);
-      setAddClientError(e.message || "Failed to add client");
-    } finally {
-      setAddClientSubmitting(false);
-    }
-  };
-
-  // View clients helpers
-  const openViewClientsModal = async (property) => {
-    setSelectedPropertyForView(property);
-    try{
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${property.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if(response.ok) {
-        const data = await response.json();
-        data != null ? setPropertyClients(data) : setPropertyClients([]);
-      }
-      else {
-        throw new Error("Failed to fetch clients");
-      }
-    }
-    catch(error) {
-      console.error("Error fetching clients:", error);
-      setPropertyClients([]);
-    }
-    setViewClientsModalOpen(true);
-  };
-   
-   
-  
-
-  const closeViewClientsModal = () => {
-    setViewClientsModalOpen(false);
-    setSelectedPropertyForView(null);
-    setPropertyClients([]);
-    setEditingClient(null);
-    setEditClientForm({ name: "", phone: "", status: "", note: "" });
-  };
-
-  const handleEditClient = (client) => {
-    setEditingClient(client);
-    setEditClientForm({
-      name: client.name,
-      phone: client.phone,
-      status: client.status,
-      note: client.note
-    });
-  };
-
-  const handleSaveClientEdit = async () => {
-   
-    if (!editingClient) return;
-    
-    const cleanPhone = editClientForm.phone.replace(/\D/g, "");
-    if (cleanPhone.length !== 10) {
-      alert("Please enter a valid 10-digit phone number");
-      return;
-    }
-    
-    // Validate name
-    if (!editClientForm.name.trim()) {
-      alert("Please enter a valid name");
-      return;
-    }
-    try{
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${editingClient.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: editClientForm.name,
-          phone: cleanPhone,
-          status: editClientForm.status,
-          note: editClientForm.note
-        }),
-      });
-      if(response.ok) {
-        alert("Client updated successfully!");
-        const updatedClients = propertyClients.map(client =>
-          client.id === editingClient.id
-            ? { ...client, ...editClientForm, phone: cleanPhone }
-            : client
-        );
-        setPropertyClients(updatedClients);
-      }
-      else {
-        const errorMessage = await response.text();
-        alert(errorMessage || "Failed to save client edit");
-        //throw new Error("Failed to save client edit");
-      }
-    }
-    catch(error) {
-      alert("Failed to save client edit");
-      console.error("Error saving client edit:", error);
-    }
-    
-  
-    setEditingClient(null);
-    setEditClientForm({ name: "", phone: "", status: "", note: "" });
-  };
-
-  const handleDeleteClient = async(clientId) => {
-    if (window.confirm("Are you sure you want to delete this client?")) {
-      try{
-        const token = localStorage.getItem("token");
-        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${clientId}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if(response.ok) {
-          const updatedClients = propertyClients.filter(client => client.id !== clientId);
-          setPropertyClients(updatedClients);
-        }
-        else {
-          throw new Error("Failed to delete client");
-        }
-      }
-      catch(error) {
-        console.error("Error deleting client:", error);
-      }
-      const updatedClients = propertyClients.filter(client => client.id !== clientId);
-      setPropertyClients(updatedClients);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingClient(null);
-    setEditClientForm({ name: "", phone: "", status: "", note: "" });
-  };
-
-  const handlePhoneInputChange = (value) => {
-    const clean = value.replace(/\D/g, "").slice(0, 10);
-    setEditClientForm(prev => ({ ...prev, phone: clean }));
-  };
+  }
 
   return (
     <div className="my-properties-container">
-      <h3 className="my-properties-title">My Properties</h3>
-      <div className="properties-grid">
-        {(properties ?? []).map((prop) => (
-          <div key={prop.id} className="property-card">
-            {/* Carousel */}
+      <div className="properties-header">
+        <h2>My Properties</h2>
+        <p>Manage your property listings</p>
+      </div>
 
-            <div
-              className="property-carousel"
-              onClick={() => setPreviewProperty(prop)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="property-carousel-content">
-                {prop.photos &&
-                  prop.photos.map((photo, i) => (
-                    <img key={i} src={photo} alt={`Property ${i}`} />
-                  ))}
-                {prop.videos &&
-                  prop.videos.map((video, i) => (
-                    <video key={i} controls>
-                      <source src={video} type="video/mp4" />
-                    </video>
-                  ))}
+      <div className="properties-grid">
+        {properties.map((property) => (
+          <div key={property.id} className="property-card">
+            {/* Property Images Section */}
+            <div className="property-images-section">
+              <div className="property-media">
+                <div className="media-carousel">
+                  {property.images && property.images.length > 0 ? (
+                    property.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image || "/placeholder.svg"}
+                        alt={`${property.title} - Image ${index + 1}`}
+                        className="property-image"
+                      />
+                    ))
+                  ) : (
+                    <div className="no-image-placeholder">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21,15 16,10 5,21"/>
+                      </svg>
+                      <span>No Images</span>
+                    </div>
+                  )}
+                </div>
+                <div className={`status-chip ${getStatusColor(property.status)}`}>
+                  {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+                </div>
               </div>
             </div>
 
-            <h4
-              className="property-title"
-              onClick={() => setPreviewProperty(prop)}
-              style={{ cursor: "pointer" }}
-            >
-              Property Number: {prop.property_number}
-            </h4>
+            {/* Property Details */}
+            <div className="property-details">
+              <h3 className="property-title">{property.title}</h3>
+              <p className="property-location">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {property.location}
+              </p>
 
-            <p
-              className="property-detail"
-              onClick={() => setPreviewProperty(prop)}
-              style={{ cursor: "pointer" }}
-            >
-              <b>Title:</b> {prop.title}
-            </p>
+              <div className="property-specs">
+                <div className="spec-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9,22 9,12 15,12 15,22" />
+                  </svg>
+                  <span>{property.bedrooms} bed</span>
+                </div>
+                <div className="spec-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+                    <line x1="10" y1="5" x2="8" y2="7" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <line x1="7" y1="19" x2="7" y2="21" />
+                    <line x1="17" y1="19" x2="17" y2="21" />
+                  </svg>
+                  <span>{property.bathrooms} bath</span>
+                </div>
+                <div className="spec-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M9 9h6v6H9z" />
+                  </svg>
+                  <span>{property.area.toLocaleString()} sq ft</span>
+                </div>
+              </div>
 
-            <p className="property-detail">
-              <b>Nearest Landmark:</b> {prop.nearest_landmark}
-            </p>
-            {prop.status && (
-              <p className="property-status">Status: {prop.status}</p>
-            )}
+              <div className="property-price">{formatPrice(property.price)}</div>
 
-            <div
-              className="property-actions"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              <button
-                className="property-btn property-btn-edit"
-                onClick={() =>
-                  setEditingProperty({
-                    ...prop,
-                    photosInput: prop.photos?.join(",") || "",
-                    videosInput: prop.videos?.join(",") || "",
-                  })
-                }
-              >
-                Edit
-              </button>
-              <button
-                className="property-btn property-btn-delete"
-                onClick={() => handleDelete(prop.id)}
-              >
-                Delete
-              </button>
-              {/* View Clients removed; Add Client moved to bottom */}
+              {/* Action Buttons */}
+              <div className="property-actions">
+                <button className="action-btn primary" onClick={() => handleEdit(property)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  Edit
+                </button>
+
+                <button className="action-btn secondary" onClick={() => handleAddClient(property)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <line x1="19" y1="8" x2="19" y2="14" />
+                    <line x1="22" y1="11" x2="16" y2="11" />
+                  </svg>
+                  Add Client
+                </button>
+
+                <button className="action-btn secondary" onClick={() => handleViewClients(property)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  View Clients ({property.clients.length})
+                </button>
+
+                <button className="action-btn danger" onClick={() => handleDelete(property)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3,6 5,6 21,6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  Delete
+                </button>
+              </div>
             </div>
-
-            {/* Add Client button at bottom of card */}
-            <button
-              className="property-btn property-btn-sold"
-              onClick={() => openAddClientModal(prop)}
-            >
-              Add Client
-            </button>
-            
-            {/* View Client button below Add Client */}
-            <button
-              className="property-btn property-btn-view-clients"
-              onClick={() => openViewClientsModal(prop)}
-            >
-              View Clients
-            </button>
           </div>
         ))}
       </div>
 
-      {/* Edit Modal */}
-      {editingProperty && (
-        <div className="edit-modal-overlay">
-          <form onSubmit={handleEditSave} className="edit-modal-content">
-            <h3 className="edit-modal-title">Edit Property</h3>
-            <input
-              type="text"
-              name="title"
-              className="edit-modal-input"
-              value={editingProperty.title}
-              placeholder="Title"
-              required
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  title: e.target.value,
-                })
-              }
-            />
-            <textarea
-              name="description"
-              className="edit-modal-textarea"
-              value={editingProperty.description}
-              placeholder="Description"
-              required
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  description: e.target.value,
-                })
-              }
-            />
-            <input
-              type="text"
-              name="address"
-              className="edit-modal-input"
-              value={editingProperty.address}
-              placeholder="Address"
-              required
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  address: e.target.value,
-                })
-              }
-            />
-            <input
-              type="number"
-              name="price"
-              className="edit-modal-input"
-              placeholder="Min Price"
-              required
-              value={editingProperty.min_price}
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  min_price: e.target.value,
-                })
-              }
-            />
-            <input
-              type="number"
-              name="max_price"
-              className="edit-modal-input"
-              placeholder="Max Price"
-              required
-              value={editingProperty.max_price}
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  max_price: e.target.value,
-                })
-              }
-            />
-            <input
-              type="text"
-              name="nearest_landmark"
-              className="edit-modal-input"
-              placeholder="Nearest Landmark"
-              required
-              value={editingProperty.nearest_landmark}
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  nearest_landmark: e.target.value,
-                })
-              }
-            />
-            <input
-              type="text"
-              name="owner_name"
-              className="edit-modal-input"
-              placeholder="Owner Name"
-              required
-              value={editingProperty.owner_name}
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  owner_name: e.target.value,
-                })
-              }
-            />
-            <input
-              type="text"
-              name="owner_phone"
-              className="edit-modal-input"
-              placeholder="Owner Phone"
-              required
-              value={editingProperty.owner_phone}
-              onChange={(e) =>
-                setEditingProperty({
-                  ...editingProperty,
-                  owner_phone: e.target.value,
-                })
-              }
-            />
-
-            
-
-
-            {/* Photos */}
-            <div style={{ marginBottom: "15px" }}>
-              <label className="edit-modal-label">
-                <b>Photos</b>
-              </label>
-              <div className="media-grid">
-                {editingProperty.photos &&
-                  editingProperty.photos.map((photo, i) => (
-                    <div key={i} className="media-item">
-                      <img src={photo} alt={`photo-${i}`} />
-                      <button
-                        type="button"
-                        className="media-remove-btn"
-                        onClick={() =>
-                          setEditingProperty({
-                            ...editingProperty,
-                            photos: editingProperty.photos.filter(
-                              (_, idx) => idx !== i
-                            ),
-                          })
-                        }
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-              </div>
-
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  const files = Array.from(e.target.files);
-                  Promise.all(
-                    files.map((file) => {
-                      return new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(file);
-                      });
-                    })
-                  ).then((newPhotos) => {
-                    setEditingProperty({
-                      ...editingProperty,
-                      photos: [...(editingProperty.photos || []), ...newPhotos],
-                    });
-                  });
-                }}
-              />
-            </div>
-
-            {/* Videos */}
-            <div style={{ marginBottom: "15px" }}>
-              <label className="edit-modal-label">
-                <b>Videos</b>
-              </label>
-              <div className="media-grid">
-                {editingProperty.videos &&
-                  editingProperty.videos.map((video, i) => (
-                    <div key={i} className="media-item">
-                      <video controls>
-                        <source src={video} type="video/mp4" />
-                      </video>
-                      <button
-                        type="button"
-                        className="media-remove-btn"
-                        onClick={() =>
-                          setEditingProperty({
-                            ...editingProperty,
-                            videos: editingProperty.videos.filter(
-                              (_, idx) => idx !== i
-                            ),
-                          })
-                        }
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-              </div>
-
-              <input
-                type="file"
-                accept="video/*"
-                multiple
-                onChange={(e) => {
-                  const files = Array.from(e.target.files);
-                  Promise.all(
-                    files.map((file) => {
-                      return new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(file);
-                      });
-                    })
-                  ).then((newVideos) => {
-                    setEditingProperty({
-                      ...editingProperty,
-                      videos: [...(editingProperty.videos || []), ...newVideos],
-                    });
-                  });
-                }}
-              />
-            </div>
-
-            <div className="edit-modal-actions">
-              <button
-                type="submit"
-                className="edit-modal-btn edit-modal-btn-save"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                className="edit-modal-btn edit-modal-btn-cancel"
-                onClick={() => setEditingProperty(null)}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-      {previewProperty && (
-        <PropertyPreview
-          property={previewProperty}
-          onClose={() => setPreviewProperty(null)}
-        />
-      )}
-
-      {/* View Clients modal removed */}
-
-      {addClientModalOpen && selectedPropertyForAdd && (
-        <div className="edit-modal-overlay" onClick={closeAddClientModal}>
-          <div
-            className="edit-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 12,
-              }}
-            >
-              <h3 className="edit-modal-title" style={{ margin: 0 }}>
-                Add Client
+      {/* Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>
+                {modalType === "edit" && "Edit Property"}
+                {modalType === "delete" && "Delete Property"}
+                {modalType === "addClient" && "Add Client"}
+                {modalType === "viewClients" && "Property Clients"}
               </h3>
-              <button
-                className="media-remove-btn"
-                onClick={closeAddClientModal}
-              >
-                ✕
+              <button className="modal-close" onClick={closeModal} aria-label="Close modal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
-            <div>
-              <input
-                type="text"
-                className="edit-modal-input"
-                placeholder="Client Name"
-                value={addClientForm.name}
-                onChange={(e) =>
-                  setAddClientForm((f) => ({ ...f, name: e.target.value }))
-                }
-              />
-              <input
-                type="tel"
-                inputMode="numeric"
-                className="edit-modal-input"
-                placeholder="Phone (10 digits)"
-                value={addClientForm.phone}
-                onChange={(e) => {
-                  const clean = e.target.value.replace(/\D/g, "").slice(0, 10);
-                  setAddClientForm((f) => ({ ...f, phone: clean }));
-                }}
-              />
-              <textarea
-                className="edit-modal-textarea"
-                placeholder="Notes (optional)"
-                value={addClientForm.notes}
-                onChange={(e) =>
-                  setAddClientForm((f) => ({ ...f, notes: e.target.value }))
-                }
-                rows={3}
-              />
-              {addClientError && (
-                <div style={{ color: "#ff6b6b", marginBottom: 8 }}>
-                  {addClientError}
+
+            <div className="modal-content">
+              {modalType === "delete" && (
+                <div className="delete-confirmation">
+                  <p>Are you sure you want to delete "{selectedProperty?.title}"?</p>
+                  <p className="warning-text">This action cannot be undone.</p>
+                  <div className="modal-actions">
+                    <button className="btn-cancel" onClick={closeModal}>
+                      Cancel
+                    </button>
+                    <button className="btn-delete">Delete Property</button>
+                  </div>
                 </div>
               )}
-              <div className="edit-modal-actions">
-                <button
-                  className="edit-modal-btn edit-modal-btn-save"
-                  onClick={createClientAndAttach}
-                  disabled={addClientSubmitting}
-                >
-                  {addClientSubmitting ? "Adding..." : "Add Client"}
-                </button>
-                <button
-                  className="edit-modal-btn edit-modal-btn-cancel"
-                  onClick={closeAddClientModal}
-                  type="button"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* View Clients Modal */}
-      {viewClientsModalOpen && selectedPropertyForView && (
-        <div className="edit-modal-overlay" onClick={closeViewClientsModal}>
-          <div
-            className="view-clients-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="view-clients-modal-header">
-              <h3 className="edit-modal-title" style={{ margin: 0 }}>
-                Clients for {selectedPropertyForView.title}
-              </h3>
-              <button
-                className="modal-close-button"
-                onClick={closeViewClientsModal}
-              >
-                Close
-              </button>
-            </div>
-            
-            <div className="view-clients-modal-body">
-              <div className="clients-table-container">
-                <table className="clients-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Phone</th>
-                      <th>Status</th>
-                      <th>Note</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {propertyClients.map((client) => (
-                      <tr 
-                        key={client.id} 
-                        className={`client-row ${client.status === 'marked' ? 'marked-row' : 'unmarked-row'}`}
-                      >
-                        <td>
-                          {editingClient?.id === client.id ? (
-                            <input
-                              type="text"
-                              className="client-edit-input"
-                              placeholder="Enter client name"
-                              value={editClientForm.name}
-                              onChange={(e) => setEditClientForm(prev => ({ ...prev, name: e.target.value }))}
-                            />
-                          ) : (
-                            client.name
-                          )}
-                        </td>
-                        <td>
-                          {editingClient?.id === client.id ? (
-                            <input
-                              type="tel"
-                              inputMode="numeric"
-                              className="client-edit-input"
-                              placeholder="Enter 10-digit phone"
-                              value={editClientForm.phone}
-                              onChange={(e) => handlePhoneInputChange(e.target.value)}
-                            />
-                          ) : (
-                            client.phone
-                          )}
-                        </td>
-                        <td>
-                          {editingClient?.id === client.id ? (
-                            <select
-                              className="client-edit-select"
-                              value={editClientForm.status}
-                              onChange={(e) => setEditClientForm(prev => ({ ...prev, status: e.target.value }))}
-                            >
-                              <option value="marked">Marked</option>
-                              <option value="unmarked">Unmarked</option>
-                            </select>
-                          ) : (
-                            <>
-                              <span className={`status-badge ${client.status}`}>
-                                {client.status}
-                              </span>
-                              {(() => {
-                                const note = getAdminNote(selectedPropertyForView);
-                                return note ? (
-                                  <div style={{ marginTop: 6, fontSize: 12, color: '#b0bec5' }}>
-                                    <b style={{ color: '#ffffff' }}>Admin Note:</b> {note}
-                                  </div>
-                                ) : null;
-                              })()}
-                            </>
-                          )}
-                        </td>
-                        <td>
-                          {editingClient?.id === client.id ? (
-                            <input
-                              type="text"
-                              className="client-edit-input"
-                              placeholder="Enter note"
-                              value={editClientForm.note}
-                              onChange={(e) => setEditClientForm(prev => ({ ...prev, note: e.target.value }))}
-                            />
-                          ) : (
-                            client.note
-                          )}
-                        </td>
-                        <td className="client-actions">
-                          {editingClient?.id === client.id ? (
-                            <>
-                              <button
-                                className="client-action-btn client-save-btn"
-                                onClick={handleSaveClientEdit}
-                              >
-                                Save
-                              </button>
-                              <button
-                                className="client-action-btn client-cancel-btn"
-                                onClick={handleCancelEdit}
-                              >
-                                Cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                className="client-action-btn client-edit-btn"
-                                onClick={() => handleEditClient(client)}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="client-action-btn client-delete-btn"
-                                onClick={() => handleDeleteClient(client.id)}
-                              >
-                                Delete
-                              </button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {modalType === "viewClients" && (
+                <div className="clients-list">
+                  {selectedProperty?.clients.length > 0 ? (
+                    <div className="clients-table">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Client Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedProperty.clients.map((client, index) => (
+                            <tr key={index}>
+                              <td>{client}</td>
+                              <td>
+                                <span className="client-status active">Active</span>
+                              </td>
+                              <td>
+                                <button className="table-action-btn">Contact</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="no-clients">No clients assigned to this property yet.</p>
+                  )}
+                </div>
+              )}
+
+              {(modalType === "edit" || modalType === "addClient") && (
+                <div className="form-placeholder">
+                  <p>Form content would go here for {modalType} functionality.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
+
+export default MyProperties

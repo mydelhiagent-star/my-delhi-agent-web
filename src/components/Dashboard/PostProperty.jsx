@@ -1,511 +1,466 @@
-// src/components/Dashboard/PostProperty.jsx
-import React, { useEffect, useRef, useState } from "react";
-import "./PostProperty.css";
-import { API_ENDPOINTS } from "../../config/api";
+"use client"
 
-export default function PostProperty() {
-  const [property, setProperty] = useState({
+import { useState } from "react"
+import "./PostProperty.css"
+
+const PostProperty = () => {
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
     address: "",
     min_price: "",
     max_price: "",
-    photos: [],
-    videos: [],
+    nearest_landmark: "",
+    area: "",
+    bedrooms: "",
+    bathrooms: "",
+    property_type: "",
     owner_name: "",
     owner_phone: "",
-    nearest_landmark: "",
-  });
+  })
 
-  const [isUploading, setIsUploading] = useState(false);
-  const [previews, setPreviews] = useState({ photos: [], videos: [] });
-  const [menuOpen, setMenuOpen] = useState({ type: null, index: null });
-  const [errors, setErrors] = useState({});
-  const previousObjectUrlsRef = useRef({ photos: [], videos: [] });
+  const [errors, setErrors] = useState({})
+  const [imageFiles, setImageFiles] = useState([])
+  const [videoFiles, setVideoFiles] = useState([])
+  const [isImageDragOver, setIsImageDragOver] = useState(false)
+  const [isVideoDragOver, setIsVideoDragOver] = useState(false)
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProperty({ ...property, [name]: value });
-    
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }))
     }
-  };
+  }
 
-  const handleFileChange = (e, type) => {
-    const newFiles = Array.from(e.target.files || []);
-    console.log(
-      `${type} files selected:`,
-      newFiles.map((file) => file.name)
-    );
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'))
+    setImageFiles((prev) => [...prev, ...files])
+  }
 
-    // Create object URLs for new files only (append behavior)
-    const newUrls = newFiles.map((file) => URL.createObjectURL(file));
+  const handleVideoUpload = (e) => {
+    const files = Array.from(e.target.files).filter(file => file.type.startsWith('video/'))
+    setVideoFiles((prev) => [...prev, ...files])
+  }
 
-    // Accumulate for cleanup later
-    previousObjectUrlsRef.current[type] = [
-      ...(previousObjectUrlsRef.current[type] || []),
-      ...newUrls,
-    ];
+  const handleImageDragOver = (e) => {
+    e.preventDefault()
+    setIsImageDragOver(true)
+  }
 
-    // Append to existing state
-    setProperty((prev) => ({
-      ...prev,
-      [type]: [...(prev[type] || []), ...newFiles],
-    }));
-    setPreviews((prev) => ({
-      ...prev,
-      [type]: [...(prev[type] || []), ...newUrls],
-    }));
-  };
+  const handleImageDragLeave = (e) => {
+    e.preventDefault()
+    setIsImageDragOver(false)
+  }
 
-  const handleRemoveMedia = (type, index) => {
-    setPreviews((prev) => {
-      const urls = [...prev[type]];
-      const [removedUrl] = urls.splice(index, 1);
-      if (removedUrl) URL.revokeObjectURL(removedUrl);
-      previousObjectUrlsRef.current[type] = (
-        previousObjectUrlsRef.current[type] || []
-      ).filter((u) => u !== removedUrl);
-      return { ...prev, [type]: urls };
-    });
-    setProperty((prev) => {
-      const files = [...prev[type]];
-      files.splice(index, 1);
-      return { ...prev, [type]: files };
-    });
-    setMenuOpen({ type: null, index: null });
-  };
+  const handleImageDrop = (e) => {
+    e.preventDefault()
+    setIsImageDragOver(false)
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'))
+    setImageFiles((prev) => [...prev, ...files])
+  }
 
-  const toggleMenu = (type, index) => {
-    setMenuOpen((curr) =>
-      curr.type === type && curr.index === index
-        ? { type: null, index: null }
-        : { type, index }
-    );
-  };
+  const handleVideoDragOver = (e) => {
+    e.preventDefault()
+    setIsVideoDragOver(true)
+  }
 
-  const handleViewMedia = (type, index) => {
-    const src = (previews[type] || [])[index];
-    if (src) window.open(src, "_blank", "noopener,noreferrer");
-    setMenuOpen({ type: null, index: null });
-  };
+  const handleVideoDragLeave = (e) => {
+    e.preventDefault()
+    setIsVideoDragOver(false)
+  }
 
-  useEffect(() => {
-    return () => {
-      // Cleanup on unmount
-      previousObjectUrlsRef.current.photos.forEach((url) =>
-        URL.revokeObjectURL(url)
-      );
-      previousObjectUrlsRef.current.videos.forEach((url) =>
-        URL.revokeObjectURL(url)
-      );
-    };
-  }, []);
+  const handleVideoDrop = (e) => {
+    e.preventDefault()
+    setIsVideoDragOver(false)
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('video/'))
+    setVideoFiles((prev) => [...prev, ...files])
+  }
 
-  const validateForm = () => {
-    const newErrors = {};
+  const removeImage = (index) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index))
+  }
 
-    // Required field validations
-    if (!property.title.trim()) {
-      newErrors.title = "Title is required";
-    } else if (property.title.trim().length < 5) {
-      newErrors.title = "Title must be at least 5 characters long";
+  const removeVideo = (index) => {
+    setVideoFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    
+    // Validate required fields
+    const newErrors = {}
+    if (!formData.title) newErrors.title = "Title is required"
+    if (!formData.address) newErrors.address = "Address is required"
+    if (!formData.min_price) newErrors.min_price = "Minimum price is required"
+    if (!formData.max_price) newErrors.max_price = "Maximum price is required"
+    if (!formData.property_type) newErrors.property_type = "Property type is required"
+    if (!formData.nearest_landmark) newErrors.nearest_landmark = "Nearest landmark is required"
+    
+    // Validate price range
+    if (formData.min_price && formData.max_price && parseInt(formData.min_price) > parseInt(formData.max_price)) {
+      newErrors.max_price = "Maximum price must be greater than minimum price"
     }
-
-    if (!property.description.trim()) {
-      newErrors.description = "Description is required";
-    } else if (property.description.trim().length < 10) {
-      newErrors.description = "Description must be at least 10 characters long";
-    }
-
-    if (!property.address.trim()) {
-      newErrors.address = "Address is required";
-    }
-
-    // Price validations
-    if (!property.min_price) {
-      newErrors.min_price = "Minimum price is required";
-    } else if (parseFloat(property.min_price) <= 0) {
-      newErrors.min_price = "Minimum price must be greater than 0";
-    }
-
-    if (!property.max_price) {
-      newErrors.max_price = "Maximum price is required";
-    } else if (parseFloat(property.max_price) <= 0) {
-      newErrors.max_price = "Maximum price must be greater than 0";
-    }
-
-    if (property.min_price && property.max_price) {
-      if (parseFloat(property.min_price) > parseFloat(property.max_price)) {
-        newErrors.max_price = "Maximum price must be greater than minimum price";
+    
+    setErrors(newErrors)
+    
+    if (Object.keys(newErrors).length === 0) {
+      // Prepare data for API submission
+      const propertyData = {
+        title: formData.title,
+        description: formData.description,
+        address: formData.address,
+        min_price: parseInt(formData.min_price),
+        max_price: parseInt(formData.max_price),
+        nearest_landmark: formData.nearest_landmark,
+        area: formData.area ? parseFloat(formData.area) : 0,
+        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : 0,
+        bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : 0,
+        property_type: formData.property_type,
+        owner_name: formData.owner_name || "",
+        owner_phone: formData.owner_phone || "",
+        photos: imageFiles, // Image files
+        videos: videoFiles  // Video files
       }
+      
+      console.log("Form submitted:", propertyData, { imageFiles, videoFiles })
+      // TODO: Implement API submission logic here
     }
-
-    // Phone number validation (if provided)
-    if (property.owner_phone && !/^[0-9]{10}$/.test(property.owner_phone)) {
-      newErrors.owner_phone = "Phone number must be 10 digits";
-    }
-
-    // File validations
-    // if (property.photos.length > 10) {
-    //   newErrors.photos = "Maximum 10 photos allowed";
-    // }
-
-    // if (property.videos.length > 2) {
-    //   newErrors.videos = "Maximum 2 videos allowed";
-    // }
-
-    // File size validations
-    // const maxPhotoSize = 5 * 1024 * 1024; // 5MB
-    // const maxVideoSize = 100 * 1024 * 1024; // 100MB
-
-    // property.photos.forEach((file, index) => {
-    //   if (file.size > maxPhotoSize) {
-    //     newErrors.photos = `Photo ${index + 1} is too large (max 5MB)`;
-    //   }
-    // });
-
-    // property.videos.forEach((file, index) => {
-    //   if (file.size > maxVideoSize) {
-    //     newErrors.videos = `Video ${index + 1} is too large (max 100MB)`;
-    //   }
-    // });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validate form before submission
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      // Count total files needed
-      const totalPhotos = property.photos.length;
-      const totalVideos = property.videos.length;
-      const totalFiles = totalPhotos + totalVideos;
-
-      let uploadedFileKeys = [];
-
-      if (totalFiles > 0) {
-        // Simple API call: Just request number of presigned URLs
-        const response = await fetch(API_ENDPOINTS.PRESIGNED_URLS, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            count: totalFiles,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to get presigned URLs");
-        }
-
-        const { presignedUrls } = await response.json();
-
-        // Upload photos first, then videos
-        let urlIndex = 0;
-
-        // Upload photos
-        for (let i = 0; i < totalPhotos; i++) {
-          const file = property.photos[i];
-          const presignedUrl = presignedUrls[urlIndex].presignedUrl;
-
-          const uploadResponse = await fetch(presignedUrl, {
-            method: "PUT",
-            body: file,
-            headers: { "Content-Type": file.type },
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error(`Failed to upload ${file.name}`);
-          }
-
-          uploadedFileKeys.push({
-            fileKey: presignedUrls[urlIndex].fileKey,
-            category: "photo",
-          });
-          urlIndex++;
-        }
-
-        // Upload videos
-        for (let i = 0; i < totalVideos; i++) {
-          const file = property.videos[i];
-          const presignedUrl = presignedUrls[urlIndex].presignedUrl;
-
-          const uploadResponse = await fetch(presignedUrl, {
-            method: "PUT",
-            body: file,
-            headers: { "Content-Type": file.type },
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error(`Failed to upload ${file.name}`);
-          }
-
-          uploadedFileKeys.push({
-            fileKey: presignedUrls[urlIndex].fileKey,
-            category: "video",
-          });
-          urlIndex++;
-        }
-      }
-
-      // Separate file keys by category
-      const uploadedPhotoKeys = uploadedFileKeys
-        .filter((file) => file.category === "photo")
-        .map((file) => file.fileKey);
-
-      const uploadedVideoKeys = uploadedFileKeys
-        .filter((file) => file.category === "video")
-        .map((file) => file.fileKey);
-
-      // Create property object with uploaded file keys
-      const propertyWithFileKeys = {
-        ...property,
-        photos: uploadedPhotoKeys,
-        videos: uploadedVideoKeys,
-        min_price: parseFloat(property.min_price),
-        max_price: parseFloat(property.max_price),
-      };
-
-      console.log(propertyWithFileKeys);
-
-      // Send property to backend to add in database
-      const propertyResponse = await fetch(API_ENDPOINTS.PROPERTIES_DEALER, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(propertyWithFileKeys),
-      });
-
-      if (!propertyResponse.ok) {
-        throw new Error("Failed to create property in database");
-      }
-
-      alert("Property posted successfully!");
-
-      // Reset form
-      setProperty({
-        title: "",
-        description: "",
-        address: "",
-        min_price: "",
-        max_price: "",
-        photos: [],
-        videos: [],
-        owner_name: "",
-        owner_phone: "",
-        nearest_landmark: "",
-      });
-      setErrors({});
-      setPreviews({ photos: [], videos: [] });
-    } catch (error) {
-      console.error("Failed to post property:", error);
-      alert("Failed to post property. Please try again.");
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="post-property-form">
-      <input
-        type="text"
-        name="title"
-        placeholder="Title"
-        value={property.title}
-        onChange={handleChange}
-        className={errors.title ? "error" : ""}
-        required
-      />
-      {errors.title && <span className="error-message">{errors.title}</span>}
+    <div className="post-property-container">
+      <div className="post-property-header">
+        <h2>Post New Property</h2>
+        <p>Add a new property to your portfolio</p>
+      </div>
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={property.description}
-        onChange={handleChange}
-        className={errors.description ? "error" : ""}
-        required
-      />
-      {errors.description && <span className="error-message">{errors.description}</span>}
+      <form onSubmit={handleSubmit} className="post-property-form">
+        <div className="form-grid">
+          {/* Basic Information */}
+          <div className="form-section">
+            <h3>Basic Information</h3>
 
-      <input
-        type="text"
-        name="address"
-        placeholder="Address"
-        value={property.address}
-        onChange={handleChange}
-        className={errors.address ? "error" : ""}
-        required
-      />
-      {errors.address && <span className="error-message">{errors.address}</span>}
-
-      <input
-        type="number"
-        name="min_price"
-        placeholder="Min Price"
-        value={property.min_price}
-        onChange={handleChange}
-        className={errors.min_price ? "error" : ""}
-        required
-      />
-      {errors.min_price && <span className="error-message">{errors.min_price}</span>}
-      
-      <input
-        type="number"
-        name="max_price"
-        placeholder="Max Price"
-        value={property.max_price}
-        onChange={handleChange}
-        className={errors.max_price ? "error" : ""}
-        required
-      />
-      {errors.max_price && <span className="error-message">{errors.max_price}</span>}
-
-      <input
-        type="text"
-        name="owner_name"
-        placeholder="Owner Name"
-        value={property.owner_name}
-        onChange={handleChange}
-      />
-
-      <input
-        type="text"
-        name="owner_phone"
-        placeholder="Owner Phone"
-        value={property.owner_phone}
-        onChange={handleChange}
-        className={errors.owner_phone ? "error" : ""}
-      />
-      {errors.owner_phone && <span className="error-message">{errors.owner_phone}</span>}
-
-      <input
-        type="text"
-        name="nearest_landmark"
-        placeholder="Nearest Landmark"
-        value={property.nearest_landmark}
-        onChange={handleChange}
-      />
-
-      <label>Upload Photos (Optional):</label>
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={(e) => handleFileChange(e, "photos")}
-      />
-      {errors.photos && <span className="error-message">{errors.photos}</span>}
-      {previews.photos.length > 0 && (
-        <div className="media-preview-grid">
-          {previews.photos.map((src, idx) => (
-            <div key={idx} className="media-preview-item">
-              <button
-                type="button"
-                className="media-menu-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleMenu("photos", idx);
-                }}
-                aria-label="Options"
-                title="Options"
-              >
-                ⋯
-              </button>
-              {menuOpen.type === "photos" && menuOpen.index === idx && (
-                <div
-                  className="media-menu"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleViewMedia("photos", idx)}
-                  >
-                    View
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveMedia("photos", idx)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-              <img src={src} alt={`preview-${idx}`} />
+            <div className="form-group">
+              <label htmlFor="title">Property Title *</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                className={errors.title ? "error" : ""}
+                placeholder="Enter property title"
+                required
+              />
+              {errors.title && <span className="error-message">{errors.title}</span>}
             </div>
-          ))}
-        </div>
-      )}
 
-      <label>Upload Videos (Optional):</label>
-      <input
-        type="file"
-        multiple
-        accept="video/*"
-        onChange={(e) => handleFileChange(e, "videos")}
-      />
-      {errors.videos && <span className="error-message">{errors.videos}</span>}
-      {previews.videos.length > 0 && (
-        <div className="media-preview-grid">
-          {previews.videos.map((src, idx) => (
-            <div key={idx} className="media-preview-item">
-              <button
-                type="button"
-                className="media-menu-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleMenu("videos", idx);
-                }}
-                aria-label="Options"
-                title="Options"
-              >
-                ⋯
-              </button>
-              {menuOpen.type === "videos" && menuOpen.index === idx && (
-                <div
-                  className="media-menu"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleViewMedia("videos", idx)}
-                  >
-                    View
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveMedia("videos", idx)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-              <video controls>
-                <source src={src} type="video/mp4" />
-              </video>
+            <div className="form-group">
+              <label htmlFor="description">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                rows="4"
+                placeholder="Describe the property features and amenities"
+              />
             </div>
-          ))}
-        </div>
-      )}
 
-      <button type="submit" disabled={isUploading}>
-        {isUploading ? "Uploading & Posting..." : "Post Property"}
-      </button>
-    </form>
-  );
+            <div className="form-row three-columns">
+              <div className="form-group">
+                <label htmlFor="min_price">Minimum Price *</label>
+                <input
+                  type="number"
+                  id="min_price"
+                  name="min_price"
+                  value={formData.min_price}
+                  onChange={handleInputChange}
+                  className={errors.min_price ? "error" : ""}
+                  placeholder="0"
+                  required
+                />
+                {errors.min_price && <span className="error-message">{errors.min_price}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="max_price">Maximum Price *</label>
+                <input
+                  type="number"
+                  id="max_price"
+                  name="max_price"
+                  value={formData.max_price}
+                  onChange={handleInputChange}
+                  className={errors.max_price ? "error" : ""}
+                  placeholder="0"
+                  required
+                />
+                {errors.max_price && <span className="error-message">{errors.max_price}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="property_type">Property Type *</label>
+                <select
+                  id="property_type"
+                  name="property_type"
+                  value={formData.property_type}
+                  onChange={handleInputChange}
+                  className={errors.property_type ? "error" : ""}
+                  required
+                >
+                  <option value="">Select type</option>
+                  <option value="apartment">Apartment</option>
+                  <option value="house">House</option>
+                  <option value="villa">Villa</option>
+                  <option value="condo">Condo</option>
+                  <option value="townhouse">Townhouse</option>
+                  <option value="penthouse">Penthouse</option>
+                  <option value="studio">Studio</option>
+                  <option value="commercial">Commercial</option>
+                </select>
+                {errors.property_type && <span className="error-message">{errors.property_type}</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* Property Details */}
+          <div className="form-section">
+            <h3>Property Details</h3>
+
+            <div className="form-group">
+              <label htmlFor="address">Address *</label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                className={errors.address ? "error" : ""}
+                placeholder="Enter full address"
+                required
+              />
+              {errors.address && <span className="error-message">{errors.address}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="nearest_landmark">Nearest Landmark *</label>
+              <input
+                type="text"
+                id="nearest_landmark"
+                name="nearest_landmark"
+                value={formData.nearest_landmark}
+                onChange={handleInputChange}
+                className={errors.nearest_landmark ? "error" : ""}
+                placeholder="e.g., Metro Station - 5 mins walk"
+                required
+              />
+              {errors.nearest_landmark && <span className="error-message">{errors.nearest_landmark}</span>}
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="bedrooms">Bedrooms</label>
+                <input
+                  type="number"
+                  id="bedrooms"
+                  name="bedrooms"
+                  value={formData.bedrooms}
+                  onChange={handleInputChange}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="bathrooms">Bathrooms</label>
+                <input
+                  type="number"
+                  id="bathrooms"
+                  name="bathrooms"
+                  value={formData.bathrooms}
+                  onChange={handleInputChange}
+                  placeholder="0"
+                  min="0"
+                  step="0.5"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="area">Area (sq ft)</label>
+                <input
+                  type="number"
+                  id="area"
+                  name="area"
+                  value={formData.area}
+                  onChange={handleInputChange}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Owner Information */}
+          <div className="form-section">
+            <h3>Owner Information</h3>
+
+            <div className="form-row two-columns">
+              <div className="form-group">
+                <label htmlFor="owner_name">Owner Name</label>
+                <input
+                  type="text"
+                  id="owner_name"
+                  name="owner_name"
+                  value={formData.owner_name}
+                  onChange={handleInputChange}
+                  className={errors.owner_name ? "error" : ""}
+                  placeholder="Enter owner's name"
+                />
+                {errors.owner_name && <span className="error-message">{errors.owner_name}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="owner_phone">Owner Phone</label>
+                <input
+                  type="tel"
+                  id="owner_phone"
+                  name="owner_phone"
+                  value={formData.owner_phone}
+                  onChange={handleInputChange}
+                  className={errors.owner_phone ? "error" : ""}
+                  placeholder="Enter owner's phone number"
+                />
+                {errors.owner_phone && <span className="error-message">{errors.owner_phone}</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Media Upload */}
+        <div className="form-section">
+          <h3>Property Media</h3>
+
+          {/* Image Upload */}
+          <div className="upload-section">
+            <h4>Property Images</h4>
+            <div
+              className={`file-upload-area ${isImageDragOver ? "drag-over" : ""}`}
+              onDragOver={handleImageDragOver}
+              onDragLeave={handleImageDragLeave}
+              onDrop={handleImageDrop}
+            >
+              <div className="upload-content">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                <h4>Upload Property Images</h4>
+                <p>Drag and drop image files here, or click to select</p>
+                <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="file-input" />
+              </div>
+            </div>
+
+            {/* Image Preview Grid */}
+            {imageFiles.length > 0 && (
+              <div className="media-preview-grid">
+                {imageFiles.map((file, index) => (
+                  <div key={`img-${index}`} className="media-preview-item">
+                    <div className="media-preview">
+                      <img src={URL.createObjectURL(file) || "/placeholder.svg"} alt={`Image ${index + 1}`} />
+                    </div>
+                    <button
+                      type="button"
+                      className="remove-media-btn"
+                      onClick={() => removeImage(index)}
+                      aria-label={`Remove ${file.name}`}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                    <span className="file-name">{file.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Video Upload */}
+          <div className="upload-section">
+            <h4>Property Videos</h4>
+            <div
+              className={`file-upload-area ${isVideoDragOver ? "drag-over" : ""}`}
+              onDragOver={handleVideoDragOver}
+              onDragLeave={handleVideoDragLeave}
+              onDrop={handleVideoDrop}
+            >
+              <div className="upload-content">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <polygon points="23,7 16,12 23,17 23,7"/>
+                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                </svg>
+                <h4>Upload Property Videos</h4>
+                <p>Drag and drop video files here, or click to select</p>
+                <input type="file" multiple accept="video/*" onChange={handleVideoUpload} className="file-input" />
+              </div>
+            </div>
+
+            {/* Video Preview Grid */}
+            {videoFiles.length > 0 && (
+              <div className="media-preview-grid">
+                {videoFiles.map((file, index) => (
+                  <div key={`vid-${index}`} className="media-preview-item">
+                    <div className="media-preview">
+                      <div className="video-preview">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="remove-media-btn"
+                      onClick={() => removeVideo(index)}
+                      aria-label={`Remove ${file.name}`}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                    <span className="file-name">{file.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="form-actions">
+          <button type="submit" className="submit-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7,10 12,15 17,10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Post Property
+          </button>
+        </div>
+      </form>
+    </div>
+  )
 }
+
+export default PostProperty
