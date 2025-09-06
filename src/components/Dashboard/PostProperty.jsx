@@ -178,6 +178,14 @@ const PostProperty = () => {
         setErrors({})
       }
     }
+    else{
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+      
+      alert("Please fill correct details")
+    }
   }
 
   return (
@@ -209,7 +217,7 @@ const PostProperty = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">Description</label>
+              <label htmlFor="description">Description *</label>
               <textarea
                 id="description"
                 name="description"
@@ -217,7 +225,9 @@ const PostProperty = () => {
                 onChange={handleInputChange}
                 rows="4"
                 placeholder="Describe the property features and amenities"
+                required
               />
+              {errors.description && <span className="error-message">{errors.description}</span>}
             </div>
 
             <div className="form-row three-columns">
@@ -337,7 +347,7 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   placeholder="0"
                   min="0"
-                  step="0.5"
+                  step="1"
                   required
                   className={errors.bathrooms ? "error" : ""}
                 />
