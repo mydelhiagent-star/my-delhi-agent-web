@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import "./PostProperty.css"
-import { API_ENDPOINTS } from "../../config/api"
+import { useState } from "react";
+import "./PostProperty.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 const PostProperty = () => {
   const [formData, setFormData] = useState({
@@ -18,188 +18,265 @@ const PostProperty = () => {
     property_type: "",
     owner_name: "",
     owner_phone: "",
-  })
+  });
 
-  const [errors, setErrors] = useState({})
-  const [imageFiles, setImageFiles] = useState([])
-  const [videoFiles, setVideoFiles] = useState([])
-  const [isImageDragOver, setIsImageDragOver] = useState(false)
-  const [isVideoDragOver, setIsVideoDragOver] = useState(false)
+  const [errors, setErrors] = useState({});
+  const [imageFiles, setImageFiles] = useState([]);
+  const [videoFiles, setVideoFiles] = useState([]);
+  const [isImageDragOver, setIsImageDragOver] = useState(false);
+  const [isVideoDragOver, setIsVideoDragOver] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
+    }));
 
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
         [name]: "",
-      }))
+      }));
     }
-  }
+  };
 
   const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'))
-    setImageFiles((prev) => [...prev, ...files])
-  }
+    const files = Array.from(e.target.files).filter((file) =>
+      file.type.startsWith("image/")
+    );
+    setImageFiles((prev) => [...prev, ...files]);
+  };
 
   const handleVideoUpload = (e) => {
-    const files = Array.from(e.target.files).filter(file => file.type.startsWith('video/'))
-    setVideoFiles((prev) => [...prev, ...files])
-  }
+    const files = Array.from(e.target.files).filter((file) =>
+      file.type.startsWith("video/")
+    );
+    setVideoFiles((prev) => [...prev, ...files]);
+  };
 
   const handleImageDragOver = (e) => {
-    e.preventDefault()
-    setIsImageDragOver(true)
-  }
+    e.preventDefault();
+    setIsImageDragOver(true);
+  };
 
   const handleImageDragLeave = (e) => {
-    e.preventDefault()
-    setIsImageDragOver(false)
-  }
+    e.preventDefault();
+    setIsImageDragOver(false);
+  };
 
   const handleImageDrop = (e) => {
-    e.preventDefault()
-    setIsImageDragOver(false)
-    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'))
-    setImageFiles((prev) => [...prev, ...files])
-  }
+    e.preventDefault();
+    setIsImageDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter((file) =>
+      file.type.startsWith("image/")
+    );
+    setImageFiles((prev) => [...prev, ...files]);
+  };
 
   const handleVideoDragOver = (e) => {
-    e.preventDefault()
-    setIsVideoDragOver(true)
-  }
+    e.preventDefault();
+    setIsVideoDragOver(true);
+  };
 
   const handleVideoDragLeave = (e) => {
-    e.preventDefault()
-    setIsVideoDragOver(false)
-  }
+    e.preventDefault();
+    setIsVideoDragOver(false);
+  };
 
   const handleVideoDrop = (e) => {
-    e.preventDefault()
-    setIsVideoDragOver(false)
-    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('video/'))
-    setVideoFiles((prev) => [...prev, ...files])
-  }
+    e.preventDefault();
+    setIsVideoDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter((file) =>
+      file.type.startsWith("video/")
+    );
+    setVideoFiles((prev) => [...prev, ...files]);
+  };
 
   const removeImage = (index) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const removeVideo = (index) => {
-    setVideoFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+    setVideoFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
-  const handleSubmit = async(e) => {
-    e.preventDefault()
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     // Validate required fields
-    const newErrors = {}
-    if (!formData.title) newErrors.title = "Title is required"
-    if (!formData.address) newErrors.address = "Address is required"
-    if (!formData.min_price) newErrors.min_price = "Minimum price is required"
-    if (!formData.max_price) newErrors.max_price = "Maximum price is required"
-    if (!formData.property_type) newErrors.property_type = "Property type is required"
-    if (!formData.nearest_landmark) newErrors.nearest_landmark = "Nearest landmark is required"
+    const newErrors = {};
+    if (!formData.title) newErrors.title = "Title is required";
+    if (!formData.address) newErrors.address = "Address is required";
+    if (!formData.min_price) newErrors.min_price = "Minimum price is required";
+    if (!formData.max_price) newErrors.max_price = "Maximum price is required";
+    if (!formData.property_type)
+      newErrors.property_type = "Property type is required";
+    if (!formData.nearest_landmark)
+      newErrors.nearest_landmark = "Nearest landmark is required";
 
-    if (!formData.bedrooms) newErrors.bedrooms = "Bedrooms is required"
-    if (!formData.bathrooms) newErrors.bathrooms = "Bathrooms is required"
-    if (!formData.area) newErrors.area = "Area is required"
-    if (!formData.owner_name.trim()) newErrors.owner_name = "Owner name is required"
-    if (!formData.owner_phone) newErrors.owner_phone = "Owner phone is required"
+    if (!formData.bedrooms) newErrors.bedrooms = "Bedrooms is required";
+    if (!formData.bathrooms) newErrors.bathrooms = "Bathrooms is required";
+    if (!formData.area) newErrors.area = "Area is required";
+    if (!formData.owner_name.trim())
+      newErrors.owner_name = "Owner name is required";
+    if (!formData.owner_phone)
+      newErrors.owner_phone = "Owner phone is required";
 
     if (formData.min_price && parseInt(formData.min_price) <= 0) {
-      newErrors.min_price = "Minimum price must be greater than 0"
+      newErrors.min_price = "Minimum price must be greater than 0";
     }
-    if (formData.min_price && formData.max_price && parseInt(formData.min_price) > parseInt(formData.max_price) ) {
-      newErrors.max_price = "Maximum price must be greater than minimum price"
+    if (
+      formData.min_price &&
+      formData.max_price &&
+      parseInt(formData.min_price) > parseInt(formData.max_price)
+    ) {
+      newErrors.max_price = "Maximum price must be greater than minimum price";
     }
     if (formData.max_price && parseInt(formData.max_price) <= 0) {
-      newErrors.max_price = "Maximum price must be greater than 0"
+      newErrors.max_price = "Maximum price must be greater than 0";
     }
     if (formData.bedrooms && parseInt(formData.bedrooms) <= 0) {
-      newErrors.bedrooms = "Bedrooms must be greater than 0"
+      newErrors.bedrooms = "Bedrooms must be greater than 0";
     }
     if (formData.bathrooms && parseInt(formData.bathrooms) <= 0) {
-      newErrors.bathrooms = "Bathrooms must be greater than 0"
+      newErrors.bathrooms = "Bathrooms must be greater than 0";
     }
     if (formData.area && parseInt(formData.area) <= 0) {
-      newErrors.area = "Area must be greater than 0"
+      newErrors.area = "Area must be greater than 0";
     }
     if (formData.owner_phone) {
-      const phoneRegex = /^[6-9]\d{9}$/
-      if (!phoneRegex.test(formData.owner_phone.replace(/\D/g, ''))) {
-        newErrors.owner_phone = "Please enter a valid 10-digit phone number"
+      const phoneRegex = /^[6-9]\d{9}$/;
+      if (!phoneRegex.test(formData.owner_phone.replace(/\D/g, ""))) {
+        newErrors.owner_phone = "Please enter a valid 10-digit phone number";
       }
     }
-    
-    setErrors(newErrors)
-    
+
+    setErrors(newErrors);
+
     if (Object.keys(newErrors).length === 0) {
       // Prepare data for API submission
-      const propertyData = {
-        title: formData.title,
-        description: formData.description,
-        address: formData.address,
-        min_price: parseInt(formData.min_price),
-        max_price: parseInt(formData.max_price),
-        nearest_landmark: formData.nearest_landmark,
-        area: formData.area ? parseFloat(formData.area) : 0,
-        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : 0,
-        bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : 0,
-        property_type: formData.property_type,
-        owner_name: formData.owner_name || "",
-        owner_phone: formData.owner_phone || "",
-        photos: imageFiles, // Image files
-        videos: videoFiles  // Video files
-      }
-      
-      console.log("Form submitted:", propertyData, { imageFiles, videoFiles })
-      // TODO: Implement API submission logic here
       try {
+        let uploadedImageKeys = []
+        let uploadedVideoKeys = []
+
+        if (imageFiles.length > 0) {
+          uploadedImageKeys = await uploadFilesToCloudflare(imageFiles, 'image')
+        }
+
+       if (videoFiles.length > 0) {
+         uploadedVideoKeys = await uploadFilesToCloudflare(videoFiles, 'video')
+        }
+        const propertyData = {
+          title: formData.title,
+          description: formData.description,
+          address: formData.address,
+          min_price: parseInt(formData.min_price),
+          max_price: parseInt(formData.max_price),
+          nearest_landmark: formData.nearest_landmark,
+          area: formData.area ? parseFloat(formData.area) : 0,
+          bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : 0,
+          bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : 0,
+          property_type: formData.property_type,
+          owner_name: formData.owner_name || "",
+          owner_phone: formData.owner_phone || "",
+          photos: uploadedImageKeys, // Image files
+          videos: uploadedVideoKeys, // Video files
+        };
         const response = await fetch(API_ENDPOINTS.PROPERTIES_DEALER, {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(propertyData),
-        })
-        const result = await response.json()
+        });
+        const result = await response.json();
         if (!result.success) {
-          alert(result.message || "Failed to post property")
-          return
+          alert(result.message || "Failed to post property");
+          return;
         }
-        alert(result.message || "Property posted successfully")
+        alert(result.message || "Property posted successfully");
         setFormData({
           title: "",
           description: "",
           address: "",
           min_price: "",
           max_price: "",
+          nearest_landmark: "",
+          area: "",
+          bedrooms: "",
+          bathrooms: "",
+          property_type: "",
+          owner_name: "",
+          owner_phone: "",
         })
         setImageFiles([])
         setVideoFiles([])
         setErrors({})
-
-      } catch (error) {
-        console.error("Error submitting property:", error)
-        alert("Failed to post property. Please try again.")
-        setErrors({})
       }
-    }
-    else{
+      catch (error) {
+        console.error("Error submitting property:", error);
+        alert("Failed to post property. Please try again.");
+        setErrors({});
+      }
+    } else {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
-      })
-      
-      alert("Please fill correct details")
+        behavior: "smooth",
+      });
+
+      alert("Please fill correct details");
     }
-  }
+  };
+
+  // Add this function after handleSubmit (around line 202)
+  const uploadFilesToCloudflare = async (files, type) => {
+    try {
+      // Step 1: Get presigned URLs
+      const response = await fetch(API_ENDPOINTS.PRESIGNED_URLS, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ count: files.length }),
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || "Failed to get upload URLs");
+      }
+
+      const { presignedUrls } = result.data;
+
+      // Step 2: Upload files to Cloudflare
+      const uploadPromises = files.map(async (file, index) => {
+        const { presignedUrl, fileKey } = presignedUrls[index];
+
+        const uploadResponse = await fetch(presignedUrl, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        return fileKey;
+      });
+
+      // Wait for all uploads to complete
+      const uploadedKeys = await Promise.all(uploadPromises);
+      return uploadedKeys;
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
+  };
 
   return (
     <div className="post-property-container">
@@ -226,7 +303,9 @@ const PostProperty = () => {
                 placeholder="Enter property title"
                 required
               />
-              {errors.title && <span className="error-message">{errors.title}</span>}
+              {errors.title && (
+                <span className="error-message">{errors.title}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -240,7 +319,9 @@ const PostProperty = () => {
                 placeholder="Describe the property features and amenities"
                 required
               />
-              {errors.description && <span className="error-message">{errors.description}</span>}
+              {errors.description && (
+                <span className="error-message">{errors.description}</span>
+              )}
             </div>
 
             <div className="form-row three-columns">
@@ -257,7 +338,9 @@ const PostProperty = () => {
                   step="1"
                   required
                 />
-                {errors.min_price && <span className="error-message">{errors.min_price}</span>}
+                {errors.min_price && (
+                  <span className="error-message">{errors.min_price}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -273,7 +356,9 @@ const PostProperty = () => {
                   step="1"
                   required
                 />
-                {errors.max_price && <span className="error-message">{errors.max_price}</span>}
+                {errors.max_price && (
+                  <span className="error-message">{errors.max_price}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -296,7 +381,9 @@ const PostProperty = () => {
                   <option value="studio">Studio</option>
                   <option value="commercial">Commercial</option>
                 </select>
-                {errors.property_type && <span className="error-message">{errors.property_type}</span>}
+                {errors.property_type && (
+                  <span className="error-message">{errors.property_type}</span>
+                )}
               </div>
             </div>
           </div>
@@ -317,7 +404,9 @@ const PostProperty = () => {
                 placeholder="Enter full address"
                 required
               />
-              {errors.address && <span className="error-message">{errors.address}</span>}
+              {errors.address && (
+                <span className="error-message">{errors.address}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -332,7 +421,9 @@ const PostProperty = () => {
                 placeholder="e.g., Metro Station - 5 mins walk"
                 required
               />
-              {errors.nearest_landmark && <span className="error-message">{errors.nearest_landmark}</span>}
+              {errors.nearest_landmark && (
+                <span className="error-message">{errors.nearest_landmark}</span>
+              )}
             </div>
 
             <div className="form-row">
@@ -349,7 +440,9 @@ const PostProperty = () => {
                   className={errors.bedrooms ? "error" : ""}
                   required
                 />
-                {errors.bedrooms && <span className="error-message">{errors.bedrooms}</span>}
+                {errors.bedrooms && (
+                  <span className="error-message">{errors.bedrooms}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -365,7 +458,9 @@ const PostProperty = () => {
                   required
                   className={errors.bathrooms ? "error" : ""}
                 />
-                {errors.bathrooms && <span className="error-message">{errors.bathrooms}</span>}
+                {errors.bathrooms && (
+                  <span className="error-message">{errors.bathrooms}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -377,11 +472,12 @@ const PostProperty = () => {
                   value={formData.area}
                   onChange={handleInputChange}
                   placeholder="0"
-              
                   required
                   className={errors.area ? "error" : ""}
                 />
-                {errors.area && <span className="error-message">{errors.area}</span>}
+                {errors.area && (
+                  <span className="error-message">{errors.area}</span>
+                )}
               </div>
             </div>
           </div>
@@ -403,7 +499,9 @@ const PostProperty = () => {
                   placeholder="Enter owner's name"
                   required
                 />
-                {errors.owner_name && <span className="error-message">{errors.owner_name}</span>}
+                {errors.owner_name && (
+                  <span className="error-message">{errors.owner_name}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -418,7 +516,9 @@ const PostProperty = () => {
                   placeholder="Enter owner's phone number"
                   required
                 />
-                {errors.owner_phone && <span className="error-message">{errors.owner_phone}</span>}
+                {errors.owner_phone && (
+                  <span className="error-message">{errors.owner_phone}</span>
+                )}
               </div>
             </div>
           </div>
@@ -432,20 +532,35 @@ const PostProperty = () => {
           <div className="upload-section">
             <h4>Property Images</h4>
             <div
-              className={`file-upload-area ${isImageDragOver ? "drag-over" : ""}`}
+              className={`file-upload-area ${
+                isImageDragOver ? "drag-over" : ""
+              }`}
               onDragOver={handleImageDragOver}
               onDragLeave={handleImageDragLeave}
               onDrop={handleImageDrop}
             >
               <div className="upload-content">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21,15 16,10 5,21"/>
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21,15 16,10 5,21" />
                 </svg>
                 <h4>Upload Property Images</h4>
                 <p>Drag and drop image files here, or click to select</p>
-                <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="file-input" />
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="file-input"
+                />
               </div>
             </div>
 
@@ -455,7 +570,10 @@ const PostProperty = () => {
                 {imageFiles.map((file, index) => (
                   <div key={`img-${index}`} className="media-preview-item">
                     <div className="media-preview">
-                      <img src={URL.createObjectURL(file) || "/placeholder.svg"} alt={`Image ${index + 1}`} />
+                      <img
+                        src={URL.createObjectURL(file) || "/placeholder.svg"}
+                        alt={`Image ${index + 1}`}
+                      />
                     </div>
                     <button
                       type="button"
@@ -463,7 +581,14 @@ const PostProperty = () => {
                       onClick={() => removeImage(index)}
                       aria-label={`Remove ${file.name}`}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <line x1="18" y1="6" x2="6" y2="18" />
                         <line x1="6" y1="6" x2="18" y2="18" />
                       </svg>
@@ -479,19 +604,34 @@ const PostProperty = () => {
           <div className="upload-section">
             <h4>Property Videos</h4>
             <div
-              className={`file-upload-area ${isVideoDragOver ? "drag-over" : ""}`}
+              className={`file-upload-area ${
+                isVideoDragOver ? "drag-over" : ""
+              }`}
               onDragOver={handleVideoDragOver}
               onDragLeave={handleVideoDragLeave}
               onDrop={handleVideoDrop}
             >
               <div className="upload-content">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <polygon points="23,7 16,12 23,17 23,7"/>
-                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <polygon points="23,7 16,12 23,17 23,7" />
+                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                 </svg>
                 <h4>Upload Property Videos</h4>
                 <p>Drag and drop video files here, or click to select</p>
-                <input type="file" multiple accept="video/*" onChange={handleVideoUpload} className="file-input" />
+                <input
+                  type="file"
+                  multiple
+                  accept="video/*"
+                  onChange={handleVideoUpload}
+                  className="file-input"
+                />
               </div>
             </div>
 
@@ -502,7 +642,12 @@ const PostProperty = () => {
                   <div key={`vid-${index}`} className="media-preview-item">
                     <div className="media-preview">
                       <div className="video-preview">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
                           <path d="M8 5v14l11-7z" />
                         </svg>
                       </div>
@@ -513,7 +658,14 @@ const PostProperty = () => {
                       onClick={() => removeVideo(index)}
                       aria-label={`Remove ${file.name}`}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <line x1="18" y1="6" x2="6" y2="18" />
                         <line x1="6" y1="6" x2="18" y2="18" />
                       </svg>
@@ -529,7 +681,14 @@ const PostProperty = () => {
         {/* Submit Button */}
         <div className="form-actions">
           <button type="submit" className="submit-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7,10 12,15 17,10" />
               <line x1="12" y1="15" x2="12" y2="3" />
@@ -539,7 +698,7 @@ const PostProperty = () => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default PostProperty
+export default PostProperty;
