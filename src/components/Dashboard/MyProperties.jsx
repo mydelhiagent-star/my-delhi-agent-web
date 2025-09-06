@@ -19,6 +19,7 @@ const MyProperties = () => {
   const [showDescription, setShowDescription] = useState(false)
   const [showSpecifications, setShowSpecifications] = useState(false)
   const [showClients, setShowClients] = useState(false)
+  
 
   useEffect(() => {
     fetchProperties()
