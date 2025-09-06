@@ -241,6 +241,8 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   className={errors.min_price ? "error" : ""}
                   placeholder="0"
+                  min="0"
+                  step="1"
                   required
                 />
                 {errors.min_price && <span className="error-message">{errors.min_price}</span>}
@@ -256,6 +258,9 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   className={errors.max_price ? "error" : ""}
                   placeholder="0"
+                  min="0"
+                  step="1"
+
                   required
                 />
                 {errors.max_price && <span className="error-message">{errors.max_price}</span>}
