@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import "./MyProperties.css"
 
 const MyProperties = () => {
@@ -8,52 +8,203 @@ const MyProperties = () => {
     {
       id: 1,
       title: "Modern Downtown Apartment",
-      location: "123 Main St, Downtown",
-      price: 450000,
+      description: "A stunning modern apartment in the heart of downtown with panoramic city views and premium amenities. Features floor-to-ceiling windows, marble countertops, and smart home technology throughout.",
+      address: "123 Main St, Downtown",
+      nearest_landmark: "Metro Station - 5 mins walk",
+      min_price: 400000,
+      max_price: 500000,
       bedrooms: 2,
       bathrooms: 2,
       area: 1200,
+      property_type: "apartment",
+      owner_name: "John Smith",
+      owner_phone: "+1-555-0123",
       status: "active",
-      images: ["/modern-apartment.png"],
-      clients: ["John Doe", "Jane Smith"],
+      images: [
+        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      videos: [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+      ],
+      clients: ["John Doe", "Jane Smith", "Mike Wilson"],
+      created_at: "2024-01-15",
     },
     {
       id: 2,
       title: "Luxury Family Home",
-      location: "456 Oak Ave, Suburbs",
-      price: 750000,
+      description: "Spacious family home with large backyard, modern kitchen, and multiple bedrooms perfect for growing families. Features a gourmet kitchen, master suite with walk-in closet, and a finished basement.",
+      address: "456 Oak Ave, Suburbs",
+      nearest_landmark: "Central Park - 10 mins drive",
+      min_price: 700000,
+      max_price: 800000,
       bedrooms: 4,
       bathrooms: 3,
       area: 2500,
+      property_type: "house",
+      owner_name: "Sarah Johnson",
+      owner_phone: "+1-555-0456",
       status: "pending",
-      images: ["/luxury-family-home-exterior.jpg"],
-      clients: ["Mike Johnson"],
+      images: [
+        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop"
+      ],
+      videos: [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+      ],
+      clients: ["Mike Johnson", "Sarah Davis"],
+      created_at: "2024-01-20",
     },
+    {
+      id: 3,
+      title: "Cozy Studio Apartment",
+      description: "Perfect starter apartment with modern amenities and great location for young professionals. Features an open-concept layout, built-in storage, and access to building amenities.",
+      address: "789 Pine St, Midtown",
+      nearest_landmark: "Shopping Mall - 3 mins walk",
+      min_price: 250000,
+      max_price: 300000,
+      bedrooms: 1,
+      bathrooms: 1,
+      area: 600,
+      property_type: "studio",
+      owner_name: "David Wilson",
+      owner_phone: "+1-555-0789",
+      status: "active",
+      images: [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      videos: [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+      ],
+      clients: ["Emma Brown"],
+      created_at: "2024-01-25",
+    },
+    {
+      id: 4,
+      title: "Penthouse with City Views",
+      description: "Exclusive penthouse offering breathtaking city views from every room. Features a private rooftop terrace, premium finishes, and concierge service.",
+      address: "1000 Sky Tower, Financial District",
+      nearest_landmark: "Business District - 2 mins walk",
+      min_price: 1200000,
+      max_price: 1500000,
+      bedrooms: 3,
+      bathrooms: 3,
+      area: 2000,
+      property_type: "penthouse",
+      owner_name: "Robert Chen",
+      owner_phone: "+1-555-0999",
+      status: "active",
+      images: [
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1616486338812-3dadae4b4ce1?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1618221195710-dd6b41faaea8?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1616486338812-3dadae4b4ce1?w=800&h=600&fit=crop"
+      ],
+      videos: [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+      ],
+      clients: ["Alex Thompson", "Lisa Wang", "James Rodriguez"],
+      created_at: "2024-02-01",
+    },
+    {
+      id: 5,
+      title: "Historic Brownstone",
+      description: "Beautifully restored historic brownstone with original architectural details and modern updates. Features hardwood floors, high ceilings, and a private garden.",
+      address: "555 Heritage Lane, Historic District",
+      nearest_landmark: "Museum District - 5 mins walk",
+      min_price: 850000,
+      max_price: 950000,
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 1800,
+      property_type: "townhouse",
+      owner_name: "Margaret O'Connor",
+      owner_phone: "+1-555-0777",
+      status: "sold",
+      images: [
+        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop"
+      ],
+      videos: [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+      ],
+      clients: ["Tom Anderson"],
+      created_at: "2024-01-10",
+    }
   ])
 
-  const [selectedProperty, setSelectedProperty] = useState(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [viewMode, setViewMode] = useState("grid") // "grid" or "list"
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState("")
+  const [selectedProperty, setSelectedProperty] = useState(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [showPrice, setShowPrice] = useState(false)
+  const [showAddress, setShowAddress] = useState(false)
+  const [showOwnerInfo, setShowOwnerInfo] = useState(false)
+  const [showDescription, setShowDescription] = useState(false)
+  const [showSpecifications, setShowSpecifications] = useState(false)
+  const [showClients, setShowClients] = useState(false)
+  
+  // Filtered properties based on search
+  const filteredProperties = useMemo(() => {
+    if (!searchTerm) return properties
+    
+    return properties.filter(property => 
+      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.nearest_landmark.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.property_type.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [properties, searchTerm])
 
-  const handleEdit = (property) => {
+  // Handler functions
+  const handlePropertyClick = (property) => {
+    setSelectedProperty(property)
+    setCurrentImageIndex(0)
+    setShowPrice(false)
+    setShowAddress(false)
+    setShowOwnerInfo(false)
+    setShowDescription(false)
+    setShowSpecifications(false)
+    setShowClients(false)
+    setShowPreviewModal(true)
+  }
+
+  const handleEdit = (property, e) => {
+    e.stopPropagation()
     setSelectedProperty(property)
     setModalType("edit")
     setShowModal(true)
   }
 
-  const handleDelete = (property) => {
+  const handleDelete = (property, e) => {
+    e.stopPropagation()
     setSelectedProperty(property)
     setModalType("delete")
     setShowModal(true)
   }
 
-  const handleAddClient = (property) => {
+  const handleAddClient = (property, e) => {
+    e.stopPropagation()
     setSelectedProperty(property)
     setModalType("addClient")
     setShowModal(true)
   }
 
-  const handleViewClients = (property) => {
+  const handleViewClients = (property, e) => {
+    e.stopPropagation()
     setSelectedProperty(property)
     setModalType("viewClients")
     setShowModal(true)
@@ -65,12 +216,73 @@ const MyProperties = () => {
     setModalType("")
   }
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
+  const closePreviewModal = () => {
+    setShowPreviewModal(false)
+    setSelectedProperty(null)
+    setCurrentImageIndex(0)
+    setShowPrice(false)
+    setShowAddress(false)
+    setShowOwnerInfo(false)
+    setShowDescription(false)
+    setShowSpecifications(false)
+    setShowClients(false)
+  }
+
+  // Image navigation functions
+  const nextImage = () => {
+    if (selectedProperty && selectedProperty.images) {
+      setCurrentImageIndex((prev) => 
+        prev === selectedProperty.images.length - 1 ? 0 : prev + 1
+      )
+    }
+  }
+
+  const prevImage = () => {
+    if (selectedProperty && selectedProperty.images) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? selectedProperty.images.length - 1 : prev - 1
+      )
+    }
+  }
+
+  const togglePrice = () => {
+    setShowPrice(!showPrice)
+  }
+
+  const toggleAddress = () => {
+    setShowAddress(!showAddress)
+  }
+
+  const toggleOwnerInfo = () => {
+    setShowOwnerInfo(!showOwnerInfo)
+  }
+
+  const toggleDescription = () => {
+    setShowDescription(!showDescription)
+  }
+
+  const toggleSpecifications = () => {
+    setShowSpecifications(!showSpecifications)
+  }
+
+  const toggleClients = () => {
+    setShowClients(!showClients)
+  }
+
+  const formatPrice = (minPrice, maxPrice) => {
+    const min = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
-    }).format(price)
+    }).format(minPrice)
+    
+    const max = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+    }).format(maxPrice)
+    
+    return `${min} - ${max}`
   }
 
   const getStatusColor = (status) => {
@@ -88,27 +300,74 @@ const MyProperties = () => {
 
   return (
     <div className="my-properties-container">
+      {/* Header */}
       <div className="properties-header">
         <h2>My Properties</h2>
         <p>Manage your property listings</p>
       </div>
 
-      <div className="properties-grid">
-        {properties.map((property) => (
-          <div key={property.id} className="property-card">
-            {/* Property Images Section */}
-            <div className="property-images-section">
+      {/* Search and View Controls */}
+      <div className="properties-controls">
+        <div className="search-container">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search properties..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        
+        <div className="view-toggle">
+          <button
+            className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
+            onClick={() => setViewMode("grid")}
+            aria-label="Grid view"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </button>
+          <button
+            className={`view-btn ${viewMode === "list" ? "active" : ""}`}
+            onClick={() => setViewMode("list")}
+            aria-label="List view"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Properties Grid/List */}
+      <div className={`properties-container ${viewMode}`}>
+        {filteredProperties.map((property) => (
+          <div 
+            key={property.id} 
+            className={`property-card ${viewMode}`}
+            onClick={() => handlePropertyClick(property)}
+          >
+            {/* Property Media */}
               <div className="property-media">
-                <div className="media-carousel">
                   {property.images && property.images.length > 0 ? (
-                    property.images.map((image, index) => (
                       <img
-                        key={index}
-                        src={image || "/placeholder.svg"}
-                        alt={`${property.title} - Image ${index + 1}`}
+                  src={property.images[0] || "/placeholder.svg"}
+                  alt={property.title}
                         className="property-image"
                       />
-                    ))
                   ) : (
                     <div className="no-image-placeholder">
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -116,100 +375,436 @@ const MyProperties = () => {
                         <circle cx="8.5" cy="8.5" r="1.5"/>
                         <polyline points="21,15 16,10 5,21"/>
                       </svg>
-                      <span>No Images</span>
                     </div>
                   )}
+              
+              {/* Video indicator */}
+              {property.videos && property.videos.length > 0 && (
+                <div className="video-indicator">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5,3 19,12 5,21"/>
+                  </svg>
                 </div>
+              )}
+              
+              {/* Status chip */}
                 <div className={`status-chip ${getStatusColor(property.status)}`}>
                   {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
-                </div>
               </div>
             </div>
 
-            {/* Property Details */}
-            <div className="property-details">
+            {/* Property Info */}
+            <div className="property-info">
               <h3 className="property-title">{property.title}</h3>
-              <p className="property-location">
+              <p className="property-landmark">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                {property.location}
+                {property.nearest_landmark}
               </p>
-
-              <div className="property-specs">
-                <div className="spec-item">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <polyline points="9,22 9,12 15,12 15,22" />
-                  </svg>
-                  <span>{property.bedrooms} bed</span>
-                </div>
-                <div className="spec-item">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
-                    <line x1="10" y1="5" x2="8" y2="7" />
-                    <line x1="2" y1="12" x2="22" y2="12" />
-                    <line x1="7" y1="19" x2="7" y2="21" />
-                    <line x1="17" y1="19" x2="17" y2="21" />
-                  </svg>
-                  <span>{property.bathrooms} bath</span>
-                </div>
-                <div className="spec-item">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <path d="M9 9h6v6H9z" />
-                  </svg>
-                  <span>{property.area.toLocaleString()} sq ft</span>
-                </div>
               </div>
 
-              <div className="property-price">{formatPrice(property.price)}</div>
-
               {/* Action Buttons */}
-              <div className="property-actions">
-                <button className="action-btn primary" onClick={() => handleEdit(property)}>
+            <div className="property-actions" onClick={(e) => e.stopPropagation()}>
+              <button className="action-btn edit" onClick={(e) => handleEdit(property, e)}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </svg>
-                  Edit
+              </button>
+              
+              <button className="action-btn delete" onClick={(e) => handleDelete(property, e)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3,6 5,6 21,6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
                 </button>
 
-                <button className="action-btn secondary" onClick={() => handleAddClient(property)}>
+              <button className="action-btn add-client" onClick={(e) => handleAddClient(property, e)}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                     <circle cx="9" cy="7" r="4" />
                     <line x1="19" y1="8" x2="19" y2="14" />
                     <line x1="22" y1="11" x2="16" y2="11" />
                   </svg>
-                  Add Client
                 </button>
 
-                <button className="action-btn secondary" onClick={() => handleViewClients(property)}>
+              <button className="action-btn view-clients" onClick={(e) => handleViewClients(property, e)}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                     <circle cx="9" cy="7" r="4" />
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                  View Clients ({property.clients.length})
+                <span className="client-count">{property.clients.length}</span>
                 </button>
-
-                <button className="action-btn danger" onClick={() => handleDelete(property)}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3,6 5,6 21,6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
-                  Delete
-                </button>
-              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal */}
+      {/* No Results */}
+      {filteredProperties.length === 0 && (
+        <div className="no-results">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+            <line x1="11" y1="8" x2="11" y2="14"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+          <h3>No properties found</h3>
+          <p>Try adjusting your search terms</p>
+        </div>
+      )}
+
+      {/* Property Preview Modal */}
+      {showPreviewModal && selectedProperty && (
+        <div className="preview-modal-overlay" onClick={closePreviewModal}>
+          <div className="preview-modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="preview-modal-header">
+              <h2>{selectedProperty.title}</h2>
+              <button className="preview-modal-close" onClick={closePreviewModal} aria-label="Close preview">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="preview-modal-content">
+              {/* Full Screen Image Carousel */}
+              <div className="fullscreen-image-section">
+                <div className="image-carousel-container">
+                  {/* Navigation Arrows */}
+                  {selectedProperty.images && selectedProperty.images.length > 1 && (
+                    <>
+                      <button className="carousel-nav prev" onClick={prevImage} aria-label="Previous image">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="15,18 9,12 15,6"/>
+                        </svg>
+                      </button>
+                      <button className="carousel-nav next" onClick={nextImage} aria-label="Next image">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="9,18 15,12 9,6"/>
+                        </svg>
+                      </button>
+                    </>
+                  )}
+
+                  {/* Full Screen Main Image */}
+                  <div className="fullscreen-image-container">
+                    {selectedProperty.images && selectedProperty.images.length > 0 ? (
+                      <img 
+                        src={selectedProperty.images[currentImageIndex]} 
+                        alt={`${selectedProperty.title} - Image ${currentImageIndex + 1}`}
+                        className="fullscreen-image"
+                      />
+                    ) : (
+                      <div className="no-image-placeholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21,15 16,10 5,21"/>
+                        </svg>
+                        <span>No Images Available</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Image Counter */}
+                  {selectedProperty.images && selectedProperty.images.length > 1 && (
+                    <div className="image-counter">
+                      {currentImageIndex + 1} / {selectedProperty.images.length}
+                    </div>
+                  )}
+
+                  {/* Video Indicator */}
+                  {selectedProperty.videos && selectedProperty.videos.length > 0 && (
+                    <div className="video-indicator">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5,3 19,12 5,21"/>
+                      </svg>
+                      <span>{selectedProperty.videos.length} Video{selectedProperty.videos.length > 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons Row */}
+                <div className="action-buttons-row">
+                  <button className="action-btn price-btn" onClick={togglePrice}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="12" y1="1" x2="12" y2="23"/>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                    <span>{showPrice ? 'Hide' : 'Show'} Price</span>
+                  </button>
+
+                  <button className="action-btn address-btn" onClick={toggleAddress}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span>{showAddress ? 'Hide' : 'Show'} Address</span>
+                  </button>
+
+                  <button className="action-btn owner-btn" onClick={toggleOwnerInfo}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span>{showOwnerInfo ? 'Hide' : 'Show'} Owner Info</span>
+                  </button>
+
+                  <button className="action-btn description-btn" onClick={toggleDescription}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14,2 14,8 20,8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10,9 9,9 8,9"/>
+                    </svg>
+                    <span>{showDescription ? 'Hide' : 'Show'} Description</span>
+                  </button>
+
+                  <button className="action-btn specs-btn" onClick={toggleSpecifications}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="9" y1="9" x2="15" y2="9"/>
+                      <line x1="9" y1="15" x2="15" y2="15"/>
+                    </svg>
+                    <span>{showSpecifications ? 'Hide' : 'Show'} Specifications</span>
+                  </button>
+
+                  <button className="action-btn clients-btn" onClick={toggleClients}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>{showClients ? 'Hide' : 'Show'} Clients ({selectedProperty.clients.length})</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Price Information (Collapsible) */}
+              {showPrice && (
+                <div className="info-section price-section">
+                  <div className="info-content">
+                    <h3>Price Information</h3>
+                    <div className="price-display">
+                      <div className="price-range">
+                        <span className="price-label">Price Range:</span>
+                        <span className="price-value">{formatPrice(selectedProperty.min_price, selectedProperty.max_price)}</span>
+                      </div>
+                      <div className="price-details">
+                        <div className="price-item">
+                          <span className="label">Minimum:</span>
+                          <span className="value">{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(selectedProperty.min_price)}</span>
+                        </div>
+                        <div className="price-item">
+                          <span className="label">Maximum:</span>
+                          <span className="value">{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(selectedProperty.max_price)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Address Information (Collapsible) */}
+              {showAddress && (
+                <div className="info-section address-section">
+                  <div className="info-content">
+                    <h3>Location Information</h3>
+                    <div className="address-display">
+                      <div className="address-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                          <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <div className="address-details">
+                          <span className="label">Full Address:</span>
+                          <span className="value">{selectedProperty.address}</span>
+                        </div>
+                      </div>
+                      <div className="address-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                          <polyline points="9,22 9,12 15,12 15,22" />
+                        </svg>
+                        <div className="address-details">
+                          <span className="label">Nearest Landmark:</span>
+                          <span className="value">{selectedProperty.nearest_landmark}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Owner Information (Collapsible) */}
+              {showOwnerInfo && (
+                <div className="info-section owner-section">
+                  <div className="info-content">
+                    <h3>Owner Information</h3>
+                    <div className="owner-display">
+                      <div className="owner-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <div className="owner-details">
+                          <span className="label">Owner Name:</span>
+                          <span className="value">{selectedProperty.owner_name}</span>
+                        </div>
+                      </div>
+                      <div className="owner-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <div className="owner-details">
+                          <span className="label">Phone Number:</span>
+                          <span className="value">{selectedProperty.owner_phone}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Description Information (Collapsible) */}
+              {showDescription && (
+                <div className="info-section description-section">
+                  <div className="info-content">
+                    <h3>Property Description</h3>
+                    <div className="description-display">
+                      <div className="description-content">
+                        <p>{selectedProperty.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Specifications Information (Collapsible) */}
+              {showSpecifications && (
+                <div className="info-section specs-section">
+                  <div className="info-content">
+                    <h3>Property Specifications</h3>
+                    <div className="specs-display">
+                      <div className="specs-grid">
+                        <div className="spec-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9,22 9,12 15,12 15,22" />
+                          </svg>
+                          <div className="spec-details">
+                            <span className="label">Property Type:</span>
+                            <span className="value">{selectedProperty.property_type}</span>
+                          </div>
+                        </div>
+                        <div className="spec-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                          </svg>
+                          <div className="spec-details">
+                            <span className="label">Bedrooms:</span>
+                            <span className="value">{selectedProperty.bedrooms}</span>
+                          </div>
+                        </div>
+                        <div className="spec-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M8 2v4"/>
+                            <path d="M16 2v4"/>
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <path d="M3 10h18"/>
+                          </svg>
+                          <div className="spec-details">
+                            <span className="label">Bathrooms:</span>
+                            <span className="value">{selectedProperty.bathrooms}</span>
+                          </div>
+                        </div>
+                        <div className="spec-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <path d="M9 9h6v6H9z"/>
+                          </svg>
+                          <div className="spec-details">
+                            <span className="label">Area:</span>
+                            <span className="value">{selectedProperty.area.toLocaleString()} sq ft</span>
+                          </div>
+                        </div>
+                        <div className="spec-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                          </svg>
+                          <div className="spec-details">
+                            <span className="label">Created:</span>
+                            <span className="value">{new Date(selectedProperty.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <div className="spec-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                          </svg>
+                          <div className="spec-details">
+                            <span className="label">Status:</span>
+                            <span className={`value status-badge ${getStatusColor(selectedProperty.status)}`}>
+                              {selectedProperty.status.charAt(0).toUpperCase() + selectedProperty.status.slice(1)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Clients Information (Collapsible) */}
+              {showClients && (
+                <div className="info-section clients-section">
+                  <div className="info-content">
+                    <h3>Assigned Clients ({selectedProperty.clients.length})</h3>
+                    <div className="clients-display">
+                      {selectedProperty.clients.length > 0 ? (
+                        <div className="clients-list">
+                          {selectedProperty.clients.map((client, index) => (
+                            <div key={index} className="client-item">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                              </svg>
+                              <span className="client-name">{client}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="no-clients">
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                          </svg>
+                          <p>No clients assigned to this property</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Action Modals */}
       {showModal && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
