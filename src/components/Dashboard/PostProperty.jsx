@@ -192,7 +192,7 @@ const PostProperty = () => {
           owner_name: formData.owner_name || "",
           owner_phone: formData.owner_phone || "",
           photos: uploadedImageKeys, // Image files
-          videos: uploadedVideoKeys, // Video files
+          // videos: uploadedVideoKeys, // Video files
         };
         const response = await fetch(API_ENDPOINTS.PROPERTIES_DEALER, {
           method: "POST",
@@ -612,7 +612,7 @@ const PostProperty = () => {
           </div>
 
           {/* Video Upload */}
-          <div className="upload-section">
+          {/* <div className="upload-section">
             <h4>Property Videos</h4>
             <div
               className={`file-upload-area ${
@@ -686,7 +686,7 @@ const PostProperty = () => {
                 ))}
               </div>
             )}
-          </div>
+          {/* </div> */} 
         </div>
 
         {/* Submit Button */}
