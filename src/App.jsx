@@ -5,6 +5,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PropertyDetails from "./pages/PropertyDetails";
+import PropertyPreview from "./pages/PropertyPreview";
 import SearchByLocation from "./pages/SearchByLocation";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           }
         />
         <Route path="/property/:id" element={<PropertyDetails />} />
+        <Route path="/preview/:id" element={<PropertyPreview />} />
       </Routes>
     </Router>
   );
