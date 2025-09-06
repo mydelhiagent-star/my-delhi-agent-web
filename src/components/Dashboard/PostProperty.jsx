@@ -105,10 +105,23 @@ const PostProperty = () => {
     if (!formData.max_price) newErrors.max_price = "Maximum price is required"
     if (!formData.property_type) newErrors.property_type = "Property type is required"
     if (!formData.nearest_landmark) newErrors.nearest_landmark = "Nearest landmark is required"
+
+    if (!formData.bedrooms) newErrors.bedrooms = "Bedrooms is required"
+    if (!formData.bathrooms) newErrors.bathrooms = "Bathrooms is required"
+    if (!formData.area) newErrors.area = "Area is required"
+    if (!formData.owner_name.trim()) newErrors.owner_name = "Owner name is required"
+    if (!formData.owner_phone) newErrors.owner_phone = "Owner phone is required"
     
     // Validate price range
     if (formData.min_price && formData.max_price && parseInt(formData.min_price) > parseInt(formData.max_price)) {
       newErrors.max_price = "Maximum price must be greater than minimum price"
+    }
+
+    if (formData.owner_phone) {
+      const phoneRegex = /^[6-9]\d{9}$/
+      if (!phoneRegex.test(formData.owner_phone.replace(/\D/g, ''))) {
+        newErrors.owner_phone = "Please enter a valid 10-digit phone number"
+      }
     }
     
     setErrors(newErrors)
@@ -299,7 +312,7 @@ const PostProperty = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="bedrooms">Bedrooms</label>
+                <label htmlFor="bedrooms">Bedrooms *</label>
                 <input
                   type="number"
                   id="bedrooms"
@@ -308,11 +321,14 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   placeholder="0"
                   min="0"
+                  className={errors.bedrooms ? "error" : ""}
+                  required
                 />
+                {errors.bedrooms && <span className="error-message">{errors.bedrooms}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="bathrooms">Bathrooms</label>
+                <label htmlFor="bathrooms">Bathrooms *</label>
                 <input
                   type="number"
                   id="bathrooms"
@@ -322,11 +338,14 @@ const PostProperty = () => {
                   placeholder="0"
                   min="0"
                   step="0.5"
+                  required
+                  className={errors.bathrooms ? "error" : ""}
                 />
+                {errors.bathrooms && <span className="error-message">{errors.bathrooms}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="area">Area (sq ft)</label>
+                <label htmlFor="area">Area (sq ft) *</label>
                 <input
                   type="number"
                   id="area"
@@ -335,7 +354,10 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   placeholder="0"
                   min="0"
+                  required
+                  className={errors.area ? "error" : ""}
                 />
+                {errors.area && <span className="error-message">{errors.area}</span>}
               </div>
             </div>
           </div>
@@ -346,7 +368,7 @@ const PostProperty = () => {
 
             <div className="form-row two-columns">
               <div className="form-group">
-                <label htmlFor="owner_name">Owner Name</label>
+                <label htmlFor="owner_name">Owner Name *</label>
                 <input
                   type="text"
                   id="owner_name"
@@ -355,12 +377,13 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   className={errors.owner_name ? "error" : ""}
                   placeholder="Enter owner's name"
+                  required
                 />
                 {errors.owner_name && <span className="error-message">{errors.owner_name}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="owner_phone">Owner Phone</label>
+                <label htmlFor="owner_phone">Owner Phone *</label>
                 <input
                   type="tel"
                   id="owner_phone"
@@ -369,6 +392,7 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   className={errors.owner_phone ? "error" : ""}
                   placeholder="Enter owner's phone number"
+                  required
                 />
                 {errors.owner_phone && <span className="error-message">{errors.owner_phone}</span>}
               </div>
