@@ -15,6 +15,7 @@ export default function LoginForm() {
   };
 
   const handleSubmit = async (e) => {
+    console.log("Login form submitted");
     e.preventDefault();
 
     const { phone, password } = formData;
@@ -40,17 +41,17 @@ export default function LoginForm() {
 
       const result = await response.json();
 
-      if (!response.ok) {
-        alert(result.error || "Login failed");
+      if (!result.success) {
+        alert(result.message || "Login failed");
         return;
       }
 
       console.log("Login successful:", result);
 
       // Save token and optionally redirect
-      localStorage.setItem("token", result.token);
-      alert("Login successful!");
-      // window.location.href = "/dashboard"; // optional redirect
+      localStorage.setItem("token", result.data.token);
+    
+      window.location.href = "/dashboard"; // optional redirect
     } catch (error) {
       console.error("Unexpected error:", error);
       alert("Something went wrong. Please try again.");

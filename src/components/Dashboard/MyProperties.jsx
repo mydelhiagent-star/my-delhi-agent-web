@@ -1,148 +1,11 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import "./MyProperties.css"
+import { API_ENDPOINTS } from "../../config/api"
 
 const MyProperties = () => {
-  const [properties] = useState([
-    {
-      id: 1,
-      title: "Modern Downtown Apartment",
-      description: "A stunning modern apartment in the heart of downtown with panoramic city views and premium amenities. Features floor-to-ceiling windows, marble countertops, and smart home technology throughout.",
-      address: "123 Main St, Downtown",
-      nearest_landmark: "Metro Station - 5 mins walk",
-      min_price: 400000,
-      max_price: 500000,
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 1200,
-      property_type: "apartment",
-      owner_name: "John Smith",
-      owner_phone: "+1-555-0123",
-      status: "active",
-      images: [
-        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
-      ],
-      videos: [
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-      ],
-      clients: ["John Doe", "Jane Smith", "Mike Wilson"],
-      created_at: "2024-01-15",
-    },
-    {
-      id: 2,
-      title: "Luxury Family Home",
-      description: "Spacious family home with large backyard, modern kitchen, and multiple bedrooms perfect for growing families. Features a gourmet kitchen, master suite with walk-in closet, and a finished basement.",
-      address: "456 Oak Ave, Suburbs",
-      nearest_landmark: "Central Park - 10 mins drive",
-      min_price: 700000,
-      max_price: 800000,
-      bedrooms: 4,
-      bathrooms: 3,
-      area: 2500,
-      property_type: "house",
-      owner_name: "Sarah Johnson",
-      owner_phone: "+1-555-0456",
-      status: "pending",
-      images: [
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop"
-      ],
-      videos: [
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-      ],
-      clients: ["Mike Johnson", "Sarah Davis"],
-      created_at: "2024-01-20",
-    },
-    {
-      id: 3,
-      title: "Cozy Studio Apartment",
-      description: "Perfect starter apartment with modern amenities and great location for young professionals. Features an open-concept layout, built-in storage, and access to building amenities.",
-      address: "789 Pine St, Midtown",
-      nearest_landmark: "Shopping Mall - 3 mins walk",
-      min_price: 250000,
-      max_price: 300000,
-      bedrooms: 1,
-      bathrooms: 1,
-      area: 600,
-      property_type: "studio",
-      owner_name: "David Wilson",
-      owner_phone: "+1-555-0789",
-      status: "active",
-      images: [
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
-      ],
-      videos: [
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
-      ],
-      clients: ["Emma Brown"],
-      created_at: "2024-01-25",
-    },
-    {
-      id: 4,
-      title: "Penthouse with City Views",
-      description: "Exclusive penthouse offering breathtaking city views from every room. Features a private rooftop terrace, premium finishes, and concierge service.",
-      address: "1000 Sky Tower, Financial District",
-      nearest_landmark: "Business District - 2 mins walk",
-      min_price: 1200000,
-      max_price: 1500000,
-      bedrooms: 3,
-      bathrooms: 3,
-      area: 2000,
-      property_type: "penthouse",
-      owner_name: "Robert Chen",
-      owner_phone: "+1-555-0999",
-      status: "active",
-      images: [
-        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1616486338812-3dadae4b4ce1?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1618221195710-dd6b41faaea8?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1616486338812-3dadae4b4ce1?w=800&h=600&fit=crop"
-      ],
-      videos: [
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
-      ],
-      clients: ["Alex Thompson", "Lisa Wang", "James Rodriguez"],
-      created_at: "2024-02-01",
-    },
-    {
-      id: 5,
-      title: "Historic Brownstone",
-      description: "Beautifully restored historic brownstone with original architectural details and modern updates. Features hardwood floors, high ceilings, and a private garden.",
-      address: "555 Heritage Lane, Historic District",
-      nearest_landmark: "Museum District - 5 mins walk",
-      min_price: 850000,
-      max_price: 950000,
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 1800,
-      property_type: "townhouse",
-      owner_name: "Margaret O'Connor",
-      owner_phone: "+1-555-0777",
-      status: "sold",
-      images: [
-        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop"
-      ],
-      videos: [
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
-      ],
-      clients: ["Tom Anderson"],
-      created_at: "2024-01-10",
-    }
-  ])
-
+  const [properties, setProperties] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [viewMode, setViewMode] = useState("grid") // "grid" or "list"
   const [showPreviewModal, setShowPreviewModal] = useState(false)
@@ -156,6 +19,41 @@ const MyProperties = () => {
   const [showDescription, setShowDescription] = useState(false)
   const [showSpecifications, setShowSpecifications] = useState(false)
   const [showClients, setShowClients] = useState(false)
+
+  useEffect(() => {
+    fetchProperties()
+  }, [])
+  
+  const fetchProperties = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.PROPERTIES, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json"
+        }
+      })
+  
+      const result = await response.json()
+      
+      if (result.success) {
+        const processedProperties = result.data.map(property => ({
+          ...property,
+          images: property.images || [],
+          videos: property.videos || [],
+          clients: property.clients || [],
+          created_at: property.created_at === "0001-01-01T00:00:00Z" ? new Date().toISOString() : property.created_at
+        }))
+        setProperties(processedProperties)
+      } else {
+        console.error("Failed to fetch properties:", result.message)
+        setProperties([])
+      }
+    } catch (error) {
+      console.error("Error fetching properties:", error)
+      setProperties([])
+    }
+  }
   
   // Filtered properties based on search
   const filteredProperties = useMemo(() => {
@@ -388,9 +286,9 @@ const MyProperties = () => {
               )}
               
               {/* Status chip */}
-                <div className={`status-chip ${getStatusColor(property.status)}`}>
+                {/* <div className={`status-chip ${getStatusColor(property.status)}`}>
                   {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
-              </div>
+              </div> */}
             </div>
 
             {/* Property Info */}

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import "./PostProperty.css"
+import { API_ENDPOINTS } from "../../config/api"
 
 const PostProperty = () => {
   const [formData, setFormData] = useState({
@@ -93,7 +94,7 @@ const PostProperty = () => {
     setVideoFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault()
     
     // Validate required fields
@@ -133,6 +134,36 @@ const PostProperty = () => {
       
       console.log("Form submitted:", propertyData, { imageFiles, videoFiles })
       // TODO: Implement API submission logic here
+      try {
+        const response = await fetch(API_ENDPOINTS.PROPERTIES_DEALER, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(propertyData),
+        })
+        const result = await response.json()
+        if (!result.success) {
+          alert(result.message || "Failed to post property")
+          return
+        }
+        alert(result.message || "Property posted successfully")
+        setFormData({
+          title: "",
+          description: "",
+          address: "",
+          min_price: "",
+          max_price: "",
+        })
+        setImageFiles([])
+        setVideoFiles([])
+        setErrors({})
+
+      } catch (error) {
+        console.error("Error submitting property:", error)
+        alert("Failed to post property. Please try again.")
+        setErrors({})
+      }
     }
   }
 

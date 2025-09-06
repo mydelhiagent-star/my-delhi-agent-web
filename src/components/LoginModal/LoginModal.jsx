@@ -28,6 +28,7 @@ export default function LoginModal({ isOpen, onClose }) {
   };
 
   const validateForm = () => {
+    console.log("Validating form");
     const newErrors = { phone: "", password: "", general: "" };
     let isValid = true;
 
@@ -69,15 +70,15 @@ export default function LoginModal({ isOpen, onClose }) {
 
       const result = await response.json();
 
-      if (!response.ok) {
+      if (!result.success) {
         // Handle specific error cases
-        if (result.error) {
-          if (result.error.toLowerCase().includes("phone")) {
-            setErrors(prev => ({ ...prev, phone: result.error }));
-          } else if (result.error.toLowerCase().includes("password")) {
-            setErrors(prev => ({ ...prev, password: result.error }));
+        if (result.message) {
+          if (result.message.toLowerCase().includes("phone")) {
+            setErrors(prev => ({ ...prev, phone: result.message }));
+          } else if (result.message.toLowerCase().includes("password")) {
+            setErrors(prev => ({ ...prev, password: result.message }));
           } else {
-            setErrors(prev => ({ ...prev, general: result.error }));
+            setErrors(prev => ({ ...prev, general: result.message }));
           }
         } else {
           setErrors(prev => ({ ...prev, general: "Login failed. Please try again." }));
@@ -89,7 +90,7 @@ export default function LoginModal({ isOpen, onClose }) {
       console.log("Login successful:", result);
       
       // Save token
-      localStorage.setItem("token", result.token);
+      localStorage.setItem("token", result.data.token);
       
       // Close modal and redirect to dashboard
       onClose();
@@ -151,12 +152,7 @@ export default function LoginModal({ isOpen, onClose }) {
               name="password"
               placeholder="Enter your password"
               value={formData.password}
-              onChange={(e) => {
-                setFormData({ ...formData, password: e.target.value });
-                if (errors.password) {
-                  setErrors(prev => ({ ...prev, password: "" }));
-                }
-              }}
+              onChange={handleChange}
               className={errors.password ? "mda-input-error" : ""}
               required
             />

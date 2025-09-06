@@ -19,17 +19,16 @@ export default function AdminLogin() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, password }).toString(),
       });
-
-      if (!res.ok) {
-        const err = await res.json();
-        setError(err.error || "Login failed");
+      const result = await res.json();
+      if (!result.success) {
+        setError(result.message || "Login failed");
         return;
       }
 
-      const data = await res.json();
-      localStorage.setItem("token", data.token); // save JWT
+      localStorage.setItem("token", result.data.token); // save JWT
       navigate("/admin/dashboard");
     } catch (err) {
+      console.error("Unexpected error:", err);
       setError("Something went wrong. Try again!");
     }
   };
