@@ -39,7 +39,7 @@ const MyProperties = () => {
       if (result.success) {
         const processedProperties = result.data.map(property => ({
           ...property,
-          images: property.images || [],
+          images: property.photos || [],
           videos: property.videos || [],
           clients: property.clients || [],
           created_at: property.created_at === "0001-01-01T00:00:00Z" ? new Date().toISOString() : property.created_at
