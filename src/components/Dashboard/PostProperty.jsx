@@ -111,12 +111,25 @@ const PostProperty = () => {
     if (!formData.area) newErrors.area = "Area is required"
     if (!formData.owner_name.trim()) newErrors.owner_name = "Owner name is required"
     if (!formData.owner_phone) newErrors.owner_phone = "Owner phone is required"
-    
-    // Validate price range
+
+    if (formData.min_price && parseInt(formData.min_price) <= 0) {
+      newErrors.min_price = "Minimum price must be greater than 0"
+    }
+    if (formData.max_price && parseInt(formData.max_price) <= 0) {
+      newErrors.max_price = "Maximum price must be greater than 0"
+    }
     if (formData.min_price && formData.max_price && parseInt(formData.min_price) > parseInt(formData.max_price)) {
       newErrors.max_price = "Maximum price must be greater than minimum price"
     }
-
+    if (formData.bedrooms && parseInt(formData.bedrooms) <= 0) {
+      newErrors.bedrooms = "Bedrooms must be greater than 0"
+    }
+    if (formData.bathrooms && parseInt(formData.bathrooms) <= 0) {
+      newErrors.bathrooms = "Bathrooms must be greater than 0"
+    }
+    if (formData.area && parseInt(formData.area) <= 0) {
+      newErrors.area = "Area must be greater than 0"
+    }
     if (formData.owner_phone) {
       const phoneRegex = /^[6-9]\d{9}$/
       if (!phoneRegex.test(formData.owner_phone.replace(/\D/g, ''))) {
