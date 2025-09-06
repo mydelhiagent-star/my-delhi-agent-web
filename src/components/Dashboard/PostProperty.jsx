@@ -254,7 +254,7 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   className={errors.min_price ? "error" : ""}
                   placeholder="0"
-                 
+                  min="0"
                   step="1"
                   required
                 />
@@ -271,7 +271,7 @@ const PostProperty = () => {
                   onChange={handleInputChange}
                   className={errors.max_price ? "error" : ""}
                   placeholder="0"
-            
+                  min="0"
                   step="1"
                   required
                 />
@@ -347,7 +347,7 @@ const PostProperty = () => {
                   value={formData.bedrooms}
                   onChange={handleInputChange}
                   placeholder="0"
-                 
+                  min="0"
                   step="1"
                   className={errors.bedrooms ? "error" : ""}
                   required
@@ -364,7 +364,7 @@ const PostProperty = () => {
                   value={formData.bathrooms}
                   onChange={handleInputChange}
                   placeholder="0"
-                 
+                  min="0"
                   step="1"
                   required
                   className={errors.bathrooms ? "error" : ""}
