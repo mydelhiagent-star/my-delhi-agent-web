@@ -115,11 +115,11 @@ const PostProperty = () => {
     if (formData.min_price && parseInt(formData.min_price) <= 0) {
       newErrors.min_price = "Minimum price must be greater than 0"
     }
+    if (formData.min_price && formData.max_price && parseInt(formData.min_price) > parseInt(formData.max_price) ) {
+      newErrors.max_price = "Maximum price must be greater than minimum price"
+    }
     if (formData.max_price && parseInt(formData.max_price) <= 0) {
       newErrors.max_price = "Maximum price must be greater than 0"
-    }
-    if (formData.min_price && formData.max_price && parseInt(formData.min_price) > parseInt(formData.max_price)) {
-      newErrors.max_price = "Maximum price must be greater than minimum price"
     }
     if (formData.bedrooms && parseInt(formData.bedrooms) <= 0) {
       newErrors.bedrooms = "Bedrooms must be greater than 0"
