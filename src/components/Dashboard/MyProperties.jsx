@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import "./MyProperties.css";
 import { API_ENDPOINTS } from "../../config/api";
+import AddClientModal from "./AddClientModal";
 
 const MyProperties = () => {
   const [properties, setProperties] = useState([]);
@@ -22,6 +23,9 @@ const MyProperties = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Add Client Modal State
+  const [showAddClientModal, setShowAddClientModal] = useState(false);
 
   useEffect(() => {
     fetchProperties(currentPage);
@@ -80,9 +84,9 @@ const MyProperties = () => {
       } else {
         console.error("Failed to fetch properties:", result.message);
       }
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-    } finally {
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
       setIsLoading(false);
     }
   };
@@ -186,8 +190,7 @@ const MyProperties = () => {
   const handleAddClient = (property, e) => {
     e.stopPropagation();
     setSelectedProperty(property);
-    setModalType("addClient");
-    setShowModal(true);
+    setShowAddClientModal(true);
   };
 
   const handleViewClients = (property, e) => {
@@ -195,6 +198,21 @@ const MyProperties = () => {
     setSelectedProperty(property);
     setModalType("viewClients");
     setShowModal(true);
+  };
+
+  // Add Client Handler
+  const handleAddClientSubmit = async (clientData) => {
+    try {
+      // Here you would make an API call to add the client
+      // For now, we'll just show a success message
+      alert(`Client ${clientData.name} added successfully!`);
+      
+      // Close modal
+      setShowAddClientModal(false);
+    } catch (error) {
+      console.error("Error adding client:", error);
+      alert("Failed to add client. Please try again.");
+    }
   };
 
   const handlePreview = (property, e) => {
@@ -364,8 +382,8 @@ const MyProperties = () => {
               <line x1="3" y1="18" x2="3.01" y2="18" />
             </svg>
           </button>
-        </div>
-      </div>
+              </div>
+            </div>
 
       {/* Properties Grid/List */}
       <div className={`properties-container ${viewMode}`}>
@@ -478,7 +496,7 @@ const MyProperties = () => {
                 </svg>
               </button>
 
-              <button
+            <button
                 className="action-btn add-client"
                 onClick={(e) => handleAddClient(property, e)}
               >
@@ -495,9 +513,9 @@ const MyProperties = () => {
                   <line x1="19" y1="8" x2="19" y2="14" />
                   <line x1="22" y1="11" x2="16" y2="11" />
                 </svg>
-              </button>
-
-              <button
+            </button>
+            
+            <button
                 className="action-btn view-clients"
                 onClick={(e) => handleViewClients(property, e)}
               >
@@ -533,7 +551,7 @@ const MyProperties = () => {
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-              </button>
+            </button>
             </div>
           </div>
         ))}
@@ -626,7 +644,7 @@ const MyProperties = () => {
 
                 {/* Page Numbers */}
                 {getPageNumbers().map((page) => (
-                  <button
+                      <button
                     key={page}
                     className={`pagination-number ${
                       currentPage === page ? "active" : ""
@@ -635,7 +653,7 @@ const MyProperties = () => {
                     disabled={isLoading}
                   >
                     {page}
-                  </button>
+                      </button>
                 ))}
 
                 {/* Last Page */}
@@ -653,10 +671,10 @@ const MyProperties = () => {
                     </button>
                   </>
                 )}
-              </div>
+            </div>
 
               {/* Next Button */}
-              <button
+                      <button
                 className={`pagination-btn next-btn ${
                   currentPage === totalPages ? "disabled" : ""
                 }`}
@@ -675,9 +693,9 @@ const MyProperties = () => {
                 >
                   <polyline points="9,18 15,12 9,6" />
                 </svg>
-              </button>
-            </div>
-          </div>
+                      </button>
+                    </div>
+              </div>
         </div>
       )}
 
@@ -717,7 +735,7 @@ const MyProperties = () => {
                   {selectedProperty.images &&
                     selectedProperty.images.length > 1 && (
                       <>
-                        <button
+              <button
                           className="carousel-nav prev"
                           onClick={prevImage}
                           aria-label="Previous image"
@@ -732,8 +750,8 @@ const MyProperties = () => {
                           >
                             <polyline points="15,18 9,12 15,6" />
                           </svg>
-                        </button>
-                        <button
+              </button>
+              <button
                           className="carousel-nav next"
                           onClick={nextImage}
                           aria-label="Next image"
@@ -748,7 +766,7 @@ const MyProperties = () => {
                           >
                             <polyline points="9,18 15,12 9,6" />
                           </svg>
-                        </button>
+              </button>
                       </>
                     )}
 
@@ -785,7 +803,7 @@ const MyProperties = () => {
                           <polyline points="21,15 16,10 5,21" />
                         </svg>
                         <span>No Images Available</span>
-                      </div>
+            </div>
                     )}
                   </div>
 
@@ -795,8 +813,8 @@ const MyProperties = () => {
                       <div className="image-counter">
                         {currentImageIndex + 1} /{" "}
                         {selectedProperty.images.length}
-                      </div>
-                    )}
+        </div>
+      )}
 
                   {/* Video Indicator */}
                   {selectedProperty.videos &&
@@ -856,7 +874,7 @@ const MyProperties = () => {
                     <span>{showAddress ? "Hide" : "Show"} Address</span>
                   </button>
 
-                  <button
+              <button
                     className="action-btn owner-btn"
                     onClick={toggleOwnerInfo}
                   >
@@ -937,8 +955,8 @@ const MyProperties = () => {
                       {showClients ? "Hide" : "Show"} Clients (
                       {selectedProperty.clients.length})
                     </span>
-                  </button>
-                </div>
+              </button>
+            </div>
               </div>
 
               {/* Price Information (Collapsible) */}
@@ -1199,7 +1217,7 @@ const MyProperties = () => {
                             <span className="value">
                               {selectedProperty.area.toLocaleString()} sq ft
                             </span>
-                          </div>
+                </div>
                         </div>
                         <div className="spec-item">
                           <svg
@@ -1246,11 +1264,11 @@ const MyProperties = () => {
                             </span>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
               {/* Clients Information (Collapsible) */}
               {showClients && (
@@ -1335,7 +1353,7 @@ const MyProperties = () => {
                 </svg>
               </button>
             </div>
-
+            
             <div className="modal-content">
               {modalType === "delete" && (
                 <div className="delete-confirmation">
@@ -1357,51 +1375,59 @@ const MyProperties = () => {
                   {selectedProperty?.clients.length > 0 ? (
                     <div className="clients-table">
                       <table>
-                        <thead>
-                          <tr>
+                  <thead>
+                    <tr>
                             <th>Client Name</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                           {selectedProperty.clients.map((client, index) => (
                             <tr key={index}>
                               <td>{client}</td>
                               <td>
                                 <span className="client-status active">
                                   Active
-                                </span>
-                              </td>
-                              <td>
+                              </span>
+                        </td>
+                        <td>
                                 <button className="table-action-btn">
                                   Contact
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                              </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
                   ) : (
                     <p className="no-clients">
                       No clients assigned to this property yet.
                     </p>
                   )}
-                </div>
+                                  </div>
               )}
 
-              {(modalType === "edit" || modalType === "addClient") && (
+              {modalType === "edit" && (
                 <div className="form-placeholder">
                   <p>
-                    Form content would go here for {modalType} functionality.
+                    Form content would go here for edit functionality.
                   </p>
                 </div>
               )}
+
             </div>
           </div>
         </div>
       )}
+
+      {/* Add Client Modal */}
+      <AddClientModal
+        isOpen={showAddClientModal}
+        onClose={() => setShowAddClientModal(false)}
+        onSubmit={handleAddClientSubmit}
+      />
     </div>
   );
 };

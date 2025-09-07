@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -45,11 +47,11 @@ html {
   color: #ffffff;
 }
 
-Focus styles */
+/* Focus styles */
 /* *:focus {
-  /* outline: 2px solid #00bcd4; */
-  /* outline-offset: 2px; */
-/* } */
+  outline: 2px solid #00bcd4;
+  outline-offset: 2px;
+} */
 
 /* Button reset */
 button {
