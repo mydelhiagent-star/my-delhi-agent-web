@@ -41,14 +41,58 @@ const PostProperty = () => {
     }
   };
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files).filter((file) =>
-      file.type.startsWith("image/")
-    );
-    setImageFiles((prev) => [...prev, ...files]);
+  // Add these helper functions BEFORE handleImageUpload
+  const chunkArray = (array, chunkSize) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
   };
 
-  
+  const processImagesInBatches = async (files) => {
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+    const chunks = chunkArray(imageFiles, 3); // Process 3 images at a time
+    const results = [];
+
+    for (const chunk of chunks) {
+      const chunkResults = await Promise.all(
+        chunk.map((file) => compressImage(file, 0.9, 1600))
+      );
+      results.push(...chunkResults);
+    }
+
+    return results;
+  };
+
+  // Add this state (around line 28)
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
+
+  // Replace your handleImageUpload function
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+
+    // Check limit
+    if (imageFiles.length + files.length > 10) {
+      alert(
+        `You can only upload a maximum of 10 photos. You currently have ${imageFiles.length} photos and are trying to add ${files.length} more.`
+      );
+      return;
+    }
+
+    // Show processing indicator
+    setIsProcessingImages(true);
+
+    try {
+      const processedFiles = await processImagesInBatches(files);
+      setImageFiles((prev) => [...prev, ...processedFiles]);
+    } catch (error) {
+      console.error("Image processing failed:", error);
+      alert("Failed to process some images. Please try again.");
+    } finally {
+      setIsProcessingImages(false);
+    }
+  };
 
   const handleImageDragOver = (e) => {
     e.preventDefault();
@@ -69,13 +113,9 @@ const PostProperty = () => {
     setImageFiles((prev) => [...prev, ...files]);
   };
 
- 
-
   const removeImage = (index) => {
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
-
- 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,7 +177,6 @@ const PostProperty = () => {
       // Prepare data for API submission
       try {
         let uploadedImageKeys = [];
-        
 
         if (imageFiles.length > 0) {
           uploadedImageKeys = await uploadFilesToCloudflare(
@@ -146,7 +185,6 @@ const PostProperty = () => {
           );
         }
 
-        
         const propertyData = {
           title: formData.title,
           description: formData.description,
@@ -191,7 +229,7 @@ const PostProperty = () => {
           owner_phone: "",
         });
         setImageFiles([]);
-      
+
         setErrors({});
       } catch (error) {
         console.error("Error submitting property:", error);
@@ -216,10 +254,10 @@ const PostProperty = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       const img = new Image();
-  
+
       img.onload = () => {
         URL.revokeObjectURL(img.src); // Clean up
-  
+
         // Skip compression if image is small and already JPEG
         if (
           img.width <= maxWidth &&
@@ -229,13 +267,13 @@ const PostProperty = () => {
           resolve(file);
           return;
         }
-  
+
         const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
         canvas.width = img.width * ratio;
         canvas.height = img.height * ratio;
-  
+
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-  
+
         canvas.toBlob(
           (blob) => {
             const compressedFile = new File([blob], file.name, {
@@ -247,23 +285,22 @@ const PostProperty = () => {
           quality
         );
       };
-  
+
       img.onerror = () => {
         console.error("Failed to load image:", file.name);
         resolve(file); // Fallback
       };
-  
+
       img.src = URL.createObjectURL(file);
     });
   };
-  
 
   // Add this function after handleSubmit (around line 202)
   const uploadFilesToCloudflare = async (files) => {
     try {
       const optimizedFiles = await Promise.all(
         files.map(async (file) => {
-          if (file.type.startsWith('image/')) {
+          if (file.type.startsWith("image/")) {
             // Compress image before upload - 90% quality, max 1600px
             return await compressImage(file, 0.9, 1600);
           }
@@ -568,6 +605,12 @@ const PostProperty = () => {
           {/* Image Upload */}
           <div className="upload-section">
             <h4>Property Images</h4>
+            {isProcessingImages && (
+              <div className="processing-indicator">
+                <div className="spinner"></div>
+                <p>Processing images...</p>
+              </div>
+            )}
             <div
               className={`file-upload-area ${
                 isImageDragOver ? "drag-over" : ""
@@ -636,8 +679,6 @@ const PostProperty = () => {
               </div>
             )}
           </div>
-
-         
         </div>
 
         {/* Submit Button */}
