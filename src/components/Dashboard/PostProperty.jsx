@@ -137,7 +137,7 @@ const PostProperty = () => {
       // Prepare data for API submission
       try {
         let uploadedImageKeys = [];
-        let uploadedVideoKeys = [];
+        
 
         if (imageFiles.length > 0) {
           uploadedImageKeys = await uploadFilesToCloudflare(
