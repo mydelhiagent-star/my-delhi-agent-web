@@ -211,7 +211,7 @@ const PostProperty = () => {
   };
 
   // Add this function after handleSubmit (around line 202)
-  const uploadFilesToCloudflare = async (files, type) => {
+  const uploadFilesToCloudflare = async (files) => {
     try {
       // Step 1: Get presigned URLs
       const response = await fetch(API_ENDPOINTS.PRESIGNED_URLS, {
