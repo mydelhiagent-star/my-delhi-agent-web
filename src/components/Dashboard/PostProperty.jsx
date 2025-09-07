@@ -211,31 +211,52 @@ const PostProperty = () => {
   };
 
   // Add this function before uploadFilesToCloudflare (around line 244)
-const compressImage = (file, quality, maxWidth) => {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    
-    img.onload = () => {
-      // Only compress if image is larger than maxWidth
-      if (img.width <= maxWidth && img.height <= maxWidth) {
-        // No compression needed, return original
-        resolve(file);
-        return;
-      }
-      
-      const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-      canvas.width = img.width * ratio;
-      canvas.height = img.height * ratio;
-      
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(resolve, 'image/jpeg', quality);
-    };
-    
-    img.src = URL.createObjectURL(file);
-  });
-};
+  const compressImage = (file, quality = 0.9, maxWidth = 1600) => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+  
+      img.onload = () => {
+        URL.revokeObjectURL(img.src); // Clean up
+  
+        // Skip compression if image is small and already JPEG
+        if (
+          img.width <= maxWidth &&
+          img.height <= maxWidth &&
+          file.type === "image/jpeg"
+        ) {
+          resolve(file);
+          return;
+        }
+  
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+  
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  
+        canvas.toBlob(
+          (blob) => {
+            const compressedFile = new File([blob], file.name, {
+              type: "image/jpeg",
+            });
+            resolve(compressedFile);
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+  
+      img.onerror = () => {
+        console.error("Failed to load image:", file.name);
+        resolve(file); // Fallback
+      };
+  
+      img.src = URL.createObjectURL(file);
+    });
+  };
+  
 
   // Add this function after handleSubmit (around line 202)
   const uploadFilesToCloudflare = async (files) => {
