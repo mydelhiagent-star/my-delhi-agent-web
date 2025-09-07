@@ -32,7 +32,7 @@ const MyProperties = () => {
     try {
       // Request 21 items instead of 20 to check if there are more
       const response = await fetch(
-        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=21`,
+        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=12`,
         {
           method: "GET",
           headers: {
