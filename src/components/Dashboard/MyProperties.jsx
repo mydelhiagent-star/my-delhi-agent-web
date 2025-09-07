@@ -206,9 +206,35 @@ const MyProperties = () => {
   // Add Client Handler
   const handleAddClientSubmit = async (clientData) => {
     try {
-      // Here you would make an API call to add the client
-      // For now, we'll just show a success message
-      alert(`Client ${clientData.name} added successfully!`);
+      // Make API call to add client to the selected property
+      const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          property_id: selectedProperty.id,
+          dealer_id: selectedProperty.dealer_id,
+          name: clientData.name,
+          phone: clientData.phone,
+          notes: clientData.notes,
+
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        alert(result.message || "Failed to add client");
+        return;
+      }
+
+      // Show success message
+      alert("Client added successfully!");
+      
+      // Refresh the properties list to show updated client data
+      fetchProperties(currentPage);
       
       // Close modal
       setShowAddClientModal(false);
