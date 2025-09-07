@@ -316,7 +316,7 @@ const PostProperty = () => {
       const { presignedUrls } = result.data;
 
       // Step 2: Upload files to Cloudflare
-      const uploadPromises = optimizedFiles.map(async (file, index) => {
+      const uploadPromises = files.map(async (file, index) => {
         const { presignedUrl, fileKey } = presignedUrls[index];
 
         const uploadResponse = await fetch(presignedUrl, {
