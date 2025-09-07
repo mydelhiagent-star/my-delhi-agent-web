@@ -24,7 +24,6 @@ const PostProperty = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [videoFiles, setVideoFiles] = useState([]);
   const [isImageDragOver, setIsImageDragOver] = useState(false);
-  const [isVideoDragOver, setIsVideoDragOver] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
@@ -50,12 +49,7 @@ const PostProperty = () => {
     setImageFiles((prev) => [...prev, ...files]);
   };
 
-  const handleVideoUpload = (e) => {
-    const files = Array.from(e.target.files).filter((file) =>
-      file.type.startsWith("video/")
-    );
-    setVideoFiles((prev) => [...prev, ...files]);
-  };
+  
 
   const handleImageDragOver = (e) => {
     e.preventDefault();
@@ -76,32 +70,13 @@ const PostProperty = () => {
     setImageFiles((prev) => [...prev, ...files]);
   };
 
-  const handleVideoDragOver = (e) => {
-    e.preventDefault();
-    setIsVideoDragOver(true);
-  };
-
-  const handleVideoDragLeave = (e) => {
-    e.preventDefault();
-    setIsVideoDragOver(false);
-  };
-
-  const handleVideoDrop = (e) => {
-    e.preventDefault();
-    setIsVideoDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter((file) =>
-      file.type.startsWith("video/")
-    );
-    setVideoFiles((prev) => [...prev, ...files]);
-  };
+ 
 
   const removeImage = (index) => {
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const removeVideo = (index) => {
-    setVideoFiles((prev) => prev.filter((_, i) => i !== index));
-  };
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -172,12 +147,7 @@ const PostProperty = () => {
           );
         }
 
-        if (videoFiles.length > 0) {
-          uploadedVideoKeys = await uploadFilesToCloudflare(
-            videoFiles,
-            "video"
-          );
-        }
+        
         const propertyData = {
           title: formData.title,
           description: formData.description,
@@ -611,82 +581,7 @@ const PostProperty = () => {
             )}
           </div>
 
-          {/* Video Upload */}
-          {/* <div className="upload-section">
-            <h4>Property Videos</h4>
-            <div
-              className={`file-upload-area ${
-                isVideoDragOver ? "drag-over" : ""
-              }`}
-              onDragOver={handleVideoDragOver}
-              onDragLeave={handleVideoDragLeave}
-              onDrop={handleVideoDrop}
-            >
-              <div className="upload-content">
-                <svg
-                  width="48"
-                  height="48"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <polygon points="23,7 16,12 23,17 23,7" />
-                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                </svg>
-                <h4>Upload Property Videos</h4>
-                <p>Drag and drop video files here, or click to select</p>
-                <input
-                  type="file"
-                  multiple
-                  accept="video/*"
-                  onChange={handleVideoUpload}
-                  className="file-input"
-                />
-              </div>
-            </div>
-
-            {/* Video Preview Grid */}
-            {videoFiles.length > 0 && (
-              <div className="media-preview-grid">
-                {videoFiles.map((file, index) => (
-                  <div key={`vid-${index}`} className="media-preview-item">
-                    <div className="media-preview">
-                      <div className="video-preview">
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="remove-media-btn"
-                      onClick={() => removeVideo(index)}
-                      aria-label={`Remove ${file.name}`}
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                    <span className="file-name">{file.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          {/* </div> */} 
+         
         </div>
 
         {/* Submit Button */}
