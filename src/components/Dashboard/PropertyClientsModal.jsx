@@ -60,8 +60,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
         {/* Header */}
         <div className="flex items-center justify-between !p-4 border-b border-slate-700">
           <div>
-            <h2 className="text-xl font-bold text-white">Property Clients</h2>
-            <p className="text-sm text-slate-400 mt-1">{property?.title}</p>
+            <h2 className="text-xl font-bold text-white">{property?.title} Clients</h2>
           </div>
           <button
             onClick={handleClose}
@@ -78,9 +77,9 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
         <div className="!p-6">
           {/* Clients List */}
           <div>
-            <h3 className="text-lg font-semibold text-slate-200 mb-4">
+            {/* <h3 className="text-lg font-semibold text-slate-200 mb-4">
               Assigned Clients ({clients.length})
-            </h3>
+            </h3> */}
 
             {/* Loading State */}
             {isLoading ? (
