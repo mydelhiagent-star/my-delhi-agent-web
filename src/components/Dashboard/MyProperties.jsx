@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import "./MyProperties.css";
 import { API_ENDPOINTS } from "../../config/api";
 import AddClientModal from "./AddClientModal";
+import PropertyClientsModal from "./PropertyClientsModal";
 
 const MyProperties = () => {
   const [properties, setProperties] = useState([]);
@@ -26,6 +27,9 @@ const MyProperties = () => {
   
   // Add Client Modal State
   const [showAddClientModal, setShowAddClientModal] = useState(false);
+  
+  // Property Clients Modal State
+  const [showPropertyClientsModal, setShowPropertyClientsModal] = useState(false);
 
   useEffect(() => {
     fetchProperties(currentPage);
@@ -196,8 +200,7 @@ const MyProperties = () => {
   const handleViewClients = (property, e) => {
     e.stopPropagation();
     setSelectedProperty(property);
-    setModalType("viewClients");
-    setShowModal(true);
+    setShowPropertyClientsModal(true);
   };
 
   // Add Client Handler
@@ -1406,7 +1409,7 @@ const MyProperties = () => {
                       No clients assigned to this property yet.
                     </p>
                   )}
-                                  </div>
+            </div>
               )}
 
               {modalType === "edit" && (
@@ -1427,6 +1430,13 @@ const MyProperties = () => {
         isOpen={showAddClientModal}
         onClose={() => setShowAddClientModal(false)}
         onSubmit={handleAddClientSubmit}
+      />
+
+      {/* Property Clients Modal */}
+      <PropertyClientsModal
+        isOpen={showPropertyClientsModal}
+        onClose={() => setShowPropertyClientsModal(false)}
+        property={selectedProperty}
       />
     </div>
   );
