@@ -298,15 +298,6 @@ const PostProperty = () => {
   // Add this function after handleSubmit (around line 202)
   const uploadFilesToCloudflare = async (files) => {
     try {
-      const optimizedFiles = await Promise.all(
-        files.map(async (file) => {
-          if (file.type.startsWith("image/")) {
-            // Compress image before upload - 90% quality, max 1600px
-            return await compressImage(file, 0.9, 1600);
-          }
-          return file;
-        })
-      );
       // Step 1: Get presigned URLs
       const response = await fetch(API_ENDPOINTS.PRESIGNED_URLS, {
         method: "POST",
