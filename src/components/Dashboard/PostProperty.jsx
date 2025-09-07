@@ -210,9 +210,45 @@ const PostProperty = () => {
     }
   };
 
+  // Add this function before uploadFilesToCloudflare (around line 244)
+const compressImage = (file, quality, maxWidth) => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      // Only compress if image is larger than maxWidth
+      if (img.width <= maxWidth && img.height <= maxWidth) {
+        // No compression needed, return original
+        resolve(file);
+        return;
+      }
+      
+      const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(resolve, 'image/jpeg', quality);
+    };
+    
+    img.src = URL.createObjectURL(file);
+  });
+};
+
   // Add this function after handleSubmit (around line 202)
   const uploadFilesToCloudflare = async (files) => {
     try {
+      const optimizedFiles = await Promise.all(
+        files.map(async (file) => {
+          if (file.type.startsWith('image/')) {
+            // Compress image before upload - 90% quality, max 1600px
+            return await compressImage(file, 0.9, 1600);
+          }
+          return file;
+        })
+      );
       // Step 1: Get presigned URLs
       const response = await fetch(API_ENDPOINTS.PRESIGNED_URLS, {
         method: "POST",
@@ -231,7 +267,7 @@ const PostProperty = () => {
       const { presignedUrls } = result.data;
 
       // Step 2: Upload files to Cloudflare
-      const uploadPromises = files.map(async (file, index) => {
+      const uploadPromises = optimizedFiles.map(async (file, index) => {
         const { presignedUrl, fileKey } = presignedUrls[index];
 
         const uploadResponse = await fetch(presignedUrl, {
