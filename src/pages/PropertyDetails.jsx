@@ -110,7 +110,29 @@ export default function PropertyDetails() {
         >
           ← Back
         </button>
-        <h2 style={{ margin: 0 }}>{property.title}</h2>
+        <h2 style={{ margin: 0, flex: 1 }}>{property.title}</h2>
+        <button
+          onClick={() => window.open(`/preview/${property.id}`, '_blank', 'noopener,noreferrer')}
+          style={{
+            background: "rgba(59, 130, 246, 0.1)",
+            color: "#60a5fa",
+            border: "1px solid rgba(59, 130, 246, 0.2)",
+            padding: "8px 16px",
+            borderRadius: 10,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "14px",
+            fontWeight: "500",
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          Preview in New Tab
+        </button>
       </div>
 
       {/* Single-item wide media viewer */}

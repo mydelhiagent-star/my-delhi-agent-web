@@ -154,17 +154,22 @@ const MyProperties = () => {
   };
 
   // Handler functions
-  const handlePropertyClick = (property) => {
-    setSelectedProperty(property);
-    setCurrentImageIndex(0);
-    setShowPrice(false);
-    setShowAddress(false);
-    setShowOwnerInfo(false);
-    setShowDescription(false);
-    setShowSpecifications(false);
-    setShowClients(false);
-    setShowPreviewModal(true);
-  };
+  const handlePropertyClick = (property, e) => {
+    // Don't open preview modal if clicking on action buttons
+    if (e.target.closest('.property-actions')) {
+      return;
+    }
+    
+    setSelectedProperty(property)
+    setCurrentImageIndex(0)
+    setShowPrice(false)
+    setShowAddress(false)
+    setShowOwnerInfo(false)
+    setShowDescription(false)
+    setShowSpecifications(false)
+    setShowClients(false)
+    setShowPreviewModal(true)
+  }
 
   const handleEdit = (property, e) => {
     e.stopPropagation();
@@ -193,6 +198,13 @@ const MyProperties = () => {
     setModalType("viewClients");
     setShowModal(true);
   };
+
+  const handlePreview = (property, e) => {
+    e.stopPropagation()
+    // Open preview in new tab
+    const previewUrl = `/preview/${property.id}`
+    window.open(previewUrl, '_blank', 'noopener,noreferrer')
+  }
 
   const closeModal = () => {
     setShowModal(false);
@@ -363,7 +375,7 @@ const MyProperties = () => {
           <div
             key={property.id}
             className={`property-card ${viewMode}`}
-            onClick={() => handlePropertyClick(property)}
+            onClick={(e) => handlePropertyClick(property, e)}
           >
             {/* Property Media */}
             <div className="property-media">
@@ -505,7 +517,14 @@ const MyProperties = () => {
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
                 <span className="client-count">{property.clients.length}</span>
-              </button>
+                </button>
+
+              <button className="action-btn preview" onClick={(e) => handlePreview(property, e)} title="Preview in new tab">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
             </div>
           </div>
         ))}
