@@ -24,6 +24,7 @@ const PostProperty = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [isImageDragOver, setIsImageDragOver] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -213,7 +214,8 @@ const PostProperty = () => {
           alert(result.message || "Failed to post property");
           return;
         }
-        alert(result.message || "Property posted successfully");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
         setFormData({
           title: "",
           description: "",
@@ -342,6 +344,43 @@ const PostProperty = () => {
       throw error;
     }
   };
+
+  if (isSubmitting) {
+    return (
+      <div className="full-page-overlay">
+        <div className="loading-content">
+          <div className="modern-spinner">
+            <div className="spinner-circle"></div>
+          </div>
+          <h3>Posting Your Property</h3>
+          <p>Please wait while we upload your property details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (showSuccess) {
+    return (
+      <div className="full-page-overlay success-overlay">
+        <div className="success-content">
+          <div className="success-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="#10b981"/>
+              <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h2>Property Posted Successfully!</h2>
+          <p>Your property has been added to the listings.</p>
+          <button 
+            className="success-btn"
+            onClick={() => setShowSuccess(false)}
+          >
+            Post Another Property
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="post-property-container">
