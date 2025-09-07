@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./MyProperties.css";
 import { API_ENDPOINTS } from "../../config/api";
 import AddClientModal from "./AddClientModal";
 import PropertyClientsModal from "./PropertyClientsModal";
 
 const MyProperties = () => {
+  const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
@@ -179,9 +181,13 @@ const MyProperties = () => {
 
   const handleEdit = (property, e) => {
     e.stopPropagation();
-    setSelectedProperty(property);
-    setModalType("edit");
-    setShowModal(true);
+    // Navigate to PostProperty with edit data
+    navigate('/dashboard/post-property', {
+      state: {
+        isEditMode: true,
+        propertyData: property
+      }
+    });
   };
 
   const handleDelete = (property, e) => {

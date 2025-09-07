@@ -95,6 +95,10 @@
   overflow: hidden;
   font-size: 0.875rem;
   min-height: 48px; /* Larger tap target for mobile */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .tab-button::before {

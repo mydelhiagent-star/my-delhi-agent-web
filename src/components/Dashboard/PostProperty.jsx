@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./PostProperty.css";
 import { API_ENDPOINTS } from "../../config/api";
 
 const PostProperty = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Check if we're in edit mode
+  const isEditMode = location.state?.isEditMode || false;
+  const editPropertyData = location.state?.propertyData || null;
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -68,6 +75,41 @@ const PostProperty = () => {
 
   // Add this state (around line 28)
   const [isProcessingImages, setIsProcessingImages] = useState(false);
+
+  // Populate form data when in edit mode
+  useEffect(() => {
+    if (isEditMode && editPropertyData) {
+      setFormData({
+        title: editPropertyData.title || "",
+        description: editPropertyData.description || "",
+        address: editPropertyData.address || "",
+        min_price: editPropertyData.min_price?.toString() || "",
+        max_price: editPropertyData.max_price?.toString() || "",
+        nearest_landmark: editPropertyData.nearest_landmark || "",
+        area: editPropertyData.area?.toString() || "",
+        bedrooms: editPropertyData.bedrooms?.toString() || "",
+        bathrooms: editPropertyData.bathrooms?.toString() || "",
+        property_type: editPropertyData.property_type || "",
+        owner_name: editPropertyData.owner_name || "",
+        owner_phone: editPropertyData.owner_phone || "",
+      });
+
+      // Populate existing photos if available
+      if (editPropertyData.photos && editPropertyData.photos.length > 0) {
+        // Convert photo URLs to File objects for display
+        const existingPhotos = editPropertyData.photos.map((photoUrl, index) => {
+          // Create a mock File object for existing photos
+          const mockFile = new File([], `existing-photo-${index}.jpg`, {
+            type: 'image/jpeg',
+          });
+          // Add the URL as a property for display
+          mockFile.existingUrl = photoUrl;
+          return mockFile;
+        });
+        setImageFiles(existingPhotos);
+      }
+    }
+  }, [isEditMode, editPropertyData]);
 
   // Replace your handleImageUpload function
   const handleImageUpload = async (e) => {
@@ -180,10 +222,21 @@ const PostProperty = () => {
         let uploadedImageKeys = [];
 
         if (imageFiles.length > 0) {
-          uploadedImageKeys = await uploadFilesToCloudflare(
-            imageFiles,
-            "image"
-          );
+          // Separate existing photos from new uploads
+          const existingPhotos = imageFiles.filter(file => file.existingUrl);
+          const newPhotos = imageFiles.filter(file => !file.existingUrl);
+          
+          // Keep existing photo URLs
+          const existingPhotoKeys = existingPhotos.map(file => file.existingUrl);
+          
+          // Upload only new photos
+          let newPhotoKeys = [];
+          if (newPhotos.length > 0) {
+            newPhotoKeys = await uploadFilesToCloudflare(newPhotos);
+          }
+          
+          // Combine existing and new photo keys
+          uploadedImageKeys = [...existingPhotoKeys, ...newPhotoKeys];
         }
 
         const propertyData = {
@@ -202,8 +255,14 @@ const PostProperty = () => {
           photos: uploadedImageKeys, // Image files
           // videos: uploadedVideoKeys, // Video files
         };
-        const response = await fetch(API_ENDPOINTS.PROPERTIES_DEALER, {
-          method: "POST",
+        // Determine API endpoint and method based on edit mode
+        const apiEndpoint = isEditMode 
+          ? `${API_ENDPOINTS.PROPERTIES_DEALER}${editPropertyData.id}`
+          : API_ENDPOINTS.PROPERTIES_DEALER;
+        const method = isEditMode ? "PUT" : "POST";
+
+        const response = await fetch(apiEndpoint, {
+          method: method,
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -211,11 +270,15 @@ const PostProperty = () => {
         });
         const result = await response.json();
         if (!result.success) {
-          alert(result.message || "Failed to post property");
+          alert(result.message || `Failed to ${isEditMode ? 'update' : 'post'} property`);
           return;
         }
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
+        setTimeout(() => {
+          setShowSuccess(false);
+          // Navigate back to MyProperties after success
+          navigate('/dashboard/properties');
+        }, 3000);
         setFormData({
           title: "",
           description: "",
@@ -385,8 +448,8 @@ const PostProperty = () => {
   return (
     <div className="post-property-container">
       <div className="post-property-header">
-        <h2>Post New Property</h2>
-        <p>Add a new property to your portfolio</p>
+        <h2>{isEditMode ? 'Edit Property' : 'Post New Property'}</h2>
+        <p>{isEditMode ? 'Update your property details' : 'Add a new property to your portfolio'}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="post-property-form">
@@ -681,9 +744,14 @@ const PostProperty = () => {
                   <div key={`img-${index}`} className="media-preview-item">
                     <div className="media-preview">
                       <img
-                        src={URL.createObjectURL(file) || "/placeholder.svg"}
+                        src={file.existingUrl || URL.createObjectURL(file) || "/placeholder.svg"}
                         alt={`Image ${index + 1}`}
                       />
+                      {file.existingUrl && (
+                        <div className="existing-photo-badge">
+                          <span>Existing</span>
+                        </div>
+                      )}
                     </div>
                     <button
                       type="button"
@@ -753,7 +821,7 @@ const PostProperty = () => {
                   <polyline points="7,10 12,15 17,10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                Post Property
+                {isEditMode ? 'Update Property' : 'Post Property'}
               </>
             )}
           </button>
