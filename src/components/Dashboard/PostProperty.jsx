@@ -22,7 +22,6 @@ const PostProperty = () => {
 
   const [errors, setErrors] = useState({});
   const [imageFiles, setImageFiles] = useState([]);
-  const [videoFiles, setVideoFiles] = useState([]);
   const [isImageDragOver, setIsImageDragOver] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -192,7 +191,7 @@ const PostProperty = () => {
           owner_phone: "",
         });
         setImageFiles([]);
-        setVideoFiles([]);
+      
         setErrors({});
       } catch (error) {
         console.error("Error submitting property:", error);
