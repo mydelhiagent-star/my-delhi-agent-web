@@ -23,7 +23,6 @@ const MyProperties = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
- 
 
   useEffect(() => {
     fetchProperties(currentPage);
@@ -146,7 +145,7 @@ const MyProperties = () => {
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    
+
     // If searching, reset to page 1
     if (value) {
       setCurrentPage(1);
@@ -156,20 +155,20 @@ const MyProperties = () => {
   // Handler functions
   const handlePropertyClick = (property, e) => {
     // Don't open preview modal if clicking on action buttons
-    if (e.target.closest('.property-actions')) {
+    if (e.target.closest(".property-actions")) {
       return;
     }
-    
-    setSelectedProperty(property)
-    setCurrentImageIndex(0)
-    setShowPrice(false)
-    setShowAddress(false)
-    setShowOwnerInfo(false)
-    setShowDescription(false)
-    setShowSpecifications(false)
-    setShowClients(false)
-    setShowPreviewModal(true)
-  }
+
+    setSelectedProperty(property);
+    setCurrentImageIndex(0);
+    setShowPrice(false);
+    setShowAddress(false);
+    setShowOwnerInfo(false);
+    setShowDescription(false);
+    setShowSpecifications(false);
+    setShowClients(false);
+    setShowPreviewModal(true);
+  };
 
   const handleEdit = (property, e) => {
     e.stopPropagation();
@@ -200,11 +199,11 @@ const MyProperties = () => {
   };
 
   const handlePreview = (property, e) => {
-    e.stopPropagation()
+    e.stopPropagation();
     // Open preview in new tab
-    const previewUrl = `/preview/${property.id}`
-    window.open(previewUrl, '_blank', 'noopener,noreferrer')
-  }
+    const previewUrl = `/preview/${property.id}`;
+    window.open(previewUrl, "_blank", "noopener,noreferrer");
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -517,14 +516,25 @@ const MyProperties = () => {
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
                 <span className="client-count">{property.clients.length}</span>
-                </button>
+              </button>
 
-              <button className="action-btn preview" onClick={(e) => handlePreview(property, e)} title="Preview in new tab">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </button>
+              <button
+                className="action-btn preview"
+                onClick={(e) => handlePreview(property, e)}
+                title="Preview in new tab"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
             </div>
           </div>
         ))}
@@ -553,67 +563,121 @@ const MyProperties = () => {
 
       {/* Add the pagination code here - after line 358 */}
       {/* Pagination */}
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="pagination-container">
-          <div className="pagination-info">
-            <span>
-              Showing {(currentPage - 1) * 20 + 1} to{" "}
-              {Math.min(currentPage * 20, totalItems)} of {totalItems}{" "}
-              properties
-            </span>
-          </div>
-
-          <div className="pagination-controls">
-            <button
-              className="pagination-btn prev"
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1 || isLoading}
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="15,18 9,12 15,6" />
-              </svg>
-              Previous
-            </button>
-
-            <div className="pagination-numbers">
-              {getPageNumbers().map((page) => (
-                <button
-                  key={page}
-                  className={`pagination-number ${
-                    currentPage === page ? "active" : ""
-                  }`}
-                  onClick={() => handlePageChange(page)}
-                  disabled={isLoading}
-                >
-                  {page}
-                </button>
-              ))}
+        <div className="pagination-wrapper">
+          <div className="pagination-container">
+            {/* Pagination Info */}
+            <div className="pagination-info">
+              <span className="pagination-text">
+                Showing{" "}
+                <span className="font-semibold">
+                  {(currentPage - 1) * 3 + 1}
+                </span>{" "}
+                to{" "}
+                <span className="font-semibold">
+                  {Math.min(currentPage * 3, totalItems)}
+                </span>{" "}
+                of <span className="font-semibold">{totalItems}</span>{" "}
+                properties
+              </span>
             </div>
 
-            <button
-              className="pagination-btn next"
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages || isLoading}
-            >
-              Next
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+            {/* Pagination Controls */}
+            <div className="pagination-controls">
+              {/* Previous Button */}
+              <button
+                className={`pagination-btn prev-btn ${
+                  currentPage === 1 ? "disabled" : ""
+                }`}
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1 || isLoading}
+                aria-label="Previous page"
               >
-                <polyline points="9,18 15,12 9,6" />
-              </svg>
-            </button>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <polyline points="15,18 9,12 15,6" />
+                </svg>
+                <span>Previous</span>
+              </button>
+
+              {/* Page Numbers */}
+              <div className="pagination-numbers">
+                {/* First Page */}
+                {currentPage > 3 && (
+                  <>
+                    <button
+                      className="pagination-number"
+                      onClick={() => handlePageChange(1)}
+                      disabled={isLoading}
+                    >
+                      1
+                    </button>
+                    {currentPage > 4 && (
+                      <span className="pagination-ellipsis">...</span>
+                    )}
+                  </>
+                )}
+
+                {/* Page Numbers */}
+                {getPageNumbers().map((page) => (
+                  <button
+                    key={page}
+                    className={`pagination-number ${
+                      currentPage === page ? "active" : ""
+                    }`}
+                    onClick={() => handlePageChange(page)}
+                    disabled={isLoading}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                {/* Last Page */}
+                {currentPage < totalPages - 2 && (
+                  <>
+                    {currentPage < totalPages - 3 && (
+                      <span className="pagination-ellipsis">...</span>
+                    )}
+                    <button
+                      className="pagination-number"
+                      onClick={() => handlePageChange(totalPages)}
+                      disabled={isLoading}
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Next Button */}
+              <button
+                className={`pagination-btn next-btn ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages || isLoading}
+                aria-label="Next page"
+              >
+                <span>Next</span>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <polyline points="9,18 15,12 9,6" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       )}
