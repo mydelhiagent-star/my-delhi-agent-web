@@ -21,7 +21,6 @@ const MyProperties = () => {
   const [showClients, setShowClients] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -59,12 +58,12 @@ const MyProperties = () => {
 
         // Check if there are more pages
         const hasMorePages = processedProperties.length === 21;
-        const actualProperties = hasMorePages
-          ? processedProperties.slice(0, 20)
-          : processedProperties;
+        // const actualProperties = hasMorePages
+        //   ? processedProperties.slice(0, 20)
+        //   : processedProperties;
 
         // Update all properties
-        setProperties(actualProperties);
+        setProperties(processedProperties);
 
         // Set pagination info
         setCurrentPage(page);
@@ -77,7 +76,7 @@ const MyProperties = () => {
           setTotalPages(page);
         }
 
-        setTotalItems((page - 1) * 20 + actualProperties.length);
+        
       } else {
         console.error("Failed to fetch properties:", result.message);
       }
@@ -568,7 +567,7 @@ const MyProperties = () => {
         <div className="pagination-wrapper">
           <div className="pagination-container">
             {/* Pagination Info */}
-            <div className="pagination-info">
+            {/* <div className="pagination-info">
               <span className="pagination-text">
                 Showing{" "}
                 <span className="font-semibold">
@@ -581,7 +580,7 @@ const MyProperties = () => {
                 of <span className="font-semibold">{totalItems}</span>{" "}
                 properties
               </span>
-            </div>
+            </div> */}
 
             {/* Pagination Controls */}
             <div className="pagination-controls">
