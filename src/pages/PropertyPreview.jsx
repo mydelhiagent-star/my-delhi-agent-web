@@ -13,10 +13,10 @@ export default function PropertyPreview() {
   const [loading, setLoading] = useState(!preloaded);
   const [error, setError] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showDetails, setShowDetails] = useState(true);
-  const [showPrice, setShowPrice] = useState(true);
-  const [showAddress, setShowAddress] = useState(true);
-  const [showOwner, setShowOwner] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showPrice, setShowPrice] = useState(false);
+  const [showAddress, setShowAddress] = useState(false);
+  const [showOwner, setShowOwner] = useState(false);
 
   useEffect(() => {
     if (preloaded) {
