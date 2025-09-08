@@ -194,10 +194,10 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                   
                   {/* Client Rows */}
                   {clients.map((client, index) => (
-                    <div key={index} className={`!border-l !border-r !border-b !border-slate-600/30 !p-4 !grid !grid-cols-12 !gap-4 !transition-all !duration-200 hover:!bg-slate-700/30 ${
+                    <div key={index} className={`!border-l !border-r !border-b !border-slate-600/30 !p-4 !grid !grid-cols-12 !gap-4 !transition-all !duration-200 ${
                       client.status === 'marked' 
-                        ? '!bg-red-900/20 !border-red-500/30' 
-                        : '!bg-slate-700/20'
+                        ? '!bg-red-900/40 !border-red-500/60 !shadow-red-500/20 hover:!bg-red-900/50' 
+                        : '!bg-slate-700/20 hover:!bg-slate-700/30'
                     } ${index === clients.length - 1 ? '!rounded-b-xl' : ''}`}>
                       
                       {/* Name Column */}
@@ -225,7 +225,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                             const newStatus = e.target.value;
                             try {
                               const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${client.id}/status`, {
-                                method: 'PATCH',
+                                method: 'PUT',
                                 headers: {
                                   'Content-Type': 'application/json',
                                   'Authorization': `Bearer ${localStorage.getItem('token')}`,
