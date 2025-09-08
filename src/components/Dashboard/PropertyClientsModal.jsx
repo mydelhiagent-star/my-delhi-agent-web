@@ -1,20 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { API_ENDPOINTS } from "../../config/api";
+import AddClientModal from "./AddClientModal";
 
 const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const [clients, setClients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingClient, setEditingClient] = useState(null);
 
-  // Fetch clients when modal opens
-  useEffect(() => {
-    if (isOpen && property?.id) {
-      fetchPropertyClients();
-    }
-  }, [isOpen, property?.id]);
-
-  const fetchPropertyClients = async () => {
+  const fetchPropertyClients = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${property.id}`, {
@@ -38,11 +34,85 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [property?.id]);
+
+  // Fetch clients when modal opens
+  useEffect(() => {
+    if (isOpen && property?.id) {
+      fetchPropertyClients();
+    }
+  }, [isOpen, property?.id, fetchPropertyClients]);
 
   const handleClose = () => {
     setClients([]); // Reset clients when closing
     onClose();
+  };
+
+  const handleEditClient = (client) => {
+    setEditingClient(client);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteClient = async (client) => {
+    if (window.confirm(`Are you sure you want to delete ${client.name}?`)) {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${client.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        
+        if (response.ok) {
+          // Remove client from local state
+          setClients(prevClients => prevClients.filter(c => c.id !== client.id));
+          alert('Client deleted successfully');
+        } else {
+          alert('Failed to delete client');
+        }
+      } catch (error) {
+        console.error('Error deleting client:', error);
+        alert('Failed to delete client');
+      }
+    }
+  };
+
+  const handleEditClientSubmit = async (clientData) => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${editingClient.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          name: clientData.name,
+          phone: clientData.phone,
+          notes: clientData.notes,
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update client in local state
+        setClients(prevClients => 
+          prevClients.map(c => 
+            c.id === editingClient.id 
+              ? { ...c, name: clientData.name, phone: clientData.phone, notes: clientData.notes }
+              : c
+          )
+        );
+        alert('Client updated successfully');
+        setShowEditModal(false);
+        setEditingClient(null);
+      } else {
+        alert(result.message || 'Failed to update client');
+      }
+    } catch (error) {
+      console.error('Error updating client:', error);
+      alert('Failed to update client');
+    }
   };
 
   if (!isOpen) return null;
@@ -91,13 +161,14 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
               /* Clients Display */
               clients.length > 0 ? (
                 <div className="overflow-x-auto">
-                  {/* Table Header */}
-                  <div className="!bg-slate-800/60 !border !border-slate-600/30 !rounded-t-xl !p-4 !grid !grid-cols-12 !gap-4 !text-slate-300 !font-semibold !text-sm">
-                    <div className="col-span-3">Name</div>
-                    <div className="col-span-3">Phone</div>
-                    <div className="col-span-4">Notes</div>
-                    <div className="col-span-2">Status</div>
-                  </div>
+                              {/* Table Header */}
+                              <div className="!bg-slate-800/60 !border !border-slate-600/30 !rounded-t-xl !p-4 !grid !grid-cols-12 !gap-4 !text-slate-300 !font-semibold !text-sm">
+                                <div className="col-span-3">Name</div>
+                                <div className="col-span-2">Phone</div>
+                                <div className="col-span-3">Notes</div>
+                                <div className="col-span-2">Status</div>
+                                <div className="col-span-2">Actions</div>
+                              </div>
                   
                   {/* Client Rows */}
                   {clients.map((client, index) => (
@@ -118,14 +189,14 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                       </div>
                       
                       {/* Phone Column */}
-                      <div className="col-span-3 !flex !items-center">
+                      <div className="col-span-2 !flex !items-center">
                         <span className="!text-slate-300 !text-sm">
                           {client.phone || 'No phone'}
                         </span>
                       </div>
                       
                       {/* Notes Column */}
-                      <div className="col-span-4 !flex !items-center">
+                      <div className="col-span-3 !flex !items-center">
                         <span className="!text-slate-400 !text-sm !italic">
                           {client.note || 'No notes'}
                         </span>
@@ -173,6 +244,24 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                           <option value="marked">Marked</option>
                         </select>
                       </div>
+                      
+                      {/* Actions Column */}
+                      <div className="col-span-2 !flex !items-center !gap-2">
+                        <button
+                          onClick={() => handleEditClient(client)}
+                          className="!px-2 !py-1 !bg-blue-500 hover:!bg-blue-600 !text-white !text-xs !font-semibold !rounded !transition-all !duration-200"
+                          title="Edit client"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClient(client)}
+                          className="!px-2 !py-1 !bg-red-500 hover:!bg-red-600 !text-white !text-xs !font-semibold !rounded !transition-all !duration-200"
+                          title="Delete client"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -191,6 +280,22 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
           </div>
         </div>
       </div>
+
+      {/* Edit Client Modal */}
+      <AddClientModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingClient(null);
+        }}
+        onSubmit={handleEditClientSubmit}
+        initialData={editingClient ? {
+          name: editingClient.name,
+          phone: editingClient.phone,
+          notes: editingClient.notes
+        } : null}
+        title="Edit Client"
+      />
     </div>
   );
 };
