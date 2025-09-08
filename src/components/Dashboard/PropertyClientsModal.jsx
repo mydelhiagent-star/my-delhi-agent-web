@@ -86,6 +86,22 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
 
   const handleEditClientSubmit = async (clientData) => {
     try {
+      // Check if any data has changed
+      console.log('Editing Client:', editingClient);
+      console.log('Client Data:', clientData);
+      const hasChanges = 
+        editingClient.name !== clientData.name ||
+        editingClient.phone !== clientData.phone ||
+        editingClient.note !== clientData.notes; // Handle both 'notes' and 'note' fields
+        console.log('Has Changes:', hasChanges);
+
+      if (!hasChanges) {
+        alert('No changes detected. Nothing to update.');
+        setShowEditModal(false);
+        setEditingClient(null);
+        return;
+      }
+
       const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${editingClient.id}`, {
         method: 'PUT',
         headers: {
