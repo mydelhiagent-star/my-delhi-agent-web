@@ -389,9 +389,11 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                     </svg>
                     <span className="!text-slate-300 !font-semibold !text-sm">Notes</span>
                   </div>
-                  <p className="!text-white !text-base !leading-relaxed">
-                    {viewingClient.notes || viewingClient.note || 'No notes provided'}
-                  </p>
+                  <div className="!bg-slate-800/50 !rounded-lg !p-3 !max-h-32 !overflow-y-auto">
+                    <p className="!text-white !text-sm !leading-relaxed !break-words !whitespace-pre-wrap !word-wrap !overflow-wrap">
+                      {viewingClient.notes || viewingClient.note || 'No notes provided'}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Status */}
