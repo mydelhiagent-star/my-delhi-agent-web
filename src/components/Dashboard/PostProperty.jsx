@@ -157,6 +157,7 @@ const PostProperty = () => {
   };
 
   const removeImage = (index) => {
+    console.log('Removing image at index:', index);
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -758,6 +759,7 @@ const PostProperty = () => {
                       className="remove-media-btn"
                       onClick={() => removeImage(index)}
                       aria-label={`Remove ${file.name}`}
+                      title={`Remove ${file.existingUrl ? 'existing' : 'new'} image`}
                     >
                       <svg
                         width="16"
