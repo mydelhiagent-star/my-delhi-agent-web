@@ -318,14 +318,11 @@ const MyClients = () => {
                           <h6 className="property-title">
                             {property.title || 'Property'}
                           </h6>
-                          
-                          <div className="property-details">
-                            <div className="property-status">
+                          <div className="property-status">
                               <span className={`status-badge ${property.status}`}>
                                 {property.status}
                               </span>
                             </div>
-                            
                             {property.note && (
                               <div className="property-note">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -336,8 +333,9 @@ const MyClients = () => {
                                 </svg>
                                 <span>{property.note}</span>
                               </div>
-                            )}
-                          </div>
+                            )}  
+                          
+                          
                           
                           {/* <div className="property-actions">
                             <button className="btn-view-property">
