@@ -356,9 +356,9 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                   <h3 className="!text-white !font-bold !text-xl !mb-1">
                     {viewingClient.name || 'Unknown Client'}
                   </h3>
-                  <p className="!text-slate-400 !text-sm">
+                  {/* <p className="!text-slate-400 !text-sm">
                     Client ID: {viewingClient.id || 'N/A'}
-                  </p>
+                  </p> */}
                 </div>
               </div>
 
