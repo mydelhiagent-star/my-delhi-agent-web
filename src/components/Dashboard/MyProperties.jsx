@@ -12,7 +12,6 @@ const MyProperties = () => {
   const [properties, setProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const [selectedProperty, setSelectedProperty] = useState(null);
@@ -167,16 +166,7 @@ const MyProperties = () => {
     if (e.target.closest(".property-actions")) {
       return;
     }
-
-    setSelectedProperty(property);
-    setCurrentImageIndex(0);
-    setShowPrice(false);
-    setShowAddress(false);
-    setShowOwnerInfo(false);
-    setShowDescription(false);
-    setShowSpecifications(false);
-    setShowClients(false);
-    setShowPreviewModal(true);
+    // Preview modal removed - no action on property click
   };
 
   const handleEdit = (property, e) => {
@@ -219,7 +209,7 @@ const MyProperties = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
           property_id: selectedProperty.id,
           dealer_id: selectedProperty.dealer_id,
           name: clientData.name,
@@ -263,34 +253,7 @@ const MyProperties = () => {
     setModalType("");
   };
 
-  const closePreviewModal = () => {
-    setShowPreviewModal(false);
-    setSelectedProperty(null);
-    setCurrentImageIndex(0);
-    setShowPrice(false);
-    setShowAddress(false);
-    setShowOwnerInfo(false);
-    setShowDescription(false);
-    setShowSpecifications(false);
-    setShowClients(false);
-  };
 
-  // Image navigation functions
-  const nextImage = () => {
-    if (selectedProperty && selectedProperty.images) {
-      setCurrentImageIndex((prev) =>
-        prev === selectedProperty.images.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-
-  const prevImage = () => {
-    if (selectedProperty && selectedProperty.images) {
-      setCurrentImageIndex((prev) =>
-        prev === 0 ? selectedProperty.images.length - 1 : prev - 1
-      );
-    }
-  };
 
   const togglePrice = () => {
     setShowPrice(!showPrice);
