@@ -9,7 +9,7 @@ export default function PropertyPreview() {
   const location = useLocation();
   const preloaded = location.state && location.state.property ? location.state.property : null;
 
-  const [property, setProperty] = useState(preloaded);
+  const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(!preloaded);
   const [error, setError] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -25,91 +25,40 @@ export default function PropertyPreview() {
       return;
     }
 
-    // Use dummy data for testing
-    const dummyProperties = [
-      {
-        id: "1",
-        title: "Luxury 3BHK Apartment in Sector 62",
-        description: "Spacious and modern 3 bedroom apartment with premium amenities. Located in the heart of Noida with excellent connectivity to Delhi and other major areas. The apartment features a contemporary design with high-quality finishes and modern fixtures.",
-        address: "Sector 62, Noida, Uttar Pradesh 201301",
-        nearest_landmark: "DLF Mall of India",
-        price: 4500000,
-        property_type: "Apartment",
-        bedrooms: 3,
-        bathrooms: 2,
-        area: 1200,
-        status: "active",
-        owner_name: "Rajesh Kumar",
-        owner_phone: "+91 9876543210",
-        images: [
-          "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          "https://images.unsplash.com/photo-1560448204-5c3b3f3b3b3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-        ],
-        videos: [],
-        clients: ["John Doe", "Jane Smith", "Mike Johnson"],
-        created_at: new Date().toISOString()
-      },
-      {
-        id: "2",
-        title: "Modern 2BHK Villa in Greater Noida",
-        description: "Beautiful 2 bedroom villa with a private garden and modern amenities. Perfect for families looking for a peaceful environment with all modern conveniences.",
-        address: "Greater Noida West, Uttar Pradesh 201310",
-        nearest_landmark: "Gaur City Mall",
-        price: 3200000,
-        property_type: "Villa",
-        bedrooms: 2,
-        bathrooms: 2,
-        area: 900,
-        status: "pending",
-        owner_name: "Priya Sharma",
-        owner_phone: "+91 9876543211",
-        images: [
-          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-        ],
-        videos: [],
-        clients: ["Sarah Wilson"],
-        created_at: new Date().toISOString()
-      },
-      {
-        id: "3",
-        title: "Premium 4BHK Penthouse in Gurgaon",
-        description: "Luxurious 4 bedroom penthouse with panoramic city views. Features premium amenities including a private terrace, modern kitchen, and spacious living areas.",
-        address: "Sector 29, Gurgaon, Haryana 122001",
-        nearest_landmark: "Cyber City Metro Station",
-        price: 8500000,
-        property_type: "Penthouse",
-        bedrooms: 4,
-        bathrooms: 3,
-        area: 1800,
-        status: "sold",
-        owner_name: "Amit Patel",
-        owner_phone: "+91 9876543212",
-        images: [
-          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-        ],
-        videos: [],
-        clients: ["David Brown", "Lisa Davis"],
-        created_at: new Date().toISOString()
-      }
-    ];
+    // Fetch property data from API
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_ENDPOINTS.PROPERTIES}${id}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
 
-    // Find property by ID or use first one as default
-    const selectedProperty = dummyProperties.find(p => p.id === id) || dummyProperties[0];
-    
-    // Simulate loading delay
-    setTimeout(() => {
-      setProperty(selectedProperty);
-      setLoading(false);
-    }, 1000);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          setProperty(result.data);
+          console.log(result.data);
+        } else {
+          setError(result.message || 'Failed to fetch property details');
+        }
+      } catch (error) {
+        console.error('Error fetching property:', error);
+        setError('Failed to load property details. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
   }, [id, preloaded]);
 
   const mediaItems = useMemo(() => {
-    const photos = Array.isArray(property?.images) ? property.images.map((src) => ({ type: "image", src })) : [];
+    const photos = Array.isArray(property?.photos) ? property.photos.map((src) => ({ type: "image", src })) : [];
     const videos = Array.isArray(property?.videos) ? property.videos.map((src) => ({ type: "video", src })) : [];
     return [...photos, ...videos];
   }, [property]);
@@ -205,9 +154,9 @@ export default function PropertyPreview() {
             </div>
           </div>
           <div className="header-right">
-            <div className={`status-badge ${getStatusColor(property.status)}`}>
+            {/* <div className={`status-badge ${getStatusColor(property.status)}`}>
               {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
@@ -346,8 +295,17 @@ export default function PropertyPreview() {
               <h3>Price Information</h3>
               <div className="price-display">
                 <div className="price-main">
-                  <span className="price-value">{formatPrice(property.price)}</span>
-                  <span className="price-label">Total Price</span>
+                  <span className="price-value">
+                    {property.min_price && property.max_price 
+                      ? `${formatPrice(property.min_price)} - ${formatPrice(property.max_price)}`
+                      : property.min_price 
+                        ? formatPrice(property.min_price)
+                        : property.max_price 
+                          ? formatPrice(property.max_price)
+                          : 'Price not available'
+                    }
+                  </span>
+                  <span className="price-label">Price Range</span>
                 </div>
               </div>
             </div>
@@ -461,15 +419,12 @@ export default function PropertyPreview() {
                 <h3>Additional Information</h3>
                 <div className="additional-info">
                   <div className="info-item">
-                    <span className="label">Created</span>
+                    <span className="label">Posted On</span>
                     <span className="value">
                       {new Date(property.created_at).toLocaleDateString()}
                     </span>
                   </div>
-                  <div className="info-item">
-                    <span className="label">Property ID</span>
-                    <span className="value">{property.id}</span>
-                  </div>
+                  
                 </div>
               </div>
             </div>
