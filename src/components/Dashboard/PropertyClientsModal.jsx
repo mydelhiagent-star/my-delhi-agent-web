@@ -9,6 +9,8 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingClient, setViewingClient] = useState(null);
 
   const fetchPropertyClients = useCallback(async () => {
     setIsLoading(true);
@@ -46,6 +48,11 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const handleClose = () => {
     setClients([]); // Reset clients when closing
     onClose();
+  };
+
+  const handleViewClient = (client) => {
+    setViewingClient(client);
+    setShowViewModal(true);
   };
 
   const handleEditClient = (client) => {
@@ -163,10 +170,9 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                 <div className="overflow-x-auto">
                               {/* Table Header */}
                               <div className="!bg-slate-800/60 !border !border-slate-600/30 !rounded-t-xl !p-4 !grid !grid-cols-12 !gap-4 !text-slate-300 !font-semibold !text-sm">
-                                <div className="col-span-3">Name</div>
-                                <div className="col-span-2">Phone</div>
-                                <div className="col-span-3">Notes</div>
-                                <div className="col-span-2">Status</div>
+                                <div className="col-span-4">Name</div>
+                                <div className="col-span-3">Phone</div>
+                                <div className="col-span-3">Status</div>
                                 <div className="col-span-2">Actions</div>
                               </div>
                   
@@ -179,7 +185,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                     } ${index === clients.length - 1 ? '!rounded-b-xl' : ''}`}>
                       
                       {/* Name Column */}
-                      <div className="col-span-3 !flex !items-center">
+                      <div className="col-span-4 !flex !items-center">
                         <div className="!w-8 !h-8 !bg-gradient-to-br !from-cyan-500 !to-cyan-600 !rounded-full !flex !items-center !justify-center !text-white !font-semibold !text-xs !mr-3">
                           {client.name ? client.name.charAt(0).toUpperCase() : 'C'}
                         </div>
@@ -189,21 +195,14 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                       </div>
                       
                       {/* Phone Column */}
-                      <div className="col-span-2 !flex !items-center">
+                      <div className="col-span-3 !flex !items-center">
                         <span className="!text-slate-300 !text-sm">
                           {client.phone || 'No phone'}
                         </span>
                       </div>
                       
-                      {/* Notes Column */}
-                      <div className="col-span-3 !flex !items-center">
-                        <span className="!text-slate-400 !text-sm !italic">
-                          {client.note || 'No notes'}
-                        </span>
-                      </div>
-                      
                       {/* Status Column */}
-                      <div className="col-span-2 !flex !items-center">
+                      <div className="col-span-3 !flex !items-center">
                         <select
                           value={client.status || 'unmarked'}
                           onChange={async (e) => {
@@ -246,7 +245,17 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                       </div>
                       
                       {/* Actions Column */}
-                      <div className="col-span-2 !flex !items-center !justify-center !gap-3">
+                      <div className="col-span-2 !flex !items-center !justify-center !gap-2">
+                        <button
+                          onClick={() => handleViewClient(client)}
+                          className="!p-2 !bg-green-500 hover:!bg-green-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105"
+                          title="View client details"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </button>
                         <button
                           onClick={() => handleEditClient(client)}
                           className="!p-2 !bg-blue-500 hover:!bg-blue-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105"
@@ -304,6 +313,109 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
         } : null}
         title="Edit Client"
       />
+
+      {/* View Client Modal */}
+      {showViewModal && viewingClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => {
+              setShowViewModal(false);
+              setViewingClient(null);
+            }}
+          />
+          
+          {/* Modal */}
+          <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-in fade-in duration-300">
+            {/* Header */}
+            <div className="flex items-center justify-between !p-6 border-b border-slate-700">
+              <h2 className="text-xl font-bold text-white">Client Details</h2>
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  setViewingClient(null);
+                }}
+                className="text-slate-400 hover:text-white transition-colors duration-200 p-1 rounded-lg hover:bg-slate-700"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="!p-6">
+              {/* Client Avatar and Name */}
+              <div className="!flex !items-center !mb-6">
+                <div className="!w-16 !h-16 !bg-gradient-to-br !from-cyan-500 !to-cyan-600 !rounded-full !flex !items-center !justify-center !text-white !font-bold !text-2xl !mr-4">
+                  {viewingClient.name ? viewingClient.name.charAt(0).toUpperCase() : 'C'}
+                </div>
+                <div>
+                  <h3 className="!text-white !font-bold !text-xl !mb-1">
+                    {viewingClient.name || 'Unknown Client'}
+                  </h3>
+                  <p className="!text-slate-400 !text-sm">
+                    Client ID: {viewingClient.id || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Client Information */}
+              <div className="!space-y-4">
+                {/* Phone */}
+                <div className="!bg-slate-700/30 !rounded-xl !p-4">
+                  <div className="!flex !items-center !mb-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="!text-cyan-400 !mr-2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    <span className="!text-slate-300 !font-semibold !text-sm">Phone Number</span>
+                  </div>
+                  <p className="!text-white !text-lg !font-medium">
+                    {viewingClient.phone || 'No phone number provided'}
+                  </p>
+                </div>
+
+                {/* Notes */}
+                <div className="!bg-slate-700/30 !rounded-xl !p-4">
+                  <div className="!flex !items-center !mb-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="!text-cyan-400 !mr-2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14,2 14,8 20,8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                      <polyline points="10,9 9,9 8,9" />
+                    </svg>
+                    <span className="!text-slate-300 !font-semibold !text-sm">Notes</span>
+                  </div>
+                  <p className="!text-white !text-base !leading-relaxed">
+                    {viewingClient.notes || viewingClient.note || 'No notes provided'}
+                  </p>
+                </div>
+
+                {/* Status */}
+                <div className="!bg-slate-700/30 !rounded-xl !p-4">
+                  <div className="!flex !items-center !mb-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="!text-cyan-400 !mr-2">
+                      <path d="M9 12l2 2 4-4" />
+                      <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.91.37 4.15 1.02" />
+                    </svg>
+                    <span className="!text-slate-300 !font-semibold !text-sm">Status</span>
+                  </div>
+                  <div className={`!inline-flex !items-center !px-3 !py-1 !rounded-full !text-sm !font-semibold ${
+                    viewingClient.status === 'marked' 
+                      ? '!bg-red-500 !text-white' 
+                      : '!bg-green-500 !text-white'
+                  }`}>
+                    {viewingClient.status === 'marked' ? 'Marked' : 'Unmarked'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
