@@ -163,20 +163,10 @@ const MyProperties = () => {
 
   // Handler functions
   const handlePropertyClick = (property, e) => {
-    // Don't open preview modal if clicking on action buttons
-    if (e.target.closest(".property-actions")) {
-      return;
-    }
-
-    setSelectedProperty(property);
-    setCurrentImageIndex(0);
-    setShowPrice(false);
-    setShowAddress(false);
-    setShowOwnerInfo(false);
-    setShowDescription(false);
-    setShowSpecifications(false);
-    setShowClients(false);
-    setShowPreviewModal(true);
+    e.stopPropagation();
+    // Open preview in new tab
+    const previewUrl = `/preview/${property.id}`;
+    window.open(previewUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleEdit = (property, e) => {
