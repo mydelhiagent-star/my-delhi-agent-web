@@ -45,12 +45,15 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch clients");
+      const result = await response.json();
+
+      if (result.success) {
+        const leads = Array.isArray(result.data) ? result.data : [];
+        setPropertyClients(leads);
+      } else {
+        console.error("Failed to fetch clients:", result.message);
+        setPropertyClients([]);
       }
-      const data = await response.json();
-      const leads = Array.isArray(data.leads) ? data.leads : [];
-      setPropertyClients(leads);
     } catch (error) {
       console.error("Error fetching property clients:", error);
       setPropertyClients([]);
@@ -111,7 +114,9 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
           }),
         }
       );
-      if (response.ok) {
+      const result = await response.json();
+
+      if (result.success) {
         alert("Client status changed successfully");
         setPropertyClients((prevClients) =>
           prevClients.map((client) =>
@@ -134,7 +139,7 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
           closeClientModal()
         }
       } else {
-        alert("Failed to change client status");
+        alert(result.message || "Failed to change client status");
       }
     } catch (error) {
       console.error("Error changing client status:", error);
@@ -161,15 +166,15 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
           body: JSON.stringify(body),
         }
       );
-      if (response.ok) {
-        const result = await response.json();
+      const result = await response.json();
+
+      if (result.success) {
         alert(result.message || "Property added to client");
         setAddClientOpen((prev) => ({ ...prev, [pid]: false }));
         setInlinePhone((prev) => ({ ...prev, [pid]: "" }));
         setInlineNotFound((prev) => ({ ...prev, [pid]: false }));
       } else {
-        await response.json();
-        alert("Failed to add property to client");
+        alert(result.message || "Failed to add property to client");
       }
     } catch (err) {
       console.error("Attach property error:", err);
@@ -218,10 +223,11 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.leads && data.leads.length > 0) {
-          await attachPropertyToClient(data.leads[0], property);
+      const result = await response.json();
+
+      if (result.success) {
+        if (result.data && result.data.length > 0) {
+          await attachPropertyToClient(result.data[0], property);
         } else {
           setInlineNotFound((prev) => ({ ...prev, [pid]: true }));
         }

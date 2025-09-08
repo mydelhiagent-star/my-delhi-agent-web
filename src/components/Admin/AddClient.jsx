@@ -112,9 +112,10 @@ export default function AddClient() {
         body: JSON.stringify(leadData),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        alert(`Lead created successfully! Lead ID: ${result.lead_id}`);
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`Lead created successfully! Lead ID: ${result.data?.lead_id || result.data?.id || 'N/A'}`);
         
         // Reset form
         setFormData({
@@ -134,8 +135,7 @@ export default function AddClient() {
           fileInput.value = '';
         }
       } else {
-        const error = await response.json();
-        alert(`Error: ${error.error || "Failed to create lead"}`);
+        alert(`Error: ${result.message || "Failed to create lead"}`);
       }
     } catch (error) {
       console.error("Error creating lead:", error);

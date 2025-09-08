@@ -22,17 +22,21 @@ export default function DealersList() {
       const response = await fetch(`${API_ENDPOINTS.ADMIN_DEALERS}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) throw new Error("Failed to fetch dealers");
-      const data = await response.json();
-      const list = Array.isArray(data)
-        ? data
-        : Array.isArray(data.dealers)
-        ? data.dealers
-        : [];
-      setDealers(list);
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        const list = Array.isArray(result.data) ? result.data : [];
+        setDealers(list);
+      } else {
+        console.error("Failed to fetch dealers:", result.message);
+        setDealers([]);
+        alert(result.message || "Failed to fetch dealers");
+      }
     } catch (err) {
       console.error("Error fetching dealers:", err);
       setDealers([]);
+      alert("Failed to fetch dealers. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -66,9 +70,14 @@ export default function DealersList() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (!response.ok) throw new Error("Delete failed");
-      setDealers((prev) => prev.filter((d) => d.id !== dealer.id));
-      alert("Dealer deleted");
+      const result = await response.json();
+
+      if (result.success) {
+        setDealers((prev) => prev.filter((d) => d.id !== dealer.id));
+        alert("Dealer deleted successfully");
+      } else {
+        alert(result.message || "Failed to delete dealer");
+      }
     } catch (err) {
       console.error(err);
       alert("Failed to delete dealer");
@@ -104,12 +113,17 @@ export default function DealersList() {
           }),
         }
       );
-      if (!response.ok) throw new Error("Update failed");
-      setDealers((prev) =>
-        prev.map((d) => (d.id === editingDealer.id ? editingDealer : d))
-      );
-      setEditingDealer(null);
-      alert("Dealer updated");
+      const result = await response.json();
+
+      if (result.success) {
+        setDealers((prev) =>
+          prev.map((d) => (d.id === editingDealer.id ? editingDealer : d))
+        );
+        setEditingDealer(null);
+        alert("Dealer updated successfully");
+      } else {
+        alert(result.message || "Failed to update dealer");
+      }
     } catch (err) {
       console.error(err);
       alert("Failed to update dealer");
@@ -134,9 +148,14 @@ export default function DealersList() {
           body: JSON.stringify({ password: passwordDealer.newPassword }),
         }
       );
-      if (!response.ok) throw new Error("Password update failed");
-      setPasswordDealer(null);
-      alert("Password updated");
+      const result = await response.json();
+
+      if (result.success) {
+        setPasswordDealer(null);
+        alert("Password updated successfully");
+      } else {
+        alert(result.message || "Failed to update password");
+      }
     } catch (err) {
       console.error(err);
       alert("Failed to update password");

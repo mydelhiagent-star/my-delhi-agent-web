@@ -164,13 +164,13 @@ const MyClients = () => {
               </div>
             </div>
 
-            <div className="client-details">
+            {/* <div className="client-details">
               <div className="detail-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 <span>{client.phone}</span>
-              </div>
+              </div> */}
 
               {client.requirement && (
                 <div className="detail-item">
@@ -182,7 +182,7 @@ const MyClients = () => {
                 </div>
               )}
 
-              {client.aadhar_number && (
+              {/* {client.aadhar_number && (
                 <div className="detail-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -192,27 +192,12 @@ const MyClients = () => {
                   <span>Aadhar: {client.aadhar_number}</span>
                 </div>
               )}
-            </div>
+            </div> */}
 
-            <div className="client-properties">
+            {/* <div className="client-properties">
               <h4>Interested Properties ({client.properties?.length || 0})</h4>
-              <div className="properties-list">
-                {client.properties && client.properties.length > 0 ? (
-                  <>
-                    {client.properties.slice(0, 2).map((property, index) => (
-                      <div key={index} className="property-tag">
-                        Property ID: {property.property_id?.substring(0, 8)}...
-                      </div>
-                    ))}
-                    {client.properties.length > 2 && (
-                      <div className="property-tag more">+{client.properties.length - 2} more</div>
-                    )}
-                  </>
-                ) : (
-                  <div className="property-tag">No properties assigned</div>
-                )}
-              </div>
-            </div>
+             
+            </div> */}
               
               <div className="client-actions">
               <button className="action-btn primary" onClick={() => handleViewClient(client)}>
@@ -223,13 +208,13 @@ const MyClients = () => {
                   View Details
                 </button>
 
-              <button className="action-btn secondary">
+              {/* <button className="action-btn secondary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
                 </svg>
                 Contact
-              </button>
+              </button> */}
               </div>
             </div>
           ))}
@@ -268,25 +253,25 @@ const MyClients = () => {
             </div>
 
               <div className="client-detail-grid">
-                <div className="detail-section">
-                  <h5>Contact Information</h5>
-                  <div className="detail-list">
-                    <div className="detail-row">
+                {/* <div className="detail-section"> */}
+                  {/* <h5>Contact Information</h5> */}
+                  {/* <div className="detail-list"> */}
+                    {/* <div className="detail-row">
                       <span className="label">Phone:</span>
                       <span className="value">{selectedClient.phone}</span>
-                    </div>
-                    {selectedClient.aadhar_number && (
+                    </div> */}
+                    {/* {selectedClient.aadhar_number && (
                       <div className="detail-row">
                         <span className="label">Aadhar Number:</span>
                         <span className="value">{selectedClient.aadhar_number}</span>
                       </div>
-                    )}
-                    <div className="detail-row">
+                    )} */}
+                    {/* <div className="detail-row">
                       <span className="label">Client ID:</span>
                       <span className="value">{selectedClient.id}</span>
-                    </div>
-                  </div>
-                </div>
+                    </div> */}
+                  {/* </div> */}
+                {/* </div> */}
 
                 <div className="detail-section">
                   <h5>Client Information</h5>
@@ -307,45 +292,81 @@ const MyClients = () => {
 
               <div className="detail-section full-width">
                 <h5>Interested Properties</h5>
-                <div className="properties-table">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Property ID</th>
-                        <th>Status</th>
-                        <th>Note</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedClient.properties && selectedClient.properties.length > 0 ? (
-                        selectedClient.properties.map((property, index) => (
-                          <tr key={index}>
-                            <td>{property.property_id}</td>
-                            <td>
-                              <span className={`property-status ${property.status}`}>
+                <div className="properties-grid">
+                  {selectedClient.properties && selectedClient.properties.length > 0 ? (
+                    selectedClient.properties.map((property, index) => (
+                      <div key={index} className="property-card">
+                        <div className="property-image">
+                          {property.photos && property.photos.length > 0 ? (
+                            <img 
+                              src={property.photos[0]} 
+                              alt={property.title || 'Property'} 
+                              className="property-img"
+                            />
+                          ) : (
+                            <div className="no-image">
+                              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21,15 16,10 5,21"/>
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="property-content">
+                          <h6 className="property-title">
+                            {property.title || 'Property'}
+                          </h6>
+                          
+                          <div className="property-details">
+                            <div className="property-status">
+                              <span className={`status-badge ${property.status}`}>
                                 {property.status}
                               </span>
-                            </td>
-                            <td>{property.note || 'No notes'}</td>
-                            <td>
-                              <button className="table-action-btn">View Property</button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="4" style={{ textAlign: 'center', padding: '1rem' }}>
-                            No properties assigned
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                            </div>
+                            
+                            {property.note && (
+                              <div className="property-note">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                  <polyline points="14,2 14,8 20,8"/>
+                                  <line x1="16" y1="13" x2="8" y2="13"/>
+                                  <line x1="16" y1="17" x2="8" y2="17"/>
+                                </svg>
+                                <span>{property.note}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* <div className="property-actions">
+                            <button className="btn-view-property">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
+                              View Property
+                            </button>
+                          </div> */}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-properties">
+                      <div className="no-properties-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                          <polyline points="9,22 9,12 15,12 15,22"/>
+                        </svg>
+                      </div>
+                      <h4>No Properties Assigned</h4>
+                      <p>This client hasn't been assigned to any properties yet.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="modal-actions">
+              {/* <div className="modal-actions">
                 <button className="btn-primary">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -359,7 +380,7 @@ const MyClients = () => {
                   </svg>
                   Call Client
                 </button>
-                  </div>
+                  </div> */}
               </div>
           </div>
         </div>

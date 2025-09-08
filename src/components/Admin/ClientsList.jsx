@@ -68,15 +68,19 @@ export default function ClientsList() {
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch clients");
-      }
+      const result = await response.json();
 
-      const data = await response.json();
-      setClients(Array.isArray(data.leads) ? data.leads : []);
+      if (result.success) {
+        setClients(Array.isArray(result.data) ? result.data : []);
+      } else {
+        console.error("Failed to fetch clients:", result.message);
+        setClients([]);
+        alert(result.message || "Failed to fetch clients");
+      }
     } catch (error) {
       console.error("Error fetching clients:", error);
       setClients([]);
+      alert("Failed to fetch clients. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -152,14 +156,16 @@ export default function ClientsList() {
         body: JSON.stringify({ note: value, status: "ongoing" }),
       });
       
-      if (response.ok) {
+      const result = await response.json();
+
+      if (result.success) {
         setAdminNotes((prev) => ({ ...(prev || {}), [key]: value }));
       
-      // Keep draft in sync after save
-       setAdminNotesDraft((prev) => ({ ...(prev || {}), [key]: value }));
-       alert("Note saved successfully!");
+        // Keep draft in sync after save
+        setAdminNotesDraft((prev) => ({ ...(prev || {}), [key]: value }));
+        alert("Note saved successfully!");
       } else {
-        alert("Failed to save note to backend. Please try again.");
+        alert(result.message || "Failed to save note to backend. Please try again.");
       }
     } catch (error) {
       console.error("Error saving note:", error);
@@ -168,7 +174,7 @@ export default function ClientsList() {
   };
 
   const fetchClientProperties = async (id, status) => {
-    try{
+    try {
       setLoadingProperties(true);
       const token = localStorage.getItem("token");
       
@@ -183,24 +189,21 @@ export default function ClientsList() {
           Authorization: `Bearer ${token}`,
         },
       });
-      if(response.ok)
-      {
-        const data = await response.json();
-        data != null ? setClientProperties(data) : setClientProperties([]);
-      }
-      else
-      {
-        console.error("Error fetching client properties:", response.status);
+
+      const result = await response.json();
+
+      if (result.success) {
+        setClientProperties(Array.isArray(result.data) ? result.data : []);
+      } else {
+        console.error("Error fetching client properties:", result.message);
         setClientProperties([]);
+        alert(result.message || "Failed to fetch client properties");
       }
-    }
-    catch(error)
-    {
+    } catch (error) {
       console.error("Error fetching client properties:", error);
-      setLoadingProperties(false);
       setClientProperties([]);
-    }
-    finally{
+      alert("Failed to fetch client properties. Please try again.");
+    } finally {
       setLoadingProperties(false);
     }
   };
@@ -228,11 +231,13 @@ export default function ClientsList() {
           },
         });
 
-        if (response.ok) {
+        const result = await response.json();
+
+        if (result.success) {
           setClients(clients.filter(c => c.id !== clientId));
           alert("Client deleted successfully!");
         } else {
-          throw new Error("Failed to delete client");
+          alert(result.message || "Failed to delete client");
         }
       } catch (error) {
         console.error("Error deleting client:", error);

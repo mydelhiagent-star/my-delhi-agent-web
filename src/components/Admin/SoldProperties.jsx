@@ -24,12 +24,14 @@ export default function SoldProperties() {
       const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}properties-details?sold=true`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if(response.ok) {
-        const data = await response.json();
-        setSoldProperties(data || []);
-      }
-      else {
-        throw new Error("Failed to fetch sold properties");
+      const result = await response.json();
+
+      if (result.success) {
+        setSoldProperties(Array.isArray(result.data) ? result.data : []);
+      } else {
+        console.error("Failed to fetch sold properties:", result.message);
+        setSoldProperties([]);
+        alert(result.message || "Failed to fetch sold properties");
       }
     }
     catch(error) {
