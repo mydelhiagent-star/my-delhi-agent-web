@@ -127,7 +127,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                       {/* Notes Column */}
                       <div className="col-span-4 !flex !items-center">
                         <span className="!text-slate-400 !text-sm !italic">
-                          {client.notes || 'No notes'}
+                          {client.note || 'No notes'}
                         </span>
                       </div>
                       

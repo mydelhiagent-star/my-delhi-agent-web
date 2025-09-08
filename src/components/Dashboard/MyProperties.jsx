@@ -214,7 +214,7 @@ const MyProperties = () => {
           dealer_id: selectedProperty.dealer_id,
           name: clientData.name,
           phone: clientData.phone,
-          notes: clientData.notes,
+          note: clientData.notes,
 
         }),
       });
