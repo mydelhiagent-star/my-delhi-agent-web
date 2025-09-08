@@ -27,6 +27,7 @@ export const API_ENDPOINTS = {
   LEADS_ADMIN: `${API_BASE_URL}/leads/admin/`,
   LEADS_SEARCH: `${API_BASE_URL}/leads/search`,
   LEADS: `${API_BASE_URL}/leads/`,
+  LEADS_DEALER: `${API_BASE_URL}/leads/dealer/`,
 
   DEALER_CLIENTS: `${API_BASE_URL}/dealer-clients/`,
 

@@ -1,47 +1,46 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "./MyClients.css"
+import { API_ENDPOINTS } from "../../config/api"
 
 const MyClients = () => {
-  const [clients] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john.doe@email.com",
-      phone: "+1 (555) 123-4567",
-      status: "active",
-      properties: ["Modern Downtown Apartment"],
-      joinDate: "2024-01-15",
-      budget: 500000,
-      preferences: "Downtown, 2+ bedrooms",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane.smith@email.com",
-      phone: "+1 (555) 987-6543",
-      status: "interested",
-      properties: ["Modern Downtown Apartment", "Luxury Family Home"],
-      joinDate: "2024-02-20",
-      budget: 750000,
-      preferences: "Family-friendly, good schools",
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      email: "mike.johnson@email.com",
-      phone: "+1 (555) 456-7890",
-      status: "pending",
-      properties: ["Luxury Family Home"],
-      joinDate: "2024-03-10",
-      budget: 800000,
-      preferences: "Luxury amenities, large lot",
-    },
-  ])
+  const [clients, setClients] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState("")
 
   const [selectedClient, setSelectedClient] = useState(null)
   const [showModal, setShowModal] = useState(false)
+
+  useEffect(() => {
+    fetchClients()
+  }, [])
+
+  const fetchClients = async () => {
+    setIsLoading(true)
+    setError("")
+    try {
+      const response = await fetch(API_ENDPOINTS.LEADS_DEALER, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setClients(result.data || [])
+      } else {
+        setError(result.message || 'Failed to fetch clients')
+      }
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+      setError('Failed to load clients. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleViewClient = (client) => {
     setSelectedClient(client)
@@ -53,21 +52,7 @@ const MyClients = () => {
     setSelectedClient(null)
   }
 
-  const formatBudget = (budget) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-    }).format(budget)
-  }
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -112,6 +97,40 @@ const MyClients = () => {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="my-clients-container">
+        <div className="clients-header">
+          <h2>My Clients</h2>
+          <p>Manage your client relationships</p>
+        </div>
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Loading clients...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="my-clients-container">
+        <div className="clients-header">
+          <h2>My Clients</h2>
+          <p>Manage your client relationships</p>
+        </div>
+        <div className="error-state">
+          <div className="error-icon">⚠️</div>
+          <h3>Error Loading Clients</h3>
+          <p>{error}</p>
+          <button onClick={fetchClients} className="btn-retry">
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="my-clients-container">
       <div className="clients-header">
@@ -119,6 +138,13 @@ const MyClients = () => {
         <p>Manage your client relationships</p>
       </div>
 
+      {clients.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">👥</div>
+          <h3>No Clients Found</h3>
+          <p>You don't have any clients yet. Start by adding clients to your properties.</p>
+        </div>
+      ) : (
         <div className="clients-grid">
           {clients.map((client) => (
             <div key={client.id} className="client-card">
@@ -131,9 +157,9 @@ const MyClients = () => {
               </div>
               <div className="client-info">
                 <h3 className="client-name">{client.name}</h3>
-                <div className={`client-status-badge ${getStatusColor(client.status)}`}>
-                  {getStatusIcon(client.status)}
-                  <span>{client.status.charAt(0).toUpperCase() + client.status.slice(1)}</span>
+                <div className={`client-status-badge ${getStatusColor('active')}`}>
+                  {getStatusIcon('active')}
+                  <span>Active</span>
                 </div>
               </div>
             </div>
@@ -141,49 +167,52 @@ const MyClients = () => {
             <div className="client-details">
               <div className="detail-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-                <span>{client.email}</span>
-              </div>
-
-              <div className="detail-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 <span>{client.phone}</span>
               </div>
 
-              <div className="detail-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12,6 12,12 16,14" />
-                </svg>
-                <span>Joined {formatDate(client.joinDate)}</span>
-              </div>
+              {client.requirement && (
+                <div className="detail-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9,22 9,12 15,12 15,22" />
+                  </svg>
+                  <span>{client.requirement}</span>
+                </div>
+              )}
 
-              <div className="detail-item budget">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="12" y1="1" x2="12" y2="23" />
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-                <span>Budget: {formatBudget(client.budget)}</span>
-              </div>
+              {client.aadhar_number && (
+                <div className="detail-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <circle cx="12" cy="16" r="1" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>Aadhar: {client.aadhar_number}</span>
+                </div>
+              )}
             </div>
 
             <div className="client-properties">
-              <h4>Interested Properties ({client.properties.length})</h4>
+              <h4>Interested Properties ({client.properties?.length || 0})</h4>
               <div className="properties-list">
-                {client.properties.slice(0, 2).map((property, index) => (
-                  <div key={index} className="property-tag">
-                    {property}
-                  </div>
-                ))}
-                {client.properties.length > 2 && (
-                  <div className="property-tag more">+{client.properties.length - 2} more</div>
+                {client.properties && client.properties.length > 0 ? (
+                  <>
+                    {client.properties.slice(0, 2).map((property, index) => (
+                      <div key={index} className="property-tag">
+                        Property ID: {property.property_id?.substring(0, 8)}...
+                      </div>
+                    ))}
+                    {client.properties.length > 2 && (
+                      <div className="property-tag more">+{client.properties.length - 2} more</div>
+                    )}
+                  </>
+                ) : (
+                  <div className="property-tag">No properties assigned</div>
                 )}
               </div>
-              </div>
+            </div>
               
               <div className="client-actions">
               <button className="action-btn primary" onClick={() => handleViewClient(client)}>
@@ -205,6 +234,7 @@ const MyClients = () => {
             </div>
           ))}
         </div>
+      )}
 
       {/* Client Details Modal */}
       {showModal && selectedClient && (
@@ -230,11 +260,11 @@ const MyClients = () => {
                 </div>
                 <div>
                   <h4>{selectedClient.name}</h4>
-                  <div className={`client-status-badge ${getStatusColor(selectedClient.status)}`}>
-                    {getStatusIcon(selectedClient.status)}
-                    <span>{selectedClient.status.charAt(0).toUpperCase() + selectedClient.status.slice(1)}</span>
-              </div>
-              </div>
+                  <div className={`client-status-badge ${getStatusColor('active')}`}>
+                    {getStatusIcon('active')}
+                    <span>Active</span>
+                  </div>
+                </div>
             </div>
 
               <div className="client-detail-grid">
@@ -242,34 +272,38 @@ const MyClients = () => {
                   <h5>Contact Information</h5>
                   <div className="detail-list">
                     <div className="detail-row">
-                      <span className="label">Email:</span>
-                      <span className="value">{selectedClient.email}</span>
-                    </div>
-                    <div className="detail-row">
                       <span className="label">Phone:</span>
                       <span className="value">{selectedClient.phone}</span>
                     </div>
+                    {selectedClient.aadhar_number && (
+                      <div className="detail-row">
+                        <span className="label">Aadhar Number:</span>
+                        <span className="value">{selectedClient.aadhar_number}</span>
+                      </div>
+                    )}
                     <div className="detail-row">
-                      <span className="label">Join Date:</span>
-                      <span className="value">{formatDate(selectedClient.joinDate)}</span>
+                      <span className="label">Client ID:</span>
+                      <span className="value">{selectedClient.id}</span>
                     </div>
-                          </div>
-                        </div>
+                  </div>
+                </div>
 
                 <div className="detail-section">
-                  <h5>Preferences</h5>
+                  <h5>Client Information</h5>
                   <div className="detail-list">
-                    <div className="detail-row">
-                      <span className="label">Budget:</span>
-                      <span className="value budget-value">{formatBudget(selectedClient.budget)}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="label">Preferences:</span>
-                      <span className="value">{selectedClient.preferences}</span>
-                    </div>
-                              </div>
-                          </div>
+                    {selectedClient.requirement && (
+                      <div className="detail-row">
+                        <span className="label">Requirement:</span>
+                        <span className="value">{selectedClient.requirement}</span>
                       </div>
+                    )}
+                    <div className="detail-row">
+                      <span className="label">Properties Count:</span>
+                      <span className="value">{selectedClient.properties?.length || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div className="detail-section full-width">
                 <h5>Interested Properties</h5>
@@ -277,23 +311,35 @@ const MyClients = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Property Name</th>
+                        <th>Property ID</th>
                         <th>Status</th>
+                        <th>Note</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedClient.properties.map((property, index) => (
-                        <tr key={index}>
-                          <td>{property}</td>
-                          <td>
-                            <span className="property-status active">Viewing</span>
-                          </td>
-                          <td>
-                            <button className="table-action-btn">Schedule Tour</button>
+                      {selectedClient.properties && selectedClient.properties.length > 0 ? (
+                        selectedClient.properties.map((property, index) => (
+                          <tr key={index}>
+                            <td>{property.property_id}</td>
+                            <td>
+                              <span className={`property-status ${property.status}`}>
+                                {property.status}
+                              </span>
+                            </td>
+                            <td>{property.note || 'No notes'}</td>
+                            <td>
+                              <button className="table-action-btn">View Property</button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4" style={{ textAlign: 'center', padding: '1rem' }}>
+                            No properties assigned
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
