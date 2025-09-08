@@ -596,6 +596,18 @@
   overflow: hidden;
 }
 
+.image-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 .property-img {
   width: 100%;
   height: 100%;
