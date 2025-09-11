@@ -18,6 +18,13 @@ export default function PropertyPreview() {
   const [showAddress, setShowAddress] = useState(false);
   const [showOwner, setShowOwner] = useState(false);
 
+  const closeAllExcept = (key) => {
+    setShowPrice(key === 'price');
+    setShowAddress(key === 'address');
+    setShowOwner(key === 'owner');
+    setShowDetails(key === 'details');
+  };
+
   useEffect(() => {
     if (preloaded) {
       setProperty(preloaded);
@@ -242,7 +249,7 @@ export default function PropertyPreview() {
           <div className="action-buttons-grid">
             <button
               className={`action-btn ${showPrice ? 'active' : ''}`}
-              onClick={() => setShowPrice(!showPrice)}
+              onClick={() => closeAllExcept(showPrice ? '' : 'price')}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="1" x2="12" y2="23"/>
@@ -253,7 +260,7 @@ export default function PropertyPreview() {
 
             <button
               className={`action-btn ${showAddress ? 'active' : ''}`}
-              onClick={() => setShowAddress(!showAddress)}
+              onClick={() => closeAllExcept(showAddress ? '' : 'address')}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -264,7 +271,7 @@ export default function PropertyPreview() {
 
             <button
               className={`action-btn ${showOwner ? 'active' : ''}`}
-              onClick={() => setShowOwner(!showOwner)}
+              onClick={() => closeAllExcept(showOwner ? '' : 'owner')}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -275,7 +282,7 @@ export default function PropertyPreview() {
 
             <button
               className={`action-btn ${showDetails ? 'active' : ''}`}
-              onClick={() => setShowDetails(!showDetails)}
+              onClick={() => closeAllExcept(showDetails ? '' : 'details')}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>

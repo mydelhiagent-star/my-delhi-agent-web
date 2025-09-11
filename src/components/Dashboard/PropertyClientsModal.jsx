@@ -149,7 +149,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
       />
       
       {/* Modal */}
-      <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 animate-in fade-in duration-300 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 animate-in fade-in duration-300 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between !p-4 border-b border-slate-700">
           <div>
@@ -268,6 +268,18 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                             <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleViewClient(client)}
+                          className="!p-2 !bg-cyan-500 hover:!bg-cyan-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105"
+                          title="Show notes"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14,2 14,8 20,8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
                           </svg>
                         </button>
                         <button

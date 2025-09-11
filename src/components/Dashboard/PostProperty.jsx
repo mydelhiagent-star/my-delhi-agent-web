@@ -435,12 +435,6 @@ const PostProperty = () => {
           </div>
           <h2>Property Posted Successfully!</h2>
           <p>Your property has been added to the listings.</p>
-          <button 
-            className="success-btn"
-            onClick={() => setShowSuccess(false)}
-          >
-            Post Another Property
-          </button>
         </div>
       </div>
     );
@@ -597,17 +591,21 @@ const PostProperty = () => {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="bedrooms">Bedrooms *</label>
-                <input
-                  type="number"
+                <select
                   id="bedrooms"
                   name="bedrooms"
                   value={formData.bedrooms}
                   onChange={handleInputChange}
-                  placeholder="0"
-                  step="1"
                   className={errors.bedrooms ? "error" : ""}
                   required
-                />
+                >
+                  <option value="">Select</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
                 {errors.bedrooms && (
                   <span className="error-message">{errors.bedrooms}</span>
                 )}
@@ -615,17 +613,21 @@ const PostProperty = () => {
 
               <div className="form-group">
                 <label htmlFor="bathrooms">Bathrooms *</label>
-                <input
-                  type="number"
+                <select
                   id="bathrooms"
                   name="bathrooms"
                   value={formData.bathrooms}
                   onChange={handleInputChange}
-                  placeholder="0"
-                  step="1"
                   required
                   className={errors.bathrooms ? "error" : ""}
-                />
+                >
+                  <option value="">Select</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
                 {errors.bathrooms && (
                   <span className="error-message">{errors.bathrooms}</span>
                 )}

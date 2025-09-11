@@ -17,13 +17,17 @@ export default function LoginModal({ isOpen, onClose }) {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // allow only numbers
-    if (value.length > 10) value = value.slice(0, 10); // limit to 10 digits
-    setFormData({ ...formData, [e.target.name]: value });
+    const { name, value } = e.target;
+    let nextValue = value;
+    if (name === "phone") {
+      nextValue = value.replace(/\D/g, ""); // allow only numbers for phone
+      if (nextValue.length > 10) nextValue = nextValue.slice(0, 10); // limit to 10 digits
+    }
+    setFormData({ ...formData, [name]: nextValue });
     
     // Clear error when user starts typing
-    if (errors[e.target.name]) {
-      setErrors(prev => ({ ...prev, [e.target.name]: "" }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
