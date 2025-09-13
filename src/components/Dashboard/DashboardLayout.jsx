@@ -66,6 +66,24 @@ const DashboardLayout = ({ children }) => {
           >
             <span>My Clients</span>
           </Link>
+          <Link
+            to="/dashboard/all-clients"
+            className={`tab-button ${isActive("/dashboard/all-clients") ? "active" : ""}`}
+            role="tab"
+            aria-selected={isActive("/dashboard/all-clients")}
+            aria-controls="all-clients-panel"
+          >
+            <span>All Clients</span>
+          </Link>
+          <Link
+            to="/dashboard/inquiry"
+            className={`tab-button ${isActive("/dashboard/inquiry") ? "active" : ""}`}
+            role="tab"
+            aria-selected={isActive("/dashboard/inquiry")}
+            aria-controls="inquiry-panel"
+          >
+            <span>Property Inquiry</span>
+          </Link>
         </nav>
 
         {/* Tab Content Container */}

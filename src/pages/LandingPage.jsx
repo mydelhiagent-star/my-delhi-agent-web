@@ -1,5 +1,6 @@
 import Header from "../components/Header/Header";
 import Hero from "../components/Hero/Hero";
+import InquiryForm from "../components/InquiryForm/InquiryForm";
 import WhyJoinUs from "../components/WhyJoinUs/WhyJoinUs";
 import Reviews from "../components/Reviews/Reviews";
 import FAQ from "../components/FAQ/FAQ";
@@ -14,6 +15,11 @@ export default function LandingPage() {
       <WhyJoinUs />
       <Reviews />
       <FAQ />
+      <section className="inquiry-section">
+        <div className="inquiry-section-container">
+          <InquiryForm variant="home" />
+        </div>
+      </section>
       <Footer />
       <WhatsAppButton />
     </>

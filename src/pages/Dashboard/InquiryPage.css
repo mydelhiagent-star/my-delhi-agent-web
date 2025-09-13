@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.inquiry-page-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+.inquiry-page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.inquiry-page-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, #06b6d4, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.inquiry-page-header p {
+  color: #94a3b8;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.inquiry-page-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .inquiry-page-container {
+    padding: 1.5rem;
+  }
+  
+  .inquiry-page-header {
+    margin-bottom: 2rem;
+  }
+  
+  .inquiry-page-header h2 {
+    font-size: 2rem;
+  }
+  
+  .inquiry-page-header p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .inquiry-page-container {
+    padding: 1rem;
+  }
+  
+  .inquiry-page-header h2 {
+    font-size: 1.75rem;
+  }
+  
+  .inquiry-page-header p {
+    font-size: 0.9rem;
+  }
+}

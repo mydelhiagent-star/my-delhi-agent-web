@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 import PostPropertyPage from "./pages/Dashboard/PostPropertyPage";
 import MyPropertiesPage from "./pages/Dashboard/MyPropertiesPage";
 import MyClientsPage from "./pages/Dashboard/MyClientsPage";
+import AllClientsPage from "./pages/Dashboard/AllClientsPage";
+import InquiryPage from "./pages/Dashboard/InquiryPage";
 import PropertyDetails from "./pages/PropertyDetails";
 import PropertyPreview from "./pages/PropertyPreview";
 import SearchByLocation from "./pages/SearchByLocation";
@@ -49,6 +51,22 @@ function App() {
           element={
             <ProtectedRoute requiredRole="dealer">
               <MyClientsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/all-clients"
+          element={
+            <ProtectedRoute requiredRole="dealer">
+              <AllClientsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/inquiry"
+          element={
+            <ProtectedRoute requiredRole="dealer">
+              <InquiryPage />
             </ProtectedRoute>
           }
         />
