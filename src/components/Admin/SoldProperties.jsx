@@ -20,7 +20,6 @@ export default function SoldProperties() {
   const fetchSoldProperties = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log(token);
       const response = await fetch(`${API_ENDPOINTS.LEADS_ADMIN}properties-details?sold=true`, {
         headers: { Authorization: `Bearer ${token}` },
       });
