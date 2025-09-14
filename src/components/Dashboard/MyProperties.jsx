@@ -531,6 +531,7 @@ const MyProperties = () => {
               <button
                 className="action-btn edit"
                 onClick={(e) => handleEdit(property, e)}
+                title="Edit Property"
               >
                 <svg
                   width="16"
@@ -548,6 +549,7 @@ const MyProperties = () => {
               <button
                 className="action-btn delete"
                 onClick={(e) => handleDelete(property, e)}
+                title="Delete Property"
               >
                 <svg
                   width="16"
@@ -562,9 +564,10 @@ const MyProperties = () => {
                 </svg>
               </button>
 
-            <button
+              <button
                 className="action-btn add-client"
                 onClick={(e) => handleAddClient(property, e)}
+                title="Add Client"
               >
                 <svg
                   width="16"
@@ -579,11 +582,12 @@ const MyProperties = () => {
                   <line x1="19" y1="8" x2="19" y2="14" />
                   <line x1="22" y1="11" x2="16" y2="11" />
                 </svg>
-            </button>
-            
-            <button
+              </button>
+              
+              <button
                 className="action-btn view-clients"
                 onClick={(e) => handleViewClients(property, e)}
+                title="View Clients"
               >
                 <svg
                   width="16"
@@ -598,12 +602,15 @@ const MyProperties = () => {
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
+                {property.clients && property.clients.length > 0 && (
+                  <span className="client-count">{property.clients.length}</span>
+                )}
               </button>
 
               <button
                 className="action-btn preview"
                 onClick={(e) => handlePreview(property, e)}
-                title="Preview in new tab"
+                title="Preview Property"
               >
                 <svg
                   width="16"
@@ -616,7 +623,7 @@ const MyProperties = () => {
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-            </button>
+              </button>
             </div>
           </div>
         ))}

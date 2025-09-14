@@ -36,24 +36,36 @@ export default function PropertyPreview() {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_ENDPOINTS.PROPERTIES}${id}`, {
+        const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const result = await response.json();
 
+        // Handle different response structures
+        console.log('API Response:', result);
+        
         if (result.success && result.data) {
           setProperty(result.data);
-          console.log(result.data);
+          console.log('Property data (from result.data):', result.data);
+        } else if (result.id || result.title) {
+          // Direct property object
+          setProperty(result);
+          console.log('Property data (direct):', result);
         } else {
+          console.error('Unexpected response structure:', result);
           setError(result.message || 'Failed to fetch property details');
         }
       } catch (error) {
         console.error('Error fetching property:', error);
-        setError('Failed to load property details. Please try again.');
+        setError(`Failed to load property details: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -67,7 +79,10 @@ export default function PropertyPreview() {
   const mediaItems = useMemo(() => {
     const photos = Array.isArray(property?.photos) ? property.photos.map((src) => ({ type: "image", src })) : [];
     const videos = Array.isArray(property?.videos) ? property.videos.map((src) => ({ type: "video", src })) : [];
-    return [...photos, ...videos];
+    const images = Array.isArray(property?.images) ? property.images.map((src) => ({ type: "image", src })) : [];
+    
+    // Combine all media sources
+    return [...photos, ...videos, ...images];
   }, [property]);
 
   const canShowMedia = mediaItems.length > 0;
@@ -120,9 +135,17 @@ export default function PropertyPreview() {
         <div className="error-icon">⚠️</div>
         <h2>Error Loading Property</h2>
         <p>{error}</p>
-        <button onClick={() => window.close()} className="btn-primary">
-          Close Tab
-        </button>
+        <p style={{ fontSize: '0.875rem', opacity: 0.7, marginTop: '1rem' }}>
+          Property ID: {id}
+        </p>
+        <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
+          <button onClick={() => window.close()} className="btn-primary">
+            Close Tab
+          </button>
+          <button onClick={() => window.location.reload()} className="btn-secondary">
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
