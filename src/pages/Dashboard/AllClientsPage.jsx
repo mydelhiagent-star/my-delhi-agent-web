@@ -11,6 +11,12 @@ export default function AllClientsPage() {
   const [modalType, setModalType] = useState("");
   const [selectedClient, setSelectedClient] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newClient, setNewClient] = useState({
+    name: "",
+    phone: "",
+    notes: ""
+  });
 
   // Dummy data for clients
   const dummyClients = [
@@ -212,6 +218,62 @@ export default function AllClientsPage() {
     setModalType("");
   };
 
+  const handleAddClient = () => {
+    setShowAddModal(true);
+  };
+
+  const handleNewClientChange = (e) => {
+    const { name, value } = e.target;
+    setNewClient(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAddClientSubmit = (e) => {
+    e.preventDefault();
+    
+    if (!newClient.name.trim() || !newClient.phone.trim()) {
+      alert("Name and phone are required");
+      return;
+    }
+
+    // Validate phone number (10 digits)
+    if (!/^\d{10}$/.test(newClient.phone)) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    // Create new client
+    const client = {
+      id: Math.max(...clients.map(c => c.id)) + 1,
+      name: newClient.name.trim(),
+      phone: newClient.phone.trim(),
+      email: `${newClient.name.toLowerCase().replace(/\s+/g, '.')}@email.com`,
+      location: "Delhi",
+      subLocation: "Central Delhi",
+      propertyType: "Residential",
+      budget: "₹50,00,000 - ₹1,00,00,000",
+      status: "active",
+      lastContact: new Date().toISOString().split('T')[0],
+      notes: newClient.notes.trim(),
+      assignedProperties: [],
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    // Add to clients list
+    setClients(prev => [...prev, client]);
+    
+    // Reset form and close modal
+    setNewClient({ name: "", phone: "", notes: "" });
+    setShowAddModal(false);
+  };
+
+  const handleCloseAddModal = () => {
+    setNewClient({ name: "", phone: "", notes: "" });
+    setShowAddModal(false);
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case "active":
@@ -249,8 +311,19 @@ export default function AllClientsPage() {
   return (
     <div className="all-clients-container">
       <div className="all-clients-header">
-        <h2>All Clients</h2>
-        <p>Manage your client database and track their property requirements</p>
+        <div className="header-content">
+          <div className="header-text">
+            <h2>All Clients</h2>
+            <p>Manage your client database and track their property requirements</p>
+          </div>
+          <button className="add-client-btn" onClick={handleAddClient}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Client
+          </button>
+        </div>
       </div>
 
       {/* Search and Filter Controls */}
@@ -545,6 +618,79 @@ export default function AllClientsPage() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Client Modal */}
+      {showAddModal && (
+        <div className="modal-overlay" onClick={handleCloseAddModal}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add New Client</h3>
+              <button
+                className="modal-close"
+                onClick={handleCloseAddModal}
+                aria-label="Close modal"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="modal-content">
+              <form onSubmit={handleAddClientSubmit} className="add-client-form">
+                <div className="form-group">
+                  <label htmlFor="name">Name *</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={newClient.name}
+                    onChange={handleNewClientChange}
+                    placeholder="Enter client name"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="phone">Phone *</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={newClient.phone}
+                    onChange={handleNewClientChange}
+                    placeholder="Enter 10-digit phone number"
+                    maxLength="10"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="notes">Notes</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    value={newClient.notes}
+                    onChange={handleNewClientChange}
+                    placeholder="Enter any additional notes about the client"
+                    rows="4"
+                  />
+                </div>
+
+                <div className="form-actions">
+                  <button type="button" className="btn-cancel" onClick={handleCloseAddModal}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-submit">
+                    Add Client
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
