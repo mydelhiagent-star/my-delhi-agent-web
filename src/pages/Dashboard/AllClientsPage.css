@@ -221,6 +221,17 @@
   text-decoration: underline;
 }
 
+/* Notes Field */
+.notes {
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  max-width: 500px;
+  line-height: 1.4;
+  display: block;
+}
+
 /* Location Cell */
 .location-cell {
   display: flex;
