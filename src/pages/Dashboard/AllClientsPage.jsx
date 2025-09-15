@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AllClientsPage.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function AllClientsPage() {
   const [clients, setClients] = useState([]);
@@ -230,43 +231,54 @@ export default function AllClientsPage() {
     }));
   };
 
-  const handleAddClientSubmit = (e) => {
+  const handleAddClientSubmit = async (e) => {
     e.preventDefault();
     
     if (!newClient.name.trim() || !newClient.phone.trim()) {
       alert("Name and phone are required");
       return;
     }
-
-    // Validate phone number (10 digits)
+  
     if (!/^\d{10}$/.test(newClient.phone)) {
       alert("Please enter a valid 10-digit phone number");
       return;
     }
-
-    // Create new client
-    const client = {
-      id: Math.max(...clients.map(c => c.id)) + 1,
-      name: newClient.name.trim(),
-      phone: newClient.phone.trim(),
-      email: `${newClient.name.toLowerCase().replace(/\s+/g, '.')}@email.com`,
-      location: "Delhi",
-      subLocation: "Central Delhi",
-      propertyType: "Residential",
-      budget: "₹50,00,000 - ₹1,00,00,000",
-      status: "active",
-      lastContact: new Date().toISOString().split('T')[0],
-      notes: newClient.notes.trim(),
-      assignedProperties: [],
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-
-    // Add to clients list
-    setClients(prev => [...prev, client]);
-    
-    // Reset form and close modal
-    setNewClient({ name: "", phone: "", notes: "" });
-    setShowAddModal(false);
+  
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: newClient.name.trim(),
+          phone: newClient.phone.trim(),
+          note: newClient.notes.trim(),
+        }),
+      });
+  
+      const result = await response.json();
+      
+      if (!result.success) {
+        alert(result.message || "Failed to add client");
+        return;
+      }
+  
+      // Add to clients list
+      setClients(prev => [...prev, result.data]);
+      
+      // Reset form and close modal
+      setNewClient({ name: "", phone: "", notes: "" });
+      setShowAddModal(false);
+      
+      alert("Client added successfully!");
+      
+    } catch (error) {
+      console.error("Error adding client:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   const handleCloseAddModal = () => {
