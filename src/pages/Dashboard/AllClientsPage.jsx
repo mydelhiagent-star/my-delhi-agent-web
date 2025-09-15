@@ -13,6 +13,8 @@ export default function AllClientsPage() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingClient, setEditingClient] = useState(null);
   const [newClient, setNewClient] = useState({
     name: "",
     phone: "",
@@ -223,9 +225,14 @@ export default function AllClientsPage() {
   };
 
   const handleEdit = (client) => {
-    setSelectedClient(client);
-    setModalType("edit");
-    setShowModal(true);
+    setEditingClient(client);
+    setNewClient({
+      name: client.name,
+      phone: client.phone,
+      notes: client.note || client.notes || ""
+    });
+    setIsEditMode(true);
+    setShowAddModal(true);
   };
 
   const handleDelete = (client) => {
@@ -260,52 +267,85 @@ export default function AllClientsPage() {
       alert("Name and phone are required");
       return;
     }
-  
+
     if (!/^\d{10}$/.test(newClient.phone)) {
       alert("Please enter a valid 10-digit phone number");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: newClient.name.trim(),
-          phone: newClient.phone.trim(),
-          note: newClient.notes.trim(),
-        }),
-      });
-  
-      const result = await response.json();
       
-      if (!result.success) {
-        alert(result.message || "Failed to add client");
-        return;
+      if (isEditMode && editingClient) {
+        // Update existing client
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${editingClient.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: newClient.name.trim(),
+            phone: newClient.phone.trim(),
+            note: newClient.notes.trim(),
+          }),
+        });
+
+        const result = await response.json();
+        
+        if (!result.success) {
+          alert(result.message || "Failed to update client");
+          return;
+        }
+
+        // Update client in the list
+        setClients(prev => prev.map(client => 
+          client.id === editingClient.id ? result.data : client
+        ));
+        
+        alert("Client updated successfully!");
+      } else {
+        // Add new client
+        const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: newClient.name.trim(),
+            phone: newClient.phone.trim(),
+            note: newClient.notes.trim(),
+          }),
+        });
+
+        const result = await response.json();
+        
+        if (!result.success) {
+          alert(result.message || "Failed to add client");
+          return;
+        }
+
+        // Add to clients list
+        setClients(prev => [...prev, result.data]);
+        
+        alert("Client added successfully!");
       }
-  
-      // Add to clients list
-      setClients(prev => [...prev, result.data]);
       
       // Reset form and close modal
-      setNewClient({ name: "", phone: "", notes: "" });
-      setShowAddModal(false);
-      
-      alert("Client added successfully!");
+      handleCloseAddModal();
       
     } catch (error) {
-      console.error("Error adding client:", error);
+      console.error("Error saving client:", error);
       alert("Something went wrong. Please try again.");
     }
   };
 
   const handleCloseAddModal = () => {
-    setNewClient({ name: "", phone: "", notes: "" });
     setShowAddModal(false);
+    setIsEditMode(false);
+    setEditingClient(null);
+    setNewClient({ name: "", phone: "", notes: "" });
   };
 
   const getStatusColor = (status) => {
@@ -532,14 +572,6 @@ export default function AllClientsPage() {
                 </div>
               )}
 
-              {modalType === "edit" && selectedClient && (
-                <div className="edit-form">
-                  <p>Edit functionality would be implemented here with a form similar to the add client form.</p>
-                  <div className="form-placeholder">
-                    <p>Form fields for editing client information would go here.</p>
-                  </div>
-                </div>
-              )}
 
               {modalType === "delete" && selectedClient && (
                 <div className="delete-confirmation">
@@ -565,7 +597,7 @@ export default function AllClientsPage() {
         <div className="modal-overlay" onClick={handleCloseAddModal}>
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Add New Client</h3>
+              <h3>{isEditMode ? "Edit Client" : "Add New Client"}</h3>
               <button
                 className="modal-close"
                 onClick={handleCloseAddModal}
@@ -623,9 +655,9 @@ export default function AllClientsPage() {
                   <button type="button" className="btn-cancel" onClick={handleCloseAddModal}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn-submit">
-                    Add Client
-                  </button>
+                <button type="submit" className="btn-submit">
+                  {isEditMode ? "Update Client" : "Add Client"}
+                </button>
                 </div>
               </form>
             </div>
