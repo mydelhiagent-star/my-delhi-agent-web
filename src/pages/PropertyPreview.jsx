@@ -36,7 +36,7 @@ export default function PropertyPreview() {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${id}`, {
+        const response = await fetch(`${API_ENDPOINTS.PROPERTIES}?id=${id}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,

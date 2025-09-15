@@ -7,7 +7,7 @@ export const API_ENDPOINTS = {
   REGISTER: `${API_BASE_URL}/auth/dealers/register`,
 
   // Properties
-  PROPERTIES: `${API_BASE_URL}/properties/`,
+  PROPERTIES: `${API_BASE_URL}/properties`,
   PROPERTIES_DEALER: `${API_BASE_URL}/properties/dealer/`,
   PROPERTIES_ADMIN: `${API_BASE_URL}/properties/admin/`,
 
