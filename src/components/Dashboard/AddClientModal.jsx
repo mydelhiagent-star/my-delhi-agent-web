@@ -6,7 +6,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
   const [clientForm, setClientForm] = useState({
     name: "",
     phone: "",
-    notes: ""
+    notes: "",
+    status: "unmarked"
   });
   const [clientFormErrors, setClientFormErrors] = useState({});
 
@@ -16,14 +17,16 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
       setClientForm({
         name: initialData.name || "",
         phone: initialData.phone || "",
-        notes: initialData.notes || ""
+        notes: initialData.notes || "",
+        status: initialData.status || "unmarked"
       });
     } else {
       // Reset form for add mode
       setClientForm({
         name: "",
         phone: "",
-        notes: ""
+        notes: "",
+        status: "unmarked"
       });
     }
     // Clear errors when modal opens
@@ -74,7 +77,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
         setClientForm({
           name: "",
           phone: "",
-          notes: ""
+          notes: "",
+          status: "unmarked"
         });
         
         // Close modal
@@ -91,7 +95,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
     setClientForm({
       name: "",
       phone: "",
-      notes: ""
+      notes: "",
+      status: "unmarked"
     });
     setClientFormErrors({});
     onClose();
@@ -170,7 +175,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
           </div>
 
           {/* Notes */}
-          <div className="!mb-4">
+          <div className="!mb-6">
             <label htmlFor="clientNotes" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
               Notes (Optional)
             </label>
@@ -183,6 +188,23 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
               className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !resize-vertical"
               placeholder="Add any additional notes about this client..."
             />
+          </div>
+
+          {/* Status */}
+          <div className="!mb-4">
+            <label htmlFor="clientStatus" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+              Status
+            </label>
+            <select
+              id="clientStatus"
+              name="status"
+              value={clientForm.status}
+              onChange={handleInputChange}
+              className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !appearance-none !cursor-pointer"
+            >
+              <option value="unmarked" className="!bg-slate-700 !text-slate-50">Unmarked</option>
+              <option value="marked" className="!bg-slate-700 !text-slate-50">Marked</option>
+            </select>
           </div>
 
           {/* Actions */}

@@ -256,7 +256,7 @@ const MyProperties = () => {
           name: clientData.name,
           phone: clientData.phone,
           note: clientData.notes,
-
+          status: clientData.status
         }),
       });
 
