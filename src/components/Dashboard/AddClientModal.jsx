@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { API_ENDPOINTS } from "../../config/api";
 
 const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title = "Add Client" }) => {
   const [clientForm, setClientForm] = useState({
@@ -11,28 +12,25 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
     status: "unmarked"
   });
   const [clientFormErrors, setClientFormErrors] = useState({});
+  const [searchStep, setSearchStep] = useState("phone"); // "phone", "searching", "found", "notFound", "add"
+  const [searchPhone, setSearchPhone] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Populate form when initialData is provided (edit mode)
+  // Reset modal state when opening/closing
   useEffect(() => {
-    if (initialData) {
-      setClientForm({
-        name: initialData.name || "",
-        phone: initialData.phone || "",
-        notes: initialData.notes || "",
-        status: initialData.status || "unmarked"
-      });
-    } else {
-      // Reset form for add mode
+    if (isOpen) {
+      setSearchStep("phone");
+      setSearchPhone("");
+      setIsSearching(false);
       setClientForm({
         name: "",
         phone: "",
         notes: "",
         status: "unmarked"
       });
+      setClientFormErrors({});
     }
-    // Clear errors when modal opens
-    setClientFormErrors({});
-  }, [initialData, isOpen]);
+  }, [isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,6 +46,65 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
         [name]: ""
       }));
     }
+  };
+
+  const handleSearchClient = async () => {
+    if (!searchPhone.trim()) {
+      alert("Please enter a phone number");
+      return;
+    }
+
+    // Validate phone number format
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(searchPhone.replace(/\D/g, ""))) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchStep("searching");
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${searchPhone}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        // Client found - populate form
+        setClientForm({
+          name: result.data.name || "",
+          phone: result.data.phone || "",
+          notes: result.data.note || result.data.notes || "",
+          status: result.data.status || "unmarked"
+        });
+        setSearchStep("found");
+      } else {
+        // Client not found
+        setSearchStep("notFound");
+      }
+    } catch (error) {
+      console.error("Error searching client:", error);
+      alert("Failed to search client. Please try again.");
+      setSearchStep("phone");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleAddNewClient = () => {
+    setSearchStep("add");
+    setClientForm({
+      name: "",
+      phone: searchPhone,
+      notes: "",
+      status: "unmarked"
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -139,102 +196,270 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="!p-6">
-          {/* Client Name */}
-          <div className="!mb-6">
-            <label htmlFor="clientName" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
-              Client Name *
-            </label>
-            <input
-              type="text"
-              id="clientName"
-              name="name"
-              value={clientForm.name}
-              onChange={handleInputChange}
-              className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
-                clientFormErrors.name ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
-              }`}
-              placeholder="Enter client's full name"
-              required
-            />
-            {clientFormErrors.name && (
-              <span className="!block !text-red-300 !text-sm !mt-2">{clientFormErrors.name}</span>
-            )}
-          </div>
+        {/* Content */}
+        <div className="!p-6">
+          {/* Step 1: Phone Number Input */}
+          {searchStep === "phone" && (
+            <div>
+              <div className="!mb-6">
+                <label htmlFor="searchPhone" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Enter Phone Number to Search Client *
+                </label>
+                <input
+                  type="tel"
+                  id="searchPhone"
+                  value={searchPhone}
+                  onChange={(e) => setSearchPhone(e.target.value)}
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80"
+                  placeholder="Enter 10-digit phone number"
+                  required
+                />
+              </div>
+              <div className="!flex !gap-4 !justify-end !pt-4">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="!px-6 !py-3 !bg-slate-600 hover:!bg-slate-500 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSearchClient}
+                  className="!px-6 !py-3 !bg-gradient-to-r !from-cyan-500 !to-cyan-600 hover:!from-cyan-600 hover:!to-cyan-700 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5 hover:!shadow-[0_10px_25px_rgba(6,182,212,0.3)]"
+                >
+                  Search Client
+                </button>
+              </div>
+            </div>
+          )}
 
-          {/* Phone Number */}
-          <div className="!mb-6">
-            <label htmlFor="clientPhone" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
-              Phone Number *
-            </label>
-            <input
-              type="tel"
-              id="clientPhone"
-              name="phone"
-              value={clientForm.phone}
-              onChange={handleInputChange}
-              className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
-                clientFormErrors.phone ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
-              }`}
-              placeholder="Enter 10-digit phone number"
-              required
-            />
-            {clientFormErrors.phone && (
-              <span className="!block !text-red-300 !text-sm !mt-2">{clientFormErrors.phone}</span>
-            )}
-          </div>
+          {/* Step 2: Searching */}
+          {searchStep === "searching" && (
+            <div className="!text-center !py-8">
+              <div className="!mb-4">
+                <svg className="animate-spin !mx-auto !h-8 !w-8 !text-cyan-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+              <p className="!text-slate-300 !text-lg">Searching for client...</p>
+            </div>
+          )}
 
-          {/* Notes */}
-          <div className="!mb-6">
-            <label htmlFor="clientNotes" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
-              Notes (Optional)
-            </label>
-            <textarea
-              id="clientNotes"
-              name="notes"
-              value={clientForm.notes}
-              onChange={handleInputChange}
-              rows="4"
-              className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !resize-vertical"
-              placeholder="Add any additional notes about this client..."
-            />
-          </div>
+          {/* Step 3: Client Found */}
+          {searchStep === "found" && (
+            <form onSubmit={handleSubmit}>
+              <div className="!mb-4 !p-4 !bg-green-900/20 !border !border-green-500/30 !rounded-xl">
+                <p className="!text-green-300 !text-sm !font-medium">✓ Client found! You can edit notes and status below.</p>
+              </div>
+              
+              {/* Client Name - Frozen */}
+              <div className="!mb-6">
+                <label htmlFor="clientName" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Client Name *
+                </label>
+                <input
+                  type="text"
+                  id="clientName"
+                  name="name"
+                  value={clientForm.name}
+                  readOnly
+                  className="!w-full !px-4 !py-3 !bg-slate-600/40 !border !border-slate-500/30 !rounded-xl !text-slate-300 !text-base !cursor-not-allowed"
+                  placeholder="Client name"
+                />
+              </div>
 
-          {/* Status */}
-          <div className="!mb-4">
-            <label htmlFor="clientStatus" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
-              Status
-            </label>
-            <select
-              id="clientStatus"
-              name="status"
-              value={clientForm.status}
-              onChange={handleInputChange}
-              className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !appearance-none !cursor-pointer"
-            >
-              <option value="unmarked" className="!bg-slate-700 !text-slate-50">Unmarked</option>
-              <option value="marked" className="!bg-slate-700 !text-slate-50">Marked</option>
-            </select>
-          </div>
+              {/* Phone Number - Frozen */}
+              <div className="!mb-6">
+                <label htmlFor="clientPhone" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  id="clientPhone"
+                  name="phone"
+                  value={clientForm.phone}
+                  readOnly
+                  className="!w-full !px-4 !py-3 !bg-slate-600/40 !border !border-slate-500/30 !rounded-xl !text-slate-300 !text-base !cursor-not-allowed"
+                  placeholder="Phone number"
+                />
+              </div>
 
-          {/* Actions */}
-          <div className="!flex !gap-4 !justify-end !pt-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="!px-6 !py-3 !bg-slate-600 hover:!bg-slate-500 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="!px-6 !py-3 !bg-gradient-to-r !from-cyan-500 !to-cyan-600 hover:!from-cyan-600 hover:!to-cyan-700 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5 hover:!shadow-[0_10px_25px_rgba(6,182,212,0.3)]"
-            >
-              {title === "Add Client" ? "Add Client" : "Update Client"}
-            </button>
-          </div>
-        </form>
+              {/* Notes - Editable */}
+              <div className="!mb-6">
+                <label htmlFor="clientNotes" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Notes (Optional)
+                </label>
+                <textarea
+                  id="clientNotes"
+                  name="notes"
+                  value={clientForm.notes}
+                  onChange={handleInputChange}
+                  rows="4"
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !resize-vertical"
+                  placeholder="Add any additional notes about this client..."
+                />
+              </div>
+
+              {/* Status - Editable */}
+              <div className="!mb-4">
+                <label htmlFor="clientStatus" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Status
+                </label>
+                <select
+                  id="clientStatus"
+                  name="status"
+                  value={clientForm.status}
+                  onChange={handleInputChange}
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !appearance-none !cursor-pointer"
+                >
+                  <option value="unmarked" className="!bg-slate-700 !text-slate-50">Unmarked</option>
+                  <option value="marked" className="!bg-slate-700 !text-slate-50">Marked</option>
+                </select>
+              </div>
+
+              {/* Actions */}
+              <div className="!flex !gap-4 !justify-end !pt-4">
+                <button
+                  type="button"
+                  onClick={() => setSearchStep("phone")}
+                  className="!px-6 !py-3 !bg-slate-600 hover:!bg-slate-500 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  className="!px-6 !py-3 !bg-gradient-to-r !from-cyan-500 !to-cyan-600 hover:!from-cyan-600 hover:!to-cyan-700 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5 hover:!shadow-[0_10px_25px_rgba(6,182,212,0.3)]"
+                >
+                  Add Client to Property
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Step 4: Client Not Found */}
+          {searchStep === "notFound" && (
+            <div>
+              <div className="!mb-6 !p-4 !bg-red-900/20 !border !border-red-500/30 !rounded-xl">
+                <p className="!text-red-300 !text-sm !font-medium">✗ No client found with phone number: {searchPhone}</p>
+              </div>
+              <div className="!flex !gap-4 !justify-end !pt-4">
+                <button
+                  type="button"
+                  onClick={() => setSearchStep("phone")}
+                  className="!px-6 !py-3 !bg-slate-600 hover:!bg-slate-500 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddNewClient}
+                  className="!px-6 !py-3 !bg-gradient-to-r !from-green-500 !to-green-600 hover:!from-green-600 hover:!to-green-700 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5 hover:!shadow-[0_10px_25px_rgba(34,197,94,0.3)]"
+                >
+                  Add New Client
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Add New Client */}
+          {searchStep === "add" && (
+            <form onSubmit={handleSubmit}>
+              <div className="!mb-4 !p-4 !bg-blue-900/20 !border !border-blue-500/30 !rounded-xl">
+                <p className="!text-blue-300 !text-sm !font-medium">ℹ Adding new client with phone: {searchPhone}</p>
+              </div>
+              
+              {/* Client Name */}
+              <div className="!mb-6">
+                <label htmlFor="clientName" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Client Name *
+                </label>
+                <input
+                  type="text"
+                  id="clientName"
+                  name="name"
+                  value={clientForm.name}
+                  onChange={handleInputChange}
+                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
+                    clientFormErrors.name ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
+                  }`}
+                  placeholder="Enter client's full name"
+                  required
+                />
+                {clientFormErrors.name && (
+                  <span className="!block !text-red-300 !text-sm !mt-2">{clientFormErrors.name}</span>
+                )}
+              </div>
+
+              {/* Phone Number - Pre-filled */}
+              <div className="!mb-6">
+                <label htmlFor="clientPhone" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  id="clientPhone"
+                  name="phone"
+                  value={clientForm.phone}
+                  readOnly
+                  className="!w-full !px-4 !py-3 !bg-slate-600/40 !border !border-slate-500/30 !rounded-xl !text-slate-300 !text-base !cursor-not-allowed"
+                  placeholder="Phone number"
+                />
+              </div>
+
+              {/* Notes */}
+              <div className="!mb-6">
+                <label htmlFor="clientNotes" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Notes (Optional)
+                </label>
+                <textarea
+                  id="clientNotes"
+                  name="notes"
+                  value={clientForm.notes}
+                  onChange={handleInputChange}
+                  rows="4"
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !resize-vertical"
+                  placeholder="Add any additional notes about this client..."
+                />
+              </div>
+
+              {/* Status */}
+              <div className="!mb-4">
+                <label htmlFor="clientStatus" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
+                  Status
+                </label>
+                <select
+                  id="clientStatus"
+                  name="status"
+                  value={clientForm.status}
+                  onChange={handleInputChange}
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !appearance-none !cursor-pointer"
+                >
+                  <option value="unmarked" className="!bg-slate-700 !text-slate-50">Unmarked</option>
+                  <option value="marked" className="!bg-slate-700 !text-slate-50">Marked</option>
+                </select>
+              </div>
+
+              {/* Actions */}
+              <div className="!flex !gap-4 !justify-end !pt-4">
+                <button
+                  type="button"
+                  onClick={() => setSearchStep("notFound")}
+                  className="!px-6 !py-3 !bg-slate-600 hover:!bg-slate-500 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  className="!px-6 !py-3 !bg-gradient-to-r !from-cyan-500 !to-cyan-600 hover:!from-cyan-600 hover:!to-cyan-700 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5 hover:!shadow-[0_10px_25px_rgba(6,182,212,0.3)]"
+                >
+                  Add Client to Property
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
