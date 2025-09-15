@@ -671,13 +671,13 @@ export default function AllClientsPage() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="notes">Notes</label>
+                  <label htmlFor="notes">Notes <span className="optional-text">(Optional)</span></label>
                   <textarea
                     id="notes"
                     name="notes"
                     value={newClient.notes}
                     onChange={handleNewClientChange}
-                    placeholder="Enter any additional notes about the client"
+                    placeholder="Enter any additional notes about the client (optional)"
                     rows="4"
                   />
                 </div>

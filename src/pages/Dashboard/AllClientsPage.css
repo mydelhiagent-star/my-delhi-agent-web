@@ -483,8 +483,11 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
-  max-height: calc(80vh - 120px);
+  max-height: calc(80vh - 140px);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 /* Client Details */
@@ -617,9 +620,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   max-height: 100%;
   box-sizing: border-box;
+  flex: 1;
 }
 
 .form-group {
@@ -633,6 +637,13 @@
   font-weight: 500;
   color: #e2e8f0;
   margin-bottom: 0.5rem;
+}
+
+.optional-text {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #94a3b8;
+  font-style: italic;
 }
 
 .form-group input,
@@ -674,10 +685,15 @@
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  margin-top: 2rem;
+  margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid rgba(148, 163, 184, 0.1);
   flex-shrink: 0;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
 }
 
 .btn-submit {
@@ -691,6 +707,8 @@
   transition: all 0.2s ease;
   min-height: 44px;
   font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 }
 
 .btn-submit:hover {
