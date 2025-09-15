@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title = "Add Client" }) => {
   const [clientForm, setClientForm] = useState({
@@ -104,16 +105,26 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={handleClose}
-      />
-      
+  const modalContent = (
+    <div 
+      className="flex items-center justify-center p-4" 
+      style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        width: '100vw', 
+        height: '100vh',
+        zIndex: 9999,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backdropFilter: 'blur(4px)'
+      }}
+      onClick={handleClose}
+    >
       {/* Modal */}
-      <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-in fade-in duration-300 max-h-[90vh] overflow-y-auto">
+      <div 
+        className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in duration-300 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between !p-4 border-b border-slate-700">
           <h2 className="text-xl font-bold text-white">{title}</h2>
@@ -227,6 +238,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default AddClientModal;
