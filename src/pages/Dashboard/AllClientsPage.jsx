@@ -144,21 +144,43 @@ export default function AllClientsPage() {
   ];
 
   useEffect(() => {
-    // Simulate API call
-    setIsLoading(true);
-    setTimeout(() => {
-      setClients(dummyClients);
-      setFilteredClients(dummyClients);
-      setIsLoading(false);
-    }, 1000);
+    const fetchClients = async () => {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          setClients(result.data);
+          setFilteredClients(result.data);
+        } else {
+          console.error("Failed to fetch clients:", result.message);
+          setClients([]);
+          setFilteredClients([]);
+        }
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+        setClients([]);
+        setFilteredClients([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClients();
   }, []);
 
   useEffect(() => {
     let filtered = clients.filter(client =>
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.phone.includes(searchTerm) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.location.toLowerCase().includes(searchTerm.toLowerCase())
+      (client.note || client.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Sort clients
@@ -166,7 +188,7 @@ export default function AllClientsPage() {
       let aValue = a[sortBy];
       let bValue = b[sortBy];
 
-      if (sortBy === "lastContact" || sortBy === "createdAt") {
+      if (sortBy === "createdAt") {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
       }
@@ -347,7 +369,7 @@ export default function AllClientsPage() {
           </svg>
           <input
             type="text"
-            placeholder="Search clients by name, phone, email, or location..."
+            placeholder="Search clients by name, phone, or notes..."
             value={searchTerm}
             onChange={handleSearch}
             className="search-input"
@@ -383,42 +405,9 @@ export default function AllClientsPage() {
                       </span>
                     )}
                   </th>
-                  <th onClick={() => handleSort("email")} className="sortable">
-                    Email
-                    {sortBy === "email" && (
-                      <span className="sort-indicator">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </th>
-                  <th onClick={() => handleSort("location")} className="sortable">
-                    Location
-                    {sortBy === "location" && (
-                      <span className="sort-indicator">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </th>
-                  <th onClick={() => handleSort("propertyType")} className="sortable">
-                    Property Type
-                    {sortBy === "propertyType" && (
-                      <span className="sort-indicator">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </th>
-                  <th>Budget</th>
-                  <th onClick={() => handleSort("status")} className="sortable">
-                    Status
-                    {sortBy === "status" && (
-                      <span className="sort-indicator">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </th>
-                  <th onClick={() => handleSort("lastContact")} className="sortable">
-                    Last Contact
-                    {sortBy === "lastContact" && (
+                  <th onClick={() => handleSort("note")} className="sortable">
+                    Notes
+                    {sortBy === "note" && (
                       <span className="sort-indicator">
                         {sortOrder === "asc" ? "↑" : "↓"}
                       </span>
@@ -444,29 +433,7 @@ export default function AllClientsPage() {
                       </a>
                     </td>
                     <td>
-                      <a href={`mailto:${client.email}`} className="email-link">
-                        {client.email}
-                      </a>
-                    </td>
-                    <td>
-                      <div className="location-cell">
-                        <span className="location">{client.location}</span>
-                        <span className="sub-location">{client.subLocation}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="property-type">{client.propertyType}</span>
-                    </td>
-                    <td>
-                      <span className="budget">{client.budget}</span>
-                    </td>
-                    <td>
-                      <span className={`status-badge ${getStatusColor(client.status)}`}>
-                        {getStatusText(client.status)}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="last-contact">{formatDate(client.lastContact)}</span>
+                      <span className="notes">{client.note || client.notes || 'No notes'}</span>
                     </td>
                     <td>
                       <div className="action-buttons">
@@ -557,51 +524,9 @@ export default function AllClientsPage() {
                       <label>Phone:</label>
                       <span>{selectedClient.phone}</span>
                     </div>
-                    <div className="info-item">
-                      <label>Email:</label>
-                      <span>{selectedClient.email}</span>
-                    </div>
-                    <div className="info-item">
-                      <label>Location:</label>
-                      <span>{selectedClient.location}, {selectedClient.subLocation}</span>
-                    </div>
-                    <div className="info-item">
-                      <label>Property Type:</label>
-                      <span>{selectedClient.propertyType}</span>
-                    </div>
-                    <div className="info-item">
-                      <label>Budget:</label>
-                      <span>{selectedClient.budget}</span>
-                    </div>
-                    <div className="info-item">
-                      <label>Status:</label>
-                      <span className={`status-badge ${getStatusColor(selectedClient.status)}`}>
-                        {getStatusText(selectedClient.status)}
-                      </span>
-                    </div>
-                    <div className="info-item">
-                      <label>Last Contact:</label>
-                      <span>{formatDate(selectedClient.lastContact)}</span>
-                    </div>
-                    <div className="info-item">
-                      <label>Created:</label>
-                      <span>{formatDate(selectedClient.createdAt)}</span>
-                    </div>
                     <div className="info-item full-width">
                       <label>Notes:</label>
-                      <span>{selectedClient.notes}</span>
-                    </div>
-                    <div className="info-item full-width">
-                      <label>Assigned Properties:</label>
-                      <div className="assigned-properties">
-                        {selectedClient.assignedProperties.length > 0 ? (
-                          selectedClient.assignedProperties.map((property, index) => (
-                            <span key={index} className="property-tag">{property}</span>
-                          ))
-                        ) : (
-                          <span className="no-properties">No properties assigned</span>
-                        )}
-                      </div>
+                      <span>{selectedClient.note || selectedClient.notes || 'No notes'}</span>
                     </div>
                   </div>
                 </div>
