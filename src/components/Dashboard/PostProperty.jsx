@@ -32,6 +32,9 @@ const PostProperty = () => {
   const [isImageDragOver, setIsImageDragOver] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // YouTube links state (multiple) with lock toggle per item
+  const [youtubeLinks, setYoutubeLinks] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -255,6 +258,7 @@ const PostProperty = () => {
           owner_phone: formData.owner_phone || "",
           photos: uploadedImageKeys, // Image files
           // videos: uploadedVideoKeys, // Video files
+          youtube_links: youtubeLinks.map((l) => l.url).filter(Boolean),
         };
         // Determine API endpoint and method based on edit mode
         const apiEndpoint = isEditMode 
@@ -295,6 +299,7 @@ const PostProperty = () => {
           owner_phone: "",
         });
         setImageFiles([]);
+        setYoutubeLinks([]);
 
         setErrors({});
       } catch (error) {
@@ -780,6 +785,108 @@ const PostProperty = () => {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* YouTube Upload and Links */}
+          <div className="upload-section">
+            <h4>Property Video (YouTube)</h4>
+            <div className="form-group">
+              <a
+                className="youtube-upload-btn"
+                href="https://studio.youtube.com/channel/CHANNEL_ID/videos/upload"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="yt-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.01 3.01 0 0 0-2.118-2.13C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.556A3.01 3.01 0 0 0 .502 6.186C0 8.074 0 12 0 12s0 3.926.502 5.814a3.01 3.01 0 0 0 2.118 2.13C4.5 20.5 12 20.5 12 20.5s7.5 0 9.38-.556a3.01 3.01 0 0 0 2.118-2.13C24 15.926 24 12 24 12s0-3.926-.502-5.814ZM9.75 15.568V8.432L15.818 12 9.75 15.568Z"/>
+                  </svg>
+                </span>
+                Upload on YouTube
+              </a>
+              <div className="yt-note" role="note" aria-live="polite">
+                <span className="yt-note-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <circle cx="12" cy="16" r="1"/>
+                  </svg>
+                </span>
+                <span>
+                  Click the button above to upload your video on YouTube, then paste its link below.
+                </span>
+              </div>
+            </div>
+
+            {/* YouTube Links List */}
+            <div className="youtube-links-list">
+              {youtubeLinks.map((item, index) => (
+                <div key={`yt-${index}`} className={`youtube-link-row ${item.locked ? 'locked' : ''}`}>
+                  <input
+                    type="url"
+                    className="yt-link-input"
+                    placeholder="https://youtu.be/... or https://www.youtube.com/watch?v=..."
+                    value={item.url}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setYoutubeLinks((prev) => prev.map((l, i) => i === index ? { ...l, url: value } : l));
+                    }}
+                    disabled={item.locked}
+                  />
+                  <button
+                    type="button"
+                    className={`lock-btn ${item.locked ? 'locked' : ''}`}
+                    onClick={() => {
+                      setYoutubeLinks((prev) => prev.map((l, i) => i === index ? { ...l, locked: !l.locked } : l));
+                    }}
+                    aria-label={item.locked ? 'Unlock link' : 'Lock link'}
+                    title={item.locked ? 'Unlock link' : 'Lock link'}
+                  >
+                    {item.locked ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="4" y="11" width="16" height="9" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="4" y="11" width="16" height="9" rx="2"/>
+                        <path d="M12 11V7a5 5 0 0 1 9 0"/>
+                      </svg>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="yt-remove-btn"
+                    onClick={() => setYoutubeLinks((prev) => prev.filter((_, i) => i !== index))}
+                    aria-label="Remove link"
+                    title="Remove link"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="yt-reset-btn"
+                    onClick={() => setYoutubeLinks((prev) => prev.map((l, i) => i === index ? { ...l, url: "" } : l))}
+                    title="Reset all YouTube links"
+                  >
+                    Reset
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="yt-links-actions">
+              <button
+                type="button"
+                className="submit-btn"
+                onClick={() => setYoutubeLinks((prev) => [...prev, { url: "", locked: false }])}
+              >
+                Add Link
+              </button>
+            </div>
           </div>
         </div>
 
