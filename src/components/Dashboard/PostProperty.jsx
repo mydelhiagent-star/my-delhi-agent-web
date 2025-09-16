@@ -258,7 +258,7 @@ const PostProperty = () => {
           owner_phone: formData.owner_phone || "",
           photos: uploadedImageKeys, // Image files
           // videos: uploadedVideoKeys, // Video files
-          youtube_links: youtubeLinks.map((l) => l.url).filter(Boolean),
+          videos: youtubeLinks.map((l) => l.url).filter(Boolean),
         };
         // Determine API endpoint and method based on edit mode
         const apiEndpoint = isEditMode 
