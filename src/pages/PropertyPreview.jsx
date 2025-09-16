@@ -240,10 +240,19 @@ export default function PropertyPreview() {
                   className="gallery-image"
                 />
               ) : (
-                <video controls className="gallery-video">
-                  <source src={activeMedia.src} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                <iframe
+                  src={activeMedia.src}
+                  title="Property video"
+                  className="gallery-video"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    borderRadius: "8px"
+                  }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               )}
             </div>
           ) : (

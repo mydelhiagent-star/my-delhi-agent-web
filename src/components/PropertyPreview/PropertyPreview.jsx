@@ -127,16 +127,21 @@ export default function PropertyPreview({ property, onClose }) {
                   loading="eager"
                 />
               ) : (
-                <video 
-                  controls 
-                  style={{ 
-                    maxHeight: "100%", 
-                    maxWidth: "100%",
-                    objectFit: "contain"
-                  }}
+                <iframe
+                  src={
+                    'https://www.youtube.com/embed/5ZemEgs3fFA'
+                  }
+                  title="Property video_89"
+                  // style={{
+                  //   width: "100%",
+                  //   height: "100%",
+                  //   border: "none",
+                  //   borderRadius: "8px"
+                  // }}
+                  // allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  // allowFullScreen
                 >
-                  <source src={activeMedia.src} type="video/mp4" />
-                </video>
+                </iframe>
               )
             ) : (
               <div style={{ color: "#90a4ae" }}>No media available</div>
