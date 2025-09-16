@@ -279,9 +279,6 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/50 !rounded-xl !text-slate-100 !text-base !cursor-not-allowed !font-medium"
                   placeholder="Client name"
                 />
-                <div className="!text-xs !text-yellow-300 !mt-1">
-                  Debug: name = "{clientForm.name}"
-                </div>
               </div>
 
               {/* Phone Number - Frozen */}
@@ -298,9 +295,6 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/50 !rounded-xl !text-slate-100 !text-base !cursor-not-allowed !font-medium"
                   placeholder="Phone number"
                 />
-                <div className="!text-xs !text-yellow-300 !mt-1">
-                  Debug: phone = "{clientForm.phone}"
-                </div>
               </div>
 
               {/* Notes - Editable */}
