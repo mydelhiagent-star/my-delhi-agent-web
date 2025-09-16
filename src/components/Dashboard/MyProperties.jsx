@@ -171,7 +171,7 @@ const MyProperties = () => {
     window.open(previewUrl, "_blank", "noopener,noreferrer");
   };
 
-  // Slider helpers for property cards (show only images, up to first 4)
+ 
   const getCardImageList = (property) => {
     const imagesFromImages = Array.isArray(property.images) ? property.images : [];
     const imagesFromPhotos = Array.isArray(property.photos) ? property.photos : [];
@@ -237,18 +237,13 @@ const MyProperties = () => {
       const result = await response.json();
 
       if (result.success) {
-        // Remove property from local state
+        
         setProperties(prevProperties => 
           prevProperties.filter(property => property.id !== selectedProperty.id)
         );
         
-        // Show success message
         alert('Property deleted successfully');
-        
-        // Close modal
-       
-        
-        // Refresh properties list
+
         fetchProperties(currentPage);
       } else {
         alert(result.message || 'Failed to delete property');

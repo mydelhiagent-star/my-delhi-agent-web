@@ -9,7 +9,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
     name: "",
     phone: "",
     notes: "",
-    status: "unmarked"
+    status: "unmarked",
+    clientId: null
   });
   const [clientFormErrors, setClientFormErrors] = useState({});
   const [searchStep, setSearchStep] = useState("phone"); // "phone", "searching", "found", "notFound", "add"
@@ -78,11 +79,19 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
       if (result.success && result.data && result.data.length > 0) {
         // Client found - populate form (data is an array, get first client)
         const client = result.data[0];
-        setClientForm({
+        console.log("Client found:", client);
+        console.log("Setting form with:", {
           name: client.name || "",
           phone: client.phone || "",
           notes: client.note || client.notes || "",
           status: client.status || "unmarked"
+        });
+        setClientForm({
+          name: client.name || "",
+          phone: client.phone || "",
+          notes: client.note || client.notes || "",
+          status: client.status || "unmarked",
+          clientId: client.id
         });
         setSearchStep("found");
       } else {
@@ -104,7 +113,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
       name: "",
       phone: searchPhone,
       notes: "",
-      status: "unmarked"
+      status: "unmarked",
+      clientId: null
     });
   };
 
@@ -266,9 +276,12 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="name"
                   value={clientForm.name}
                   readOnly
-                  className="!w-full !px-4 !py-3 !bg-slate-600/40 !border !border-slate-500/30 !rounded-xl !text-slate-300 !text-base !cursor-not-allowed"
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/50 !rounded-xl !text-slate-100 !text-base !cursor-not-allowed !font-medium"
                   placeholder="Client name"
                 />
+                <div className="!text-xs !text-yellow-300 !mt-1">
+                  Debug: name = "{clientForm.name}"
+                </div>
               </div>
 
               {/* Phone Number - Frozen */}
@@ -282,9 +295,12 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="phone"
                   value={clientForm.phone}
                   readOnly
-                  className="!w-full !px-4 !py-3 !bg-slate-600/40 !border !border-slate-500/30 !rounded-xl !text-slate-300 !text-base !cursor-not-allowed"
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/50 !rounded-xl !text-slate-100 !text-base !cursor-not-allowed !font-medium"
                   placeholder="Phone number"
                 />
+                <div className="!text-xs !text-yellow-300 !mt-1">
+                  Debug: phone = "{clientForm.phone}"
+                </div>
               </div>
 
               {/* Notes - Editable */}
