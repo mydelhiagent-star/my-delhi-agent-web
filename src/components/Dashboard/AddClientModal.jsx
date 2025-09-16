@@ -75,13 +75,14 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
 
       const result = await response.json();
       
-      if (result.success && result.data) {
-        // Client found - populate form
+      if (result.success && result.data && result.data.length > 0) {
+        // Client found - populate form (data is an array, get first client)
+        const client = result.data[0];
         setClientForm({
-          name: result.data.name || "",
-          phone: result.data.phone || "",
-          notes: result.data.note || result.data.notes || "",
-          status: result.data.status || "unmarked"
+          name: client.name || "",
+          phone: client.phone || "",
+          notes: client.note || client.notes || "",
+          status: client.status || "unmarked"
         });
         setSearchStep("found");
       } else {
