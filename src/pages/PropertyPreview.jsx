@@ -27,21 +27,24 @@ export default function PropertyPreview() {
 
   useEffect(() => {
     if (preloaded) {
-      setProperty(preloaded);
+      setProperty(normalizeProperty(preloaded));
       setLoading(false);
       return;
     }
 
-    // Fetch property data from API
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_ENDPOINTS.PROPERTIES}?id=${id}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const token = localStorage.getItem('token');
+        const headers = { 'Authorization': `Bearer ${token}` };
+
+        // Try primary by ID path
+        let response = await fetch(`${API_ENDPOINTS.PROPERTIES}/${id}`, { method: 'GET', headers });
+
+        // Fallback to query param form if not OK
+        if (!response.ok) {
+          response = await fetch(`${API_ENDPOINTS.PROPERTIES}?id=${id}`, { method: 'GET', headers });
+        }
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -49,20 +52,31 @@ export default function PropertyPreview() {
 
         const result = await response.json();
 
-        // Handle different response structures
-        console.log('API Response:', result);
-        
-        if (result.success && result.data) {
-          setProperty(result.data);
-          console.log('Property data (from result.data):', result.data);
-        } else if (result.id || result.title) {
-          // Direct property object
-          setProperty(result);
-          console.log('Property data (direct):', result);
+        // Accept common shapes
+        let dataCandidate = null;
+        if (result?.success && result.data) {
+          dataCandidate = result.data;
+        } else if (Array.isArray(result)) {
+          dataCandidate = result;
+        } else if (result?.property) {
+          dataCandidate = result.property;
         } else {
-          console.error('Unexpected response structure:', result);
-          setError(result.message || 'Failed to fetch property details');
+          dataCandidate = result;
         }
+
+        let resolvedProperty = null;
+        if (Array.isArray(dataCandidate)) {
+          resolvedProperty = dataCandidate.find(p => String(p.id) === String(id)) || dataCandidate[0];
+        } else {
+          resolvedProperty = dataCandidate;
+        }
+
+        if (!resolvedProperty) {
+          setError('Property not found in API response');
+          return;
+        }
+
+        setProperty(normalizeProperty(resolvedProperty));
       } catch (error) {
         console.error('Error fetching property:', error);
         setError(`Failed to load property details: ${error.message}`);
@@ -76,12 +90,35 @@ export default function PropertyPreview() {
     }
   }, [id, preloaded]);
 
+  function normalizeProperty(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    const photos = Array.isArray(raw.photos) ? raw.photos : Array.isArray(raw.images) ? raw.images : [];
+    const videos = Array.isArray(raw.videos) ? raw.videos : [];
+    return {
+      id: raw.id,
+      title: raw.title || raw.name || 'Untitled Property',
+      description: raw.description || '',
+      address: raw.address || '',
+      nearest_landmark: raw.nearest_landmark || raw.landmark || '',
+      min_price: raw.min_price || raw.price_min || raw.price || null,
+      max_price: raw.max_price || raw.price_max || null,
+      property_type: raw.property_type || raw.type || '',
+      bedrooms: raw.bedrooms || raw.beds || null,
+      bathrooms: raw.bathrooms || raw.baths || null,
+      area: raw.area || raw.square_feet || raw.size || null,
+      owner_name: raw.owner_name || raw.owner || '',
+      owner_phone: raw.owner_phone || raw.phone || '',
+      created_at: raw.created_at || raw.createdAt || new Date().toISOString(),
+      photos,
+      videos,
+      images: Array.isArray(raw.images) ? raw.images : photos,
+    };
+  }
+
   const mediaItems = useMemo(() => {
     const photos = Array.isArray(property?.photos) ? property.photos.map((src) => ({ type: "image", src })) : [];
     const videos = Array.isArray(property?.videos) ? property.videos.map((src) => ({ type: "video", src })) : [];
     const images = Array.isArray(property?.images) ? property.images.map((src) => ({ type: "image", src })) : [];
-    
-    // Combine all media sources
     return [...photos, ...videos, ...images];
   }, [property]);
 
@@ -266,7 +303,6 @@ export default function PropertyPreview() {
 
       {/* Main Content */}
       <main className="preview-main">
-
         {/* Action Buttons */}
         <section className="action-buttons-section">
           <div className="action-buttons-grid">
