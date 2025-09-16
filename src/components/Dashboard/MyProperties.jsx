@@ -515,9 +515,7 @@ const MyProperties = () => {
                             aria-label="Previous image"
                             title="Previous"
                           >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="15,18 9,12 15,6" />
-                            </svg>
+                            
                           </button>
                           <button
                             className="card-slider-nav next"
@@ -525,9 +523,7 @@ const MyProperties = () => {
                             aria-label="Next image"
                             title="Next"
                           >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="9,18 15,12 9,6" />
-                            </svg>
+                           
                           </button>
                           <div className="card-slider-dots">
                             {imageList.map((_, dotIdx) => (
