@@ -4,6 +4,7 @@ import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
+import DashboardLayout from "./components/Dashboard/DashboardLayout";
 import PostPropertyPage from "./pages/Dashboard/PostPropertyPage";
 import MyPropertiesPage from "./pages/Dashboard/MyPropertiesPage";
 import MyClientsPage from "./pages/Dashboard/MyClientsPage";
@@ -58,7 +59,9 @@ function App() {
           path="/dashboard/all-clients"
           element={
             <ProtectedRoute requiredRole="dealer">
-              <AllClientsPage />
+              <DashboardLayout>
+                <AllClientsPage />
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -66,7 +69,9 @@ function App() {
           path="/dashboard/inquiry"
           element={
             <ProtectedRoute requiredRole="dealer">
-              <InquiryPage />
+              <DashboardLayout>
+                <InquiryPage />
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
