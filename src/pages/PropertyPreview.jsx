@@ -5,7 +5,6 @@ import "./PropertyPreview.css";
 
 export default function PropertyPreview() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const location = useLocation();
   const preloaded = location.state && location.state.property ? location.state.property : null;
 

@@ -36,6 +36,16 @@ const PostProperty = () => {
   // YouTube links state (multiple) with lock toggle per item
   const [youtubeLinks, setYoutubeLinks] = useState([]);
 
+  // Function to convert YouTube URL to embed URL
+  const toEmbedUrl = (youtubeUrl) => {
+    const regex = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|live\/|embed\/))([a-zA-Z0-9_-]{11})/;
+    const match = youtubeUrl.match(regex);
+    if (match && match[1]) {
+      return `https://www.youtube.com/embed/${match[1]}`;
+    }
+    return null; // invalid URL
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -258,7 +268,7 @@ const PostProperty = () => {
           owner_phone: formData.owner_phone || "",
           photos: uploadedImageKeys, // Image files
           // videos: uploadedVideoKeys, // Video files
-          videos: youtubeLinks.map((l) => l.url).filter(Boolean),
+          videos: youtubeLinks.map((l) => l.url).filter(Boolean).map(url => toEmbedUrl(url)).filter(Boolean),
         };
         // Determine API endpoint and method based on edit mode
         const apiEndpoint = isEditMode 
