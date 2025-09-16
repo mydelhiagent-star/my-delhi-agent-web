@@ -117,8 +117,7 @@ export default function PropertyPreview() {
   const mediaItems = useMemo(() => {
     const photos = Array.isArray(property?.photos) ? property.photos.map((src) => ({ type: "image", src })) : [];
     const videos = Array.isArray(property?.videos) ? property.videos.map((src) => ({ type: "video", src })) : [];
-    const images = Array.isArray(property?.images) ? property.images.map((src) => ({ type: "image", src })) : [];
-    return [...photos, ...videos, ...images];
+    return [...photos, ...videos];
   }, [property]);
 
   const canShowMedia = mediaItems.length > 0;
