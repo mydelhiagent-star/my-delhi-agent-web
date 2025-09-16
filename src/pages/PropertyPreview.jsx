@@ -131,6 +131,22 @@ export default function PropertyPreview() {
   const goNext = () =>
     setCurrentImageIndex((i) => (mediaItems.length === 0 ? 0 : (i + 1) % mediaItems.length));
 
+  // Function to extract YouTube video ID
+  const getYouTubeVideoId = (url) => {
+    const regex = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|live\/|embed\/))([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  // Function to get YouTube thumbnail URL
+  const getYouTubeThumbnail = (url) => {
+    const videoId = getYouTubeVideoId(url);
+    if (videoId) {
+      return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    }
+    return null;
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -297,9 +313,17 @@ export default function PropertyPreview() {
                   <img src={item.src} alt={`Thumbnail ${index + 1}`} />
                 ) : (
                   <div className="video-thumbnail">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <polygon points="5,3 19,12 5,21" />
-                    </svg>
+                    {getYouTubeThumbnail(item.src) ? (
+                      <img 
+                        src={getYouTubeThumbnail(item.src)} 
+                        alt={`Video thumbnail ${index + 1}`}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5,3 19,12 5,21" />
+                      </svg>
+                    )}
                   </div>
                 )}
               </button>
