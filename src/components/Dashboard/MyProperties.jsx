@@ -274,11 +274,11 @@ const MyProperties = () => {
     setShowPropertyClientsModal(true);
   };
 
-  // Add Client Handler
+  
   const handleAddClientSubmit = async (clientData) => {
     try {
-      // Make API call to add client to the selected property
-      const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
+      
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${clientData.clientId}/properties`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -286,32 +286,29 @@ const MyProperties = () => {
         },
         body: JSON.stringify({
           property_id: selectedProperty.id,
-          dealer_id: selectedProperty.dealer_id,
-          name: clientData.name,
-          phone: clientData.phone,
           note: clientData.notes,
-          status: clientData.status
+          status: clientData.status,
+
         }),
       });
-
+  
       const result = await response.json();
       
       if (!result.success) {
-        alert(result.message || "Failed to add client");
+        alert(result.message || "Failed to add client to property");
         return;
       }
-
-      // Show success message
-      alert("Client added successfully!");
+  
+      alert("Client added to property successfully!");
       
-      // Refresh the properties list to show updated client data
+     
       fetchProperties(currentPage);
       
-      // Close modal
+      
       setShowAddClientModal(false);
     } catch (error) {
-      console.error("Error adding client:", error);
-      alert("Failed to add client. Please try again.");
+      console.error("Error adding client to property:", error);
+      alert("Failed to add client to property. Please try again.");
     }
   };
 
