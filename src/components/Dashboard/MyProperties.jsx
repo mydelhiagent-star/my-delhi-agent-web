@@ -42,9 +42,9 @@ const MyProperties = () => {
   const fetchProperties = async (page = 1) => {
     setIsLoading(true);
     try {
-      // Request 21 items instead of 20 to check if there are more
+      // Request 13 items instead of 12 to check if there are more
       const response = await fetch(
-        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=12`,
+        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=13`,
         {
           method: "GET",
           headers: {
@@ -69,13 +69,13 @@ const MyProperties = () => {
         }));
 
         // Check if there are more pages
-        const hasMorePages = processedProperties.length === 21;
-        // const actualProperties = hasMorePages
-        //   ? processedProperties.slice(0, 20)
-        //   : processedProperties;
+        const hasMorePages = processedProperties.length === 13;
+        const actualProperties = hasMorePages
+          ? processedProperties.slice(0, 12)
+          : processedProperties;
 
         // Update all properties
-        setProperties(processedProperties);
+        setProperties(actualProperties);
 
         // Set pagination info
         setCurrentPage(page);
@@ -87,6 +87,8 @@ const MyProperties = () => {
           // This is the last page
           setTotalPages(page);
         }
+
+        console.log(`Page ${page}: ${actualProperties.length} properties, hasMorePages: ${hasMorePages}, totalPages: ${hasMorePages ? Math.max(totalPages, page + 1) : page}`);
 
         
       } else {
