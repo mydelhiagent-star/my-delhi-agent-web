@@ -7,7 +7,7 @@ export default function AllClientsPage() {
   const [clients, setClients] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("name");
+  const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -70,22 +70,24 @@ export default function AllClientsPage() {
       (client.note || client.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Sort clients
-    filtered.sort((a, b) => {
-      let aValue = a[sortBy];
-      let bValue = b[sortBy];
+    // Sort clients only if sortBy is set
+    if (sortBy) {
+      filtered.sort((a, b) => {
+        let aValue = a[sortBy];
+        let bValue = b[sortBy];
 
-      if (sortBy === "createdAt") {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      }
+        if (sortBy === "createdAt") {
+          aValue = new Date(aValue);
+          bValue = new Date(bValue);
+        }
 
-      if (sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
+        if (sortOrder === "asc") {
+          return aValue > bValue ? 1 : -1;
+        } else {
+          return aValue < bValue ? 1 : -1;
+        }
+      });
+    }
 
     // Calculate total pages
     const totalFilteredItems = filtered.length;
