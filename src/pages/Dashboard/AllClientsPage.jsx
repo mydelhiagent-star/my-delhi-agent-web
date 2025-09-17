@@ -21,137 +21,18 @@ export default function AllClientsPage() {
     phone: "",
     notes: ""
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 20;
 
-  // Dummy data for clients
-  const dummyClients = [
-    {
-      id: 1,
-      name: "Rajesh Kumar",
-      phone: "9876543210",
-      email: "rajesh.kumar@email.com",
-      location: "Delhi",
-      subLocation: "Connaught Place",
-      propertyType: "Commercial",
-      budget: "₹50,00,000 - ₹75,00,000",
-      status: "active",
-      lastContact: "2024-01-15",
-      notes: "Looking for office space in CP area",
-      assignedProperties: ["Property #123", "Property #456"],
-      createdAt: "2024-01-10"
-    },
-    {
-      id: 2,
-      name: "Priya Sharma",
-      phone: "8765432109",
-      email: "priya.sharma@email.com",
-      location: "Gurgaon",
-      subLocation: "Sector 29",
-      propertyType: "Residential",
-      budget: "₹1,00,00,000 - ₹1,50,00,000",
-      status: "active",
-      lastContact: "2024-01-14",
-      notes: "Interested in 3BHK apartment",
-      assignedProperties: ["Property #789"],
-      createdAt: "2024-01-08"
-    },
-    {
-      id: 3,
-      name: "Amit Singh",
-      phone: "7654321098",
-      email: "amit.singh@email.com",
-      location: "Noida",
-      subLocation: "Sector 62",
-      propertyType: "Residential",
-      budget: "₹80,00,000 - ₹1,20,00,000",
-      status: "pending",
-      lastContact: "2024-01-12",
-      notes: "First-time buyer, needs guidance",
-      assignedProperties: [],
-      createdAt: "2024-01-05"
-    },
-    {
-      id: 4,
-      name: "Sunita Gupta",
-      phone: "6543210987",
-      email: "sunita.gupta@email.com",
-      location: "Delhi",
-      subLocation: "Karol Bagh",
-      propertyType: "Commercial",
-      budget: "₹30,00,000 - ₹50,00,000",
-      status: "inactive",
-      lastContact: "2024-01-01",
-      notes: "Looking for retail space",
-      assignedProperties: ["Property #321"],
-      createdAt: "2023-12-28"
-    },
-    {
-      id: 5,
-      name: "Vikram Mehta",
-      phone: "5432109876",
-      email: "vikram.mehta@email.com",
-      location: "Faridabad",
-      subLocation: "Sector 15",
-      propertyType: "Residential",
-      budget: "₹60,00,000 - ₹90,00,000",
-      status: "active",
-      lastContact: "2024-01-13",
-      notes: "Looking for investment property",
-      assignedProperties: ["Property #654", "Property #987"],
-      createdAt: "2024-01-03"
-    },
-    {
-      id: 6,
-      name: "Neha Agarwal",
-      phone: "4321098765",
-      email: "neha.agarwal@email.com",
-      location: "Delhi",
-      subLocation: "Lajpat Nagar",
-      propertyType: "Residential",
-      budget: "₹1,20,00,000 - ₹1,80,00,000",
-      status: "active",
-      lastContact: "2024-01-16",
-      notes: "Looking for luxury apartment",
-      assignedProperties: ["Property #147"],
-      createdAt: "2024-01-11"
-    },
-    {
-      id: 7,
-      name: "Ravi Verma",
-      phone: "3210987654",
-      email: "ravi.verma@email.com",
-      location: "Ghaziabad",
-      subLocation: "Vaishali",
-      propertyType: "Commercial",
-      budget: "₹40,00,000 - ₹60,00,000",
-      status: "pending",
-      lastContact: "2024-01-09",
-      notes: "Office space for startup",
-      assignedProperties: [],
-      createdAt: "2024-01-07"
-    },
-    {
-      id: 8,
-      name: "Kavita Joshi",
-      phone: "2109876543",
-      email: "kavita.joshi@email.com",
-      location: "Delhi",
-      subLocation: "Pitampura",
-      propertyType: "Residential",
-      budget: "₹70,00,000 - ₹1,00,00,000",
-      status: "active",
-      lastContact: "2024-01-14",
-      notes: "Family looking for 2BHK",
-      assignedProperties: ["Property #258"],
-      createdAt: "2024-01-06"
-    }
-  ];
+  
 
   useEffect(() => {
     const fetchClients = async () => {
       setIsLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=${itemsPerPage}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
@@ -203,8 +84,18 @@ export default function AllClientsPage() {
       }
     });
 
+    // Calculate total pages
+    const totalFilteredItems = filtered.length;
+    const totalPagesCount = Math.ceil(totalFilteredItems / itemsPerPage);
+    setTotalPages(totalPagesCount);
+
+    // Reset to page 1 if current page is greater than total pages
+    if (currentPage > totalPagesCount && totalPagesCount > 0) {
+      setCurrentPage(1);
+    }
+
     setFilteredClients(filtered);
-  }, [clients, searchTerm, sortBy, sortOrder]);
+  }, [clients, searchTerm, sortBy, sortOrder, currentPage]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -217,6 +108,41 @@ export default function AllClientsPage() {
       setSortBy(field);
       setSortOrder("asc");
     }
+  };
+
+  // Pagination functions
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   };
 
   const handleView = (client) => {
@@ -495,7 +421,9 @@ export default function AllClientsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredClients.map((client) => (
+                {filteredClients
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((client) => (
                   <tr key={client.id}>
                     <td>
                       <div className="client-name-cell">
@@ -567,6 +495,71 @@ export default function AllClientsPage() {
           </div>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {!isLoading && filteredClients.length > 0 && totalPages > 1 && (
+        <div className="pagination-container">
+          <div className="pagination-info">
+            <span>
+              Showing{" "}
+              <span className="font-semibold">
+                {Math.min((currentPage - 1) * itemsPerPage + 1, filteredClients.length)}
+              </span>{" "}
+              to{" "}
+              <span className="font-semibold">
+                {Math.min(currentPage * itemsPerPage, filteredClients.length)}
+              </span>{" "}
+              of <span className="font-semibold">{filteredClients.length}</span>{" "}
+              clients
+            </span>
+          </div>
+
+          <div className="pagination-controls">
+            {/* Previous Button */}
+            <button
+              className={`pagination-btn prev-btn ${
+                currentPage === 1 ? "disabled" : ""
+              }`}
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="15,18 9,12 15,6" />
+              </svg>
+              Previous
+            </button>
+
+            {/* Page Numbers */}
+            <div className="page-numbers">
+              {getPageNumbers().map((pageNum) => (
+                <button
+                  key={pageNum}
+                  className={`pagination-btn page-btn ${
+                    currentPage === pageNum ? "active" : ""
+                  }`}
+                  onClick={() => handlePageChange(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              ))}
+            </div>
+
+            {/* Next Button */}
+            <button
+              className={`pagination-btn next-btn ${
+                currentPage === totalPages ? "disabled" : ""
+              }`}
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9,18 15,12 9,6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && createPortal(
