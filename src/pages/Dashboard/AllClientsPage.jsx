@@ -241,8 +241,31 @@ export default function AllClientsPage() {
     setShowModal(true);
   };
 
-  const confirmDelete = () => {
-    setClients(clients.filter(client => client.id !== selectedClient.id));
+  const confirmDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${selectedClient.id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Remove from local state only after successful API call
+        setClients(clients.filter(client => client.id !== selectedClient.id));
+        alert("Client deleted successfully!");
+      } else {
+        alert(result.message || "Failed to delete client");
+      }
+    } catch (error) {
+      console.error("Error deleting client:", error);
+      alert("Failed to delete client. Please try again.");
+    }
+    
+    // Close modal and reset state
     setShowModal(false);
     setSelectedClient(null);
     setModalType("");
