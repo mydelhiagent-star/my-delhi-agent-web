@@ -42,9 +42,9 @@ const MyProperties = () => {
   const fetchProperties = async (page = 1) => {
     setIsLoading(true);
     try {
-      // Request 13 items instead of 12 to check if there are more
+      // First, get the main data (12 properties)
       const response = await fetch(
-        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=13`,
+        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=12`,
         {
           method: "GET",
           headers: {
@@ -68,35 +68,57 @@ const MyProperties = () => {
               : property.created_at,
         }));
 
-        // Check if there are more pages
-        const hasMorePages = processedProperties.length === 13;
-        const actualProperties = hasMorePages
-          ? processedProperties.slice(0, 12)
-          : processedProperties;
-
-        // Update all properties
-        setProperties(actualProperties);
-
-        // Set pagination info
+        // Update properties
+        setProperties(processedProperties);
         setCurrentPage(page);
 
-        if (hasMorePages) {
-          // There are more pages
-          setTotalPages(Math.max(totalPages, page + 1));
+        // Check if there are more pages by making a test call
+        if (processedProperties.length === 12) {
+          try {
+            const testResponse = await fetch(
+              `${API_ENDPOINTS.PROPERTIES}?page=${page + 1}&limit=1`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            
+            const testResult = await testResponse.json();
+            const hasMore = testResult.success && testResult.data && testResult.data.length > 0;
+            
+            console.log(`Test call for page ${page + 1}:`, {
+              success: testResult.success,
+              dataLength: testResult.data ? testResult.data.length : 0,
+              hasMore: hasMore,
+              testData: testResult.data
+            });
+            
+            if (hasMore) {
+              setTotalPages(Math.max(totalPages, page + 1));
+            } else {
+              setTotalPages(page);
+            }
+            
+            console.log(`Page ${page}: ${processedProperties.length} properties, hasMore: ${hasMore}, totalPages: ${hasMore ? Math.max(totalPages, page + 1) : page}`);
+          } catch (testError) {
+            console.error("Error checking for more pages:", testError);
+            setTotalPages(page);
+          }
         } else {
-          // This is the last page
+          // Less than 12 properties means this is the last page
           setTotalPages(page);
+          console.log(`Page ${page}: ${processedProperties.length} properties (last page), totalPages: ${page}`);
         }
-
-        console.log(`Page ${page}: ${actualProperties.length} properties, hasMorePages: ${hasMorePages}, totalPages: ${hasMorePages ? Math.max(totalPages, page + 1) : page}`);
-
         
       } else {
         console.error("Failed to fetch properties:", result.message);
       }
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      } finally {
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
       setIsLoading(false);
     }
   };

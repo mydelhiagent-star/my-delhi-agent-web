@@ -32,7 +32,9 @@ export default function AllClientsPage() {
       setIsLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=${itemsPerPage}`, {
+        
+        // Get all clients with high limit
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?limit=100`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
@@ -41,6 +43,7 @@ export default function AllClientsPage() {
         const result = await response.json();
         
         if (result.success) {
+          console.log(`Fetched ${result.data.length} clients from API`);
           setClients(result.data);
           setFilteredClients(result.data);
         } else {
@@ -499,20 +502,7 @@ export default function AllClientsPage() {
       {/* Pagination Controls */}
       {!isLoading && filteredClients.length > 0 && totalPages > 1 && (
         <div className="pagination-container">
-          <div className="pagination-info">
-            <span>
-              Showing{" "}
-              <span className="font-semibold">
-                {Math.min((currentPage - 1) * itemsPerPage + 1, filteredClients.length)}
-              </span>{" "}
-              to{" "}
-              <span className="font-semibold">
-                {Math.min(currentPage * itemsPerPage, filteredClients.length)}
-              </span>{" "}
-              of <span className="font-semibold">{filteredClients.length}</span>{" "}
-              clients
-            </span>
-          </div>
+         
 
           <div className="pagination-controls">
             {/* Previous Button */}
