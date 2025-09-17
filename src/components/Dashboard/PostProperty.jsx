@@ -879,8 +879,8 @@ const PostProperty = () => {
                   <button
                     type="button"
                     className="yt-reset-btn"
-                    onClick={() => setYoutubeLinks((prev) => prev.map((l, i) => i === index ? { ...l, url: "" } : l))}
-                    title="Reset all YouTube links"
+                    onClick={() => setYoutubeLinks((prev) => prev.map((l, i) => i === index ? { ...l, url: "", locked: false } : l))}
+                    title="Reset this YouTube link"
                   >
                     Reset
                   </button>
