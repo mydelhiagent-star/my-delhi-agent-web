@@ -76,7 +76,7 @@ const MyProperties = () => {
         if (processedProperties.length === 12) {
           try {
             const testResponse = await fetch(
-              `${API_ENDPOINTS.PROPERTIES}?page=${page + 1}&limit=1`,
+              `${API_ENDPOINTS.PROPERTIES}?page=${page + 1}&limit=12`,
               {
                 method: "GET",
                 headers: {
@@ -98,14 +98,15 @@ const MyProperties = () => {
             
             if (hasMore) {
               setTotalPages(Math.max(totalPages, page + 1));
+              console.log(`Page ${page}: ${processedProperties.length} properties, hasMore: ${hasMore}, totalPages: ${Math.max(totalPages, page + 1)}`);
             } else {
               setTotalPages(page);
+              console.log(`Page ${page}: ${processedProperties.length} properties, hasMore: ${hasMore}, totalPages: ${page} (NO MORE PAGES)`);
             }
-            
-            console.log(`Page ${page}: ${processedProperties.length} properties, hasMore: ${hasMore}, totalPages: ${hasMore ? Math.max(totalPages, page + 1) : page}`);
           } catch (testError) {
             console.error("Error checking for more pages:", testError);
             setTotalPages(page);
+            console.log(`Page ${page}: Error in test call, setting totalPages: ${page}`);
           }
         } else {
           // Less than 12 properties means this is the last page
@@ -116,9 +117,9 @@ const MyProperties = () => {
       } else {
         console.error("Failed to fetch properties:", result.message);
       }
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-    } finally {
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
       setIsLoading(false);
     }
   };
@@ -137,7 +138,7 @@ const MyProperties = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
+    if (currentPage < totalPages && properties.length > 0) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -253,7 +254,7 @@ const MyProperties = () => {
     try {
       const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${selectedProperty.id}`, {
         method: 'DELETE',
-        headers: {
+      headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
@@ -303,7 +304,7 @@ const MyProperties = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
           property_id: selectedProperty.id,
           note: clientData.notes,
           status: clientData.status,
@@ -455,7 +456,7 @@ const MyProperties = () => {
             onChange={handleSearch}
             className="search-input"
           />
-        </div>
+              </div>
 
         
             </div>
@@ -603,7 +604,7 @@ const MyProperties = () => {
                 </svg>
               </button>
 
-              <button
+            <button
                 className="action-btn add-client"
                 onClick={(e) => handleAddClient(property, e)}
                 title="Add Client"
@@ -621,9 +622,9 @@ const MyProperties = () => {
                   <line x1="19" y1="8" x2="19" y2="14" />
                   <line x1="22" y1="11" x2="16" y2="11" />
                 </svg>
-              </button>
-              
-              <button
+            </button>
+            
+            <button
                 className="action-btn view-clients"
                 onClick={(e) => handleViewClients(property, e)}
                 title="View Clients"
@@ -662,7 +663,7 @@ const MyProperties = () => {
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-              </button>
+            </button>
             </div>
           </div>
         ))}
@@ -787,10 +788,10 @@ const MyProperties = () => {
               {/* Next Button */}
                       <button
                 className={`pagination-btn next-btn ${
-                  currentPage === totalPages ? "disabled" : ""
+                  currentPage === totalPages || properties.length === 0 ? "disabled" : ""
                 }`}
                 onClick={handleNextPage}
-                disabled={currentPage === totalPages || isLoading}
+                disabled={currentPage === totalPages || isLoading || properties.length === 0}
                 aria-label="Next page"
               >
                 <span>Next</span>
@@ -1001,9 +1002,9 @@ const MyProperties = () => {
                       <circle cx="12" cy="7" r="4" />
                     </svg>
                     <span>{showOwnerInfo ? "Hide" : "Show"} Owner Info</span>
-                  </button>
+              </button>
 
-                  <button
+                <button
                     className="action-btn description-btn"
                     onClick={toggleDescription}
                   >
@@ -1022,9 +1023,9 @@ const MyProperties = () => {
                       <polyline points="10,9 9,9 8,9" />
                     </svg>
                     <span>{showDescription ? "Hide" : "Show"} Description</span>
-                  </button>
+                </button>
 
-                  <button
+                <button
                     className="action-btn specs-btn"
                     onClick={toggleSpecifications}
                   >
@@ -1066,9 +1067,9 @@ const MyProperties = () => {
                       {showClients ? "Hide" : "Show"} Clients (
                       {selectedProperty.clients.length})
                     </span>
-              </button>
-            </div>
+                </button>
               </div>
+            </div>
 
               {/* Price Information (Collapsible) */}
               {showPrice && (
@@ -1108,9 +1109,9 @@ const MyProperties = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              )}
+          </div>
+        </div>
+      )}
 
               {/* Address Information (Collapsible) */}
               {showAddress && (
@@ -1154,7 +1155,7 @@ const MyProperties = () => {
                           <span className="value">
                             {selectedProperty.nearest_landmark}
                           </span>
-                        </div>
+            </div>
                       </div>
                     </div>
                   </div>
@@ -1246,8 +1247,8 @@ const MyProperties = () => {
                             <span className="label">Property Type:</span>
                             <span className="value">
                               {selectedProperty.property_type}
-                            </span>
-                          </div>
+                              </span>
+                                  </div>
                         </div>
                         <div className="spec-item">
                           <svg
@@ -1446,7 +1447,7 @@ const MyProperties = () => {
                 {modalType === "addClient" && "Add Client"}
                 {modalType === "viewClients" && "Property Clients"}
               </h3>
-              <button
+                              <button
                 className="modal-close"
                 onClick={closeModal}
                 aria-label="Close modal"
@@ -1474,9 +1475,9 @@ const MyProperties = () => {
                   <p className="warning-text">This action cannot be undone.</p>
                   <div className="modal-actions">
                     <button className="btn-cancel" onClick={closeModal}>
-                      Cancel
-                    </button>
-                    <button 
+                                Cancel
+                              </button>
+                              <button
                       className="btn-delete" 
                       onClick={confirmDelete}
                       disabled={isDeleting}
