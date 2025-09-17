@@ -298,9 +298,16 @@ export default function AllClientsPage() {
           return;
         }
 
-        // Update client in the list
+        // Update client in the list - create updated client object
+        const updatedClientData = {
+          id: editingClient.id,
+          name: newClient.name.trim(),
+          phone: newClient.phone.trim(),
+          note: newClient.notes.trim(),
+          created_at: editingClient.created_at || new Date().toISOString()
+        };
         setClients(prev => prev.map(client => 
-          client.id === editingClient.id ? result.data : client
+          client.id === editingClient.id ? updatedClientData : client
         ));
         
         alert("Client updated successfully!");
@@ -326,8 +333,15 @@ export default function AllClientsPage() {
           return;
         }
 
-        // Add to clients list
-        setClients(prev => [...prev, result.data]);
+        // Add to clients list - create client object from response
+        const newClientData = {
+          id: result.data.id,
+          name: newClient.name.trim(),
+          phone: newClient.phone.trim(),
+          note: newClient.notes.trim(),
+          created_at: new Date().toISOString()
+        };
+        setClients(prev => [...prev, newClientData]);
         
         alert("Client added successfully!");
       }
