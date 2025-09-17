@@ -296,7 +296,10 @@ export default function AllClientsPage() {
           note: newClient.notes.trim(),
           created_at: new Date().toISOString()
         };
-        setClients(prev => [...prev, newClientData]);
+        setClients(prev => [newClientData, ...prev]);
+        
+        // Reset to page 1 to show the new client
+        setCurrentPage(1);
         
         alert("Client added successfully!");
       }
