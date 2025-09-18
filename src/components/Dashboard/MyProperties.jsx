@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import "./MyProperties.css";
 import { API_ENDPOINTS } from "../../config/api";
@@ -1419,8 +1420,24 @@ const MyProperties = () => {
       )}
 
       {/* Action Modals */}
-      {showModal && (
-        <div className="modal-overlay" onClick={closeModal}>
+      {showModal && createPortal(
+        <div 
+          className="modal-overlay" 
+          onClick={closeModal}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>
@@ -1529,7 +1546,8 @@ const MyProperties = () => {
 
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Add Client Modal */}
