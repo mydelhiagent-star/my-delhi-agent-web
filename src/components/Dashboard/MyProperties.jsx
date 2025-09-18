@@ -228,7 +228,7 @@ const MyProperties = () => {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}${selectedProperty.id}`, {
+      const response = await fetch(`${API_ENDPOINTS.PROPERTIES_DEALER}/${selectedProperty.id}`, {
         method: 'DELETE',
       headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
