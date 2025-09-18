@@ -42,9 +42,9 @@ const MyProperties = () => {
   const fetchProperties = async (page = 1) => {
     setIsLoading(true);
     try {
-      // First, get the main data (12 properties)
+      // Request 13 items instead of 12 to check if there are more
       const response = await fetch(
-        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=12`,
+        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=13`,
         {
           method: "GET",
           headers: {
@@ -68,58 +68,33 @@ const MyProperties = () => {
               : property.created_at,
         }));
 
+        // Check if there are more pages
+        const hasMorePages = processedProperties.length === 13;
+        const actualProperties = hasMorePages
+          ? processedProperties.slice(0, 12)  // Show only 12 if more exist
+          : processedProperties;               // Show all if this is the last page
+
         // Update properties
-        setProperties(processedProperties);
+        setProperties(actualProperties);
         setCurrentPage(page);
 
-        // Check if there are more pages by making a test call
-        if (processedProperties.length === 12) {
-          try {
-            const testResponse = await fetch(
-              `${API_ENDPOINTS.PROPERTIES}?page=${page + 1}&limit=12`,
-              {
-                method: "GET",
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            
-            const testResult = await testResponse.json();
-            const hasMore = testResult.success && testResult.data && testResult.data.length > 0;
-            
-            console.log(`Test call for page ${page + 1}:`, {
-              success: testResult.success,
-              dataLength: testResult.data ? testResult.data.length : 0,
-              hasMore: hasMore,
-              testData: testResult.data
-            });
-            
-            if (hasMore) {
-              setTotalPages(Math.max(totalPages, page + 1));
-              console.log(`Page ${page}: ${processedProperties.length} properties, hasMore: ${hasMore}, totalPages: ${Math.max(totalPages, page + 1)}`);
-            } else {
-              setTotalPages(page);
-              console.log(`Page ${page}: ${processedProperties.length} properties, hasMore: ${hasMore}, totalPages: ${page} (NO MORE PAGES)`);
-            }
-          } catch (testError) {
-            console.error("Error checking for more pages:", testError);
-            setTotalPages(page);
-            console.log(`Page ${page}: Error in test call, setting totalPages: ${page}`);
-          }
+        // Set pagination info
+        if (hasMorePages) {
+          // There are more pages
+          setTotalPages(Math.max(totalPages, page + 1));
+          console.log(`Page ${page}: ${actualProperties.length} properties, hasMore: true, totalPages: ${Math.max(totalPages, page + 1)}`);
         } else {
-          // Less than 12 properties means this is the last page
+          // This is the last page
           setTotalPages(page);
-          console.log(`Page ${page}: ${processedProperties.length} properties (last page), totalPages: ${page}`);
+          console.log(`Page ${page}: ${actualProperties.length} properties (last page), totalPages: ${page}`);
         }
         
       } else {
         console.error("Failed to fetch properties:", result.message);
       }
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      } finally {
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -462,8 +437,14 @@ const MyProperties = () => {
             </div>
 
       {/* Properties Grid/List */}
-      <div className={`properties-container ${viewMode}`}>
-        {filteredProperties.map((property) => (
+      {isLoading ? (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading properties...</p>
+        </div>
+      ) : (
+        <div className={`properties-container ${viewMode}`}>
+          {filteredProperties.map((property) => (
           <div
             key={property.id}
             className={`property-card ${viewMode}`}
@@ -666,11 +647,12 @@ const MyProperties = () => {
             </button>
             </div>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* No Results */}
-      {filteredProperties.length === 0 && (
+      {/* No Results - only show when not loading */}
+      {!isLoading && filteredProperties.length === 0 && (
         <div className="no-results">
           <svg
             width="64"
