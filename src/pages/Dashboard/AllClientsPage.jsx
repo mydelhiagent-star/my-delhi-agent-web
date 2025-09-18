@@ -33,8 +33,8 @@ export default function AllClientsPage() {
       try {
         const token = localStorage.getItem("token");
         
-        // Get all clients with high limit
-        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?limit=100`, {
+        // Request 21 items instead of 20 to check if there are more
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=21`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
@@ -43,27 +43,41 @@ export default function AllClientsPage() {
         const result = await response.json();
         
         if (result.success) {
-          console.log(`Fetched ${result.data.length} clients from API`);
-          setClients(result.data);
-          setFilteredClients(result.data);
+          // Check if there are more pages
+          const hasMorePages = result.data.length === 21;
+          const actualClients = hasMorePages
+            ? result.data.slice(0, 20)  // Show only 20 if more exist
+            : result.data;               // Show all if this is the last page
+
+          // Update clients
+          setClients(actualClients);
+          setFilteredClients(actualClients);
+
+          // Set pagination info
+          if (hasMorePages) {
+            // There are more pages
+            setTotalPages(Math.max(totalPages, currentPage + 1));
+            console.log(`Page ${currentPage}: ${actualClients.length} clients, hasMore: true, totalPages: ${Math.max(totalPages, currentPage + 1)}`);
+          } else {
+            // This is the last page
+            setTotalPages(currentPage);
+            console.log(`Page ${currentPage}: ${actualClients.length} clients (last page), totalPages: ${currentPage}`);
+          }
         } else {
           console.error("Failed to fetch clients:", result.message);
-          setClients([]);
-          setFilteredClients([]);
         }
       } catch (error) {
         console.error("Error fetching clients:", error);
-        setClients([]);
-        setFilteredClients([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchClients();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
+    // For server-side pagination, we only filter the current page's data
     let filtered = clients.filter(client =>
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.phone.includes(searchTerm) ||
@@ -89,18 +103,15 @@ export default function AllClientsPage() {
       });
     }
 
-    // Calculate total pages
-    const totalFilteredItems = filtered.length;
-    const totalPagesCount = Math.ceil(totalFilteredItems / itemsPerPage);
-    setTotalPages(totalPagesCount);
+    setFilteredClients(filtered);
+  }, [clients, searchTerm, sortBy, sortOrder]);
 
-    // Reset to page 1 if current page is greater than total pages
-    if (currentPage > totalPagesCount && totalPagesCount > 0) {
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    if (searchTerm) {
       setCurrentPage(1);
     }
-
-    setFilteredClients(filtered);
-  }, [clients, searchTerm, sortBy, sortOrder, currentPage]);
+  }, [searchTerm]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
