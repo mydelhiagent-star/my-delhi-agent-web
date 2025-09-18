@@ -20,18 +20,32 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
   // Reset modal state when opening/closing
   useEffect(() => {
     if (isOpen) {
-      setSearchStep("phone");
-      setSearchPhone("");
+      // If we have initialData (edit mode), skip phone search and go directly to edit form
+      if (initialData) {
+        setSearchStep("found"); // Skip to the edit form
+        setClientForm({
+          name: initialData.name || "",
+          phone: initialData.phone || "",
+          notes: initialData.notes || "",
+          status: initialData.status || "unmarked",
+          clientId: initialData.clientId || null
+        });
+      } else {
+        // Add mode - start with phone search
+        setSearchStep("phone");
+        setSearchPhone("");
+        setClientForm({
+          name: "",
+          phone: "",
+          notes: "",
+          status: "unmarked",
+          clientId: null
+        });
+      }
       setIsSearching(false);
-      setClientForm({
-        name: "",
-        phone: "",
-        notes: "",
-        status: "unmarked"
-      });
       setClientFormErrors({});
     }
-  }, [isOpen]);
+  }, [isOpen, initialData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -262,10 +276,12 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
           {searchStep === "found" && (
             <form onSubmit={handleSubmit}>
               <div className="!mb-4 !p-4 !bg-green-900/20 !border !border-green-500/30 !rounded-xl">
-                <p className="!text-green-300 !text-sm !font-medium">✓ Client found! You can edit notes and status below.</p>
+                <p className="!text-green-300 !text-sm !font-medium">
+                  {initialData ? "✓ Edit client information below." : "✓ Client found! You can edit notes and status below."}
+                </p>
               </div>
               
-              {/* Client Name - Frozen */}
+              {/* Client Name */}
               <div className="!mb-6">
                 <label htmlFor="clientName" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
                   Client Name *
@@ -275,13 +291,18 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   id="clientName"
                   name="name"
                   value={clientForm.name}
-                  readOnly
-                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/50 !rounded-xl !text-slate-100 !text-base !cursor-not-allowed !font-medium"
+                  onChange={handleInputChange}
+                  readOnly={!initialData} // Only editable in edit mode
+                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium ${
+                    initialData 
+                      ? "!border-slate-400/20 !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80" 
+                      : "!border-slate-400/50 !cursor-not-allowed"
+                  }`}
                   placeholder="Client name"
                 />
               </div>
 
-              {/* Phone Number - Frozen */}
+              {/* Phone Number */}
               <div className="!mb-6">
                 <label htmlFor="clientPhone" className="!block !text-base !font-semibold !text-slate-200 !mb-3">
                   Phone Number *
@@ -291,8 +312,13 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   id="clientPhone"
                   name="phone"
                   value={clientForm.phone}
-                  readOnly
-                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/50 !rounded-xl !text-slate-100 !text-base !cursor-not-allowed !font-medium"
+                  onChange={handleInputChange}
+                  readOnly={!initialData} // Only editable in edit mode
+                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium ${
+                    initialData 
+                      ? "!border-slate-400/20 !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80" 
+                      : "!border-slate-400/50 !cursor-not-allowed"
+                  }`}
                   placeholder="Phone number"
                 />
               </div>
@@ -343,7 +369,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   type="submit"
                   className="!px-6 !py-3 !bg-gradient-to-r !from-cyan-500 !to-cyan-600 hover:!from-cyan-600 hover:!to-cyan-700 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5 hover:!shadow-[0_10px_25px_rgba(6,182,212,0.3)]"
                 >
-                  Add Client to Property
+                  {initialData ? "Update Client" : "Add Client to Property"}
                 </button>
               </div>
             </form>
