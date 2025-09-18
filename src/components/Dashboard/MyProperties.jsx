@@ -273,8 +273,50 @@ const MyProperties = () => {
   
   const handleAddClientSubmit = async (clientData) => {
     try {
-      
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${clientData.clientId}/properties`, {
+      let clientId = clientData.clientId;
+
+      // If clientId is null, create a new client first
+      if (!clientId) {
+        console.log("Creating new client:", clientData);
+        
+        const createClientResponse = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            name: clientData.name,
+            phone: clientData.phone,
+            note: clientData.notes,
+            status: clientData.status,
+            properties: [{
+              property_id: selectedProperty.id,
+              note: clientData.notes,
+              status: clientData.status
+            }]
+          }),
+        });
+
+        const createClientResult = await createClientResponse.json();
+        
+        if (!createClientResult.success) {
+          alert(createClientResult.message || "Failed to create client");
+          return;
+        }
+
+        clientId = createClientResult.data.id;
+        console.log("New client created with ID:", clientId);
+        
+        // For new clients, the property association is already handled in the create request
+        alert("Client created and added to property successfully!");
+        fetchProperties(currentPage);
+        setShowAddClientModal(false);
+        return;
+      }
+
+      // For existing clients, associate with the property
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${clientId}/properties`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -284,7 +326,6 @@ const MyProperties = () => {
           property_id: selectedProperty.id,
           note: clientData.notes,
           status: clientData.status,
-
         }),
       });
   
