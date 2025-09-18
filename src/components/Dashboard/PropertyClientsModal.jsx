@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { API_ENDPOINTS } from "../../config/api";
 import AddClientModal from "./AddClientModal";
 
@@ -140,7 +141,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div 
@@ -444,7 +445,8 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
           </div>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 };
 
