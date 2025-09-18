@@ -16,7 +16,8 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const fetchPropertyClients = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?property_id=${property.id}`, {
+      console.log(property.id)
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?properties_property_id=${property.id}`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
