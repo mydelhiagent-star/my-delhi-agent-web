@@ -69,9 +69,12 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
       return;
     }
   
-    // Validate phone number format
+    // Clean the phone number first (remove all non-digits)
+    const cleanedPhone = searchPhone.replace(/\D/g, "");
+    
+    // Validate cleaned phone number format
     const phoneRegex = /^[6-9]\d{9}$/;
-    if (!phoneRegex.test(searchPhone.replace(/\D/g, ""))) {
+    if (!phoneRegex.test(cleanedPhone)) {
       alert("Please enter a valid 10-digit phone number");
       return;
     }
@@ -81,7 +84,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
   
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${searchPhone}&properties_property_id=${propertyId}&aggregation=true`, {
+      // Use cleaned phone number for API call
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${cleanedPhone}&properties_property_id=${propertyId}&aggregation=true`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
