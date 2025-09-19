@@ -45,10 +45,11 @@ export default function AllClientsPage() {
         if (result.success) {
           // Check if there are more pages
           const hasMorePages = result.data.length === 21;
-           window.location.reload();
+           
           const actualClients = hasMorePages
             ? result.data.slice(0, 20)  // Show only 20 if more exist
             : result.data;               // Show all if this is the last page
+            window.location.reload();
 
           // Update clients
           setClients(actualClients);
