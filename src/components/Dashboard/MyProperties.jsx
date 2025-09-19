@@ -1596,6 +1596,7 @@ const MyProperties = () => {
         isOpen={showAddClientModal}
         onClose={() => setShowAddClientModal(false)}
         onSubmit={handleAddClientSubmit}
+        propertyId={selectedProperty?.id}
       />
 
       {/* Property Clients Modal */}

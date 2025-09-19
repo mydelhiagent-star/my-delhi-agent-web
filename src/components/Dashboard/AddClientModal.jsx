@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { API_ENDPOINTS } from "../../config/api";
 
-const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title = "Add Client" }) => {
+const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title = "Add Client", propertyId = null }) => {
   const [clientForm, setClientForm] = useState({
     name: "",
     phone: "",
@@ -81,7 +81,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${searchPhone}`, {
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${searchPhone}&properties_property_id=${propertyId}`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
