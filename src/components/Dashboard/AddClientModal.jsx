@@ -209,7 +209,9 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
       >
         {/* Header */}
         <div className="flex items-center justify-between !p-4 border-b border-slate-700">
-          <h2 className="text-xl font-bold text-white">{title}</h2>
+          <h2 className="text-xl font-bold text-white">
+            {searchStep === "found" && !initialData ? "Edit Client" : title}
+          </h2>
           <button
             onClick={handleClose}
             className="text-slate-400 hover:text-white transition-colors duration-200 p-1 rounded-lg hover:bg-slate-700"
@@ -277,7 +279,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
             <form onSubmit={handleSubmit}>
               <div className="!mb-4 !p-4 !bg-green-900/20 !border !border-green-500/30 !rounded-xl">
                 <p className="!text-green-300 !text-sm !font-medium">
-                  {initialData ? "✓ Edit client information below." : "✓ Client found! You can edit notes and status below."}
+                  ✓ Client found. Edit client information below.
                 </p>
               </div>
               
@@ -292,12 +294,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="name"
                   value={clientForm.name}
                   onChange={handleInputChange}
-                  readOnly={!initialData} // Only editable in edit mode
-                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium ${
-                    initialData 
-                      ? "!border-slate-400/20 !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80" 
-                      : "!border-slate-400/50 !cursor-not-allowed"
-                  }`}
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80"
                   placeholder="Client name"
                 />
               </div>
@@ -313,12 +310,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="phone"
                   value={clientForm.phone}
                   onChange={handleInputChange}
-                  readOnly={!initialData} // Only editable in edit mode
-                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium ${
-                    initialData 
-                      ? "!border-slate-400/20 !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80" 
-                      : "!border-slate-400/50 !cursor-not-allowed"
-                  }`}
+                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80"
                   placeholder="Phone number"
                 />
               </div>
