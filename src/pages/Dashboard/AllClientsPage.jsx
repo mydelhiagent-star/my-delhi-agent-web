@@ -49,7 +49,7 @@ export default function AllClientsPage() {
           const actualClients = hasMorePages
             ? result.data.slice(0, 20)  // Show only 20 if more exist
             : result.data;               // Show all if this is the last page
-            window.location.reload();
+          
 
           // Update clients
           setClients(actualClients);
@@ -68,6 +68,7 @@ export default function AllClientsPage() {
         } else {
           console.error("Failed to fetch clients:", result.message);
         }
+          window.location.reload();
       } catch (error) {
         console.error("Error fetching clients:", error);
       } finally {
