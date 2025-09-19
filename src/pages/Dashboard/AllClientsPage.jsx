@@ -306,24 +306,39 @@ export default function AllClientsPage() {
           return;
         }
 
-        // Add to clients list - create client object from response
-        const newClientData = {
-          id: result.data.id,
-          name: newClient.name.trim(),
-          phone: newClient.phone.trim(),
-          note: newClient.notes.trim(),
-          created_at: new Date().toISOString()
-        };
-        setClients(prev => [newClientData, ...prev]);
+        // Check if we're at the page limit
+        const currentClientsCount = clients.length;
+        const isAtPageLimit = currentClientsCount >= itemsPerPage;
 
-        if (clients.length == itemsPerPage) {
-          window.location.reload();
+        if (isAtPageLimit) {
+         
+          
+          
+         
+            const newClientData = {
+              id: result.data.id,
+              name: newClient.name.trim(),
+              phone: newClient.phone.trim(),
+              note: newClient.notes.trim(),
+              created_at: new Date().toISOString()
+            };
+            
+            setClients(prev => [newClientData, ...prev]);
+            setTotalPages(prev => Math.max(prev, currentPage + 1));
+          
+        } else {
+          // Normal case - just add the client
+          const newClientData = {
+            id: result.data.id,
+            name: newClient.name.trim(),
+            phone: newClient.phone.trim(),
+            note: newClient.notes.trim(),
+            created_at: new Date().toISOString()
+          };
+          
+          setClients(prev => [newClientData, ...prev]);
+          alert("Client added successfully!");
         }
-
-        // Reset to page 1 to show the new client
-        setCurrentPage(1);
-        
-        alert("Client added successfully!");
       }
       
       // Reset form and close modal
