@@ -294,9 +294,14 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="name"
                   value={clientForm.name}
                   onChange={handleInputChange}
-                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80"
+                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
+                    clientFormErrors.name ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
+                  }`}
                   placeholder="Client name"
                 />
+                {clientFormErrors.name && (
+                  <span className="!block !text-red-300 !text-sm !mt-2">{clientFormErrors.name}</span>
+                )}
               </div>
 
               {/* Phone Number */}
@@ -310,9 +315,14 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="phone"
                   value={clientForm.phone}
                   onChange={handleInputChange}
-                  className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80"
+                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
+                    clientFormErrors.phone ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
+                  }`}
                   placeholder="Phone number"
                 />
+                {clientFormErrors.phone && (
+                  <span className="!block !text-red-300 !text-sm !mt-2">{clientFormErrors.phone}</span>
+                )}
               </div>
 
               {/* Notes - Editable */}
