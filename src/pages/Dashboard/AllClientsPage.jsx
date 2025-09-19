@@ -34,7 +34,7 @@ export default function AllClientsPage() {
         const token = localStorage.getItem("token");
         
         // Request 21 items instead of 20 to check if there are more
-        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=21`, {
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=20`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
