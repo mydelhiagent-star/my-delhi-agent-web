@@ -294,8 +294,11 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="name"
                   value={clientForm.name}
                   onChange={handleInputChange}
+                  readOnly={!initialData} // Lock when client is found by search (not in direct edit mode)
                   className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
                     clientFormErrors.name ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
+                  } ${
+                    !initialData ? "!border-slate-400/50 !cursor-not-allowed" : ""
                   }`}
                   placeholder="Client name"
                 />
@@ -315,8 +318,11 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="phone"
                   value={clientForm.phone}
                   onChange={handleInputChange}
+                  readOnly={!initialData} // Lock when client is found by search (not in direct edit mode)
                   className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
                     clientFormErrors.phone ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
+                  } ${
+                    !initialData ? "!border-slate-400/50 !cursor-not-allowed" : ""
                   }`}
                   placeholder="Phone number"
                 />
@@ -381,7 +387,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
           {searchStep === "notFound" && (
             <div>
               <div className="!mb-6 !p-4 !bg-red-900/20 !border !border-red-500/30 !rounded-xl">
-                <p className="!text-red-300 !text-sm !font-medium">✗ No client found with phone number: {searchPhone}</p>
+                <p className="!text-red-300 !text-sm !font-medium">✗ Please add client first with this phone number {searchPhone}</p>
               </div>
               <div className="!flex !gap-4 !justify-end !pt-4">
                 <button
@@ -390,13 +396,6 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   className="!px-6 !py-3 !bg-slate-600 hover:!bg-slate-500 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5"
                 >
                   Back
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAddNewClient}
-                  className="!px-6 !py-3 !bg-gradient-to-r !from-green-500 !to-green-600 hover:!from-green-600 hover:!to-green-700 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5 hover:!shadow-[0_10px_25px_rgba(34,197,94,0.3)]"
-                >
-                  Add New Client
                 </button>
               </div>
             </div>
