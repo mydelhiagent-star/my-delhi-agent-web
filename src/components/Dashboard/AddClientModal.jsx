@@ -68,46 +68,49 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
       alert("Please enter a phone number");
       return;
     }
-
+  
     // Validate phone number format
     const phoneRegex = /^[6-9]\d{9}$/;
     if (!phoneRegex.test(searchPhone.replace(/\D/g, ""))) {
       alert("Please enter a valid 10-digit phone number");
       return;
     }
-
+  
     setIsSearching(true);
     setSearchStep("searching");
-
+  
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${searchPhone}&properties_property_id=${propertyId}`, {
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${searchPhone}&properties_property_id=${propertyId}&aggregation=true`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
         },
       });
-
+  
       const result = await response.json();
       
       if (result.success && result.data && result.data.length > 0) {
-        // Client found - populate form (data is an array, get first client)
         const client = result.data[0];
-        console.log("Client found:", client);
-        console.log("Setting form with:", {
-          name: client.name || "",
-          phone: client.phone || "",
-          notes: client.note || client.notes || "",
-          status: client.status || "unmarked"
-        });
-        setClientForm({
-          name: client.name || "",
-          phone: client.phone || "",
-          notes: client.note || client.notes || "",
-          status: client.status || "unmarked",
-          clientId: client.id
-        });
-        setSearchStep("found");
+        
+        // Check if the specific property is already associated with this client
+        const isPropertyAssociated = client.properties && client.properties.some(prop => prop.property_id === propertyId);
+        
+        if (isPropertyAssociated) {
+          // Client with this phone number is already added to this property
+          setSearchStep("clientAlreadyAdded");
+        } else {
+          // Client exists but this specific property is not associated - can add
+          console.log("Client found:", client);
+          setClientForm({
+            name: client.name || "",
+            phone: client.phone || "",
+            notes: client.note || client.notes || "",
+            status: client.status || "unmarked",
+            clientId: client.id
+          });
+          setSearchStep("found");
+        }
       } else {
         // Client not found
         setSearchStep("notFound");
@@ -383,7 +386,25 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
             </form>
           )}
 
-          {/* Step 4: Client Not Found */}
+          {/* Step 4: Client Already Added */}
+          {searchStep === "clientAlreadyAdded" && (
+            <div>
+              <div className="!mb-6 !p-4 !bg-yellow-900/20 !border !border-yellow-500/30 !rounded-xl">
+                <p className="!text-yellow-300 !text-sm !font-medium">⚠ Client with this phone number {searchPhone} is already added to this property</p>
+              </div>
+              <div className="!flex !gap-4 !justify-end !pt-4">
+                <button
+                  type="button"
+                  onClick={() => setSearchStep("phone")}
+                  className="!px-6 !py-3 !bg-slate-600 hover:!bg-slate-500 !text-white !font-semibold !text-base !rounded-xl !transition-all !duration-200 hover:!-translate-y-0.5"
+                >
+                  Back
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Client Not Found */}
           {searchStep === "notFound" && (
             <div>
               <div className="!mb-6 !p-4 !bg-red-900/20 !border !border-red-500/30 !rounded-xl">
@@ -401,7 +422,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
             </div>
           )}
 
-          {/* Step 5: Add New Client */}
+          {/* Step 6: Add New Client */}
           {searchStep === "add" && (
             <form onSubmit={handleSubmit}>
               <div className="!mb-4 !p-4 !bg-blue-900/20 !border !border-blue-500/30 !rounded-xl">
@@ -419,8 +440,11 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="name"
                   value={clientForm.name}
                   onChange={handleInputChange}
+                  readOnly={clientForm.clientId !== null} // Read-only if client already exists
                   className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
                     clientFormErrors.name ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
+                  } ${
+                    clientForm.clientId !== null ? "!border-slate-400/50 !cursor-not-allowed" : ""
                   }`}
                   placeholder="Enter client's full name"
                   required
