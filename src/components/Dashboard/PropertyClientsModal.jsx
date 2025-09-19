@@ -17,7 +17,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
     setIsLoading(true);
     try {
       console.log(property.id)
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?properties_property_id=${property.id}?aggregation=true`, {
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?properties_property_id=${property.id}&aggregation=true`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
