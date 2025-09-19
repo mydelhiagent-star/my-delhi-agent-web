@@ -66,10 +66,11 @@ export default function AllClientsPage() {
             console.log(`Page ${currentPage}: ${actualClients.length} clients (last page), totalPages: ${currentPage}`);
           }
         } 
-        window.location.reload();
+        
         else {
           console.error("Failed to fetch clients:", result.message);
         }
+        window.location.reload();
           
       } catch (error) {
         console.error("Error fetching clients:", error);
