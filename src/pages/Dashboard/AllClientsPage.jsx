@@ -70,7 +70,7 @@ export default function AllClientsPage() {
         else {
           console.error("Failed to fetch clients:", result.message);
         }
-        window.location.reload();
+        
           
       } catch (error) {
         console.error("Error fetching clients:", error);
@@ -233,6 +233,7 @@ export default function AllClientsPage() {
   };
 
   const handleAddClientSubmit = async (e) => {
+   
     e.preventDefault();
     
     if (!newClient.name.trim() || !newClient.phone.trim()) {
@@ -314,7 +315,11 @@ export default function AllClientsPage() {
           created_at: new Date().toISOString()
         };
         setClients(prev => [newClientData, ...prev]);
-        
+
+        if (clients.length == itemsPerPage) {
+          window.location.reload();
+        }
+
         // Reset to page 1 to show the new client
         setCurrentPage(1);
         
