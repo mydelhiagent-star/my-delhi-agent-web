@@ -34,7 +34,7 @@ export default function AllClientsPage() {
         const token = localStorage.getItem("token");
         
         // Request 21 items instead of 20 to check if there are more
-        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=20`, {
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=${itemsPerPage}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
@@ -441,7 +441,7 @@ export default function AllClientsPage() {
               </thead>
               <tbody>
                 {filteredClients
-                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  
                   .map((client) => (
                   <tr key={client.id}>
                     <td>
