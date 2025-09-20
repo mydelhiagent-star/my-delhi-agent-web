@@ -7,6 +7,8 @@ import "./MyProperties.css";
 import { API_ENDPOINTS } from "../../config/api";
 import AddClientModal from "./AddClientModal";
 import PropertyClientsModal from "./PropertyClientsModal";
+import Pagination from "../common/Pagination";
+import "../common/Pagination.css";
 
 const MyProperties = () => {
   const navigate = useNavigate();
@@ -100,7 +102,7 @@ const MyProperties = () => {
     }
   };
 
-  // Add these functions after fetchProperties
+  // Pagination functions for the new Pagination component
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -117,26 +119,6 @@ const MyProperties = () => {
     if (currentPage < totalPages && properties.length > 0) {
       setCurrentPage(currentPage + 1);
     }
-  };
-
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      const start = Math.max(1, currentPage - 2);
-      const end = Math.min(totalPages, start + maxVisiblePages - 1);
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-    }
-
-    return pages;
   };
 
   // Filtered properties based on search
@@ -737,101 +719,17 @@ const MyProperties = () => {
             </div> */}
 
             {/* Pagination Controls */}
-            <div className="pagination-controls">
-              {/* Previous Button */}
-              <button
-                className={`pagination-btn prev-btn ${
-                  currentPage === 1 ? "disabled" : ""
-                }`}
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1 || isLoading}
-                aria-label="Previous page"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <polyline points="15,18 9,12 15,6" />
-                </svg>
-                <span>Previous</span>
-              </button>
-
-              {/* Page Numbers */}
-              <div className="pagination-numbers">
-                {/* First Page */}
-                {currentPage > 3 && (
-                  <>
-                    <button
-                      className="pagination-number"
-                      onClick={() => handlePageChange(1)}
-                      disabled={isLoading}
-                    >
-                      1
-                    </button>
-                    {currentPage > 4 && (
-                      <span className="pagination-ellipsis">...</span>
-                    )}
-                  </>
-                )}
-
-                {/* Page Numbers */}
-                {getPageNumbers().map((page) => (
-                      <button
-                    key={page}
-                    className={`pagination-number ${
-                      currentPage === page ? "active" : ""
-                    }`}
-                    onClick={() => handlePageChange(page)}
-                    disabled={isLoading}
-                  >
-                    {page}
-                      </button>
-                ))}
-
-                {/* Last Page */}
-                {currentPage < totalPages - 2 && (
-                  <>
-                    {currentPage < totalPages - 3 && (
-                      <span className="pagination-ellipsis">...</span>
-                    )}
-                    <button
-                      className="pagination-number"
-                      onClick={() => handlePageChange(totalPages)}
-                      disabled={isLoading}
-                    >
-                      {totalPages}
-                    </button>
-                  </>
-                )}
-            </div>
-
-              {/* Next Button */}
-                      <button
-                className={`pagination-btn next-btn ${
-                  currentPage === totalPages || properties.length === 0 ? "disabled" : ""
-                }`}
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages || isLoading || properties.length === 0}
-                aria-label="Next page"
-              >
-                <span>Next</span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <polyline points="9,18 15,12 9,6" />
-                </svg>
-                      </button>
-                    </div>
-              </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              onPreviousPage={handlePreviousPage}
+              onNextPage={handleNextPage}
+              itemsPerPage={12}
+              totalItems={properties.length}
+              showItemsInfo={true}
+            />
+          </div>
         </div>
       )}
 
