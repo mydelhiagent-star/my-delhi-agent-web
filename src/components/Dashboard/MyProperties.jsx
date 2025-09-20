@@ -221,14 +221,29 @@ const MyProperties = () => {
       const result = await response.json();
 
       if (result.success) {
+        // Check if this was the last item on current page
+        const wasLastItemOnPage = properties.length === 1;
         
+        // Remove from local state
         setProperties(prevProperties => 
           prevProperties.filter(property => property.id !== selectedProperty.id)
         );
         
         alert('Property deleted successfully');
 
-        fetchProperties(currentPage);
+        // Smart pagination adjustment
+        if (wasLastItemOnPage && currentPage > 1) {
+          // If this was the last item on current page, go to previous page
+          setCurrentPage(currentPage - 1);
+        } else {
+          // Otherwise, refetch current page to get updated data
+          await fetchProperties(currentPage);
+          
+          // Double-check: if current page is still empty after refetch, go to previous page
+          if (properties.length === 0 && currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+          }
+        }
       } else {
         alert(result.message || 'Failed to delete property');
       }

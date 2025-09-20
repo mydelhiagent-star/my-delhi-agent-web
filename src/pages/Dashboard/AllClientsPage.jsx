@@ -189,9 +189,75 @@ export default function AllClientsPage() {
       const result = await response.json();
       
       if (result.success) {
+        // Check if this was the last item on current page
+        const wasLastItemOnPage = clients.length === 1;
+        
         // Remove from local state only after successful API call
         setClients(clients.filter(client => client.id !== selectedClient.id));
         alert("Client deleted successfully!");
+        
+        // Smart pagination adjustment
+        if (wasLastItemOnPage && currentPage > 1) {
+          // If this was the last item on current page, go to previous page
+          setCurrentPage(currentPage - 1);
+        } else {
+          // Refetch current page to get updated data
+          const fetchClients = async () => {
+            setIsLoading(true);
+            try {
+              const token = localStorage.getItem("token");
+              
+              // Request 21 items instead of 20 to check if there are more
+              const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?page=${currentPage}&limit=${itemsPerPage}`, {
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                },
+              });
+
+              const result = await response.json();
+              
+              if (result.success) {
+                // Check if there are more pages
+                const hasMorePages = result.data.length === 21;
+                 
+                const actualClients = hasMorePages
+                  ? result.data.slice(0, 20)  // Show only 20 if more exist
+                  : result.data;               // Show all if this is the last page
+                
+
+                // Update clients
+                setClients(actualClients);
+                setFilteredClients(actualClients);
+
+                // Set pagination info
+                if (hasMorePages) {
+                  // There are more pages
+                  setTotalPages(Math.max(totalPages, currentPage + 1));
+                } else {
+                  // This is the last page
+                  setTotalPages(currentPage);
+                }
+                
+                // Double-check: if current page is still empty after refetch, go to previous page
+                if (actualClients.length === 0 && currentPage > 1) {
+                  setCurrentPage(currentPage - 1);
+                }
+              } 
+              
+              else {
+                console.error("Failed to fetch clients:", result.message);
+              }
+              
+                
+            } catch (error) {
+              console.error("Error fetching clients:", error);
+            } finally {
+              setIsLoading(false);
+            }
+          };
+          
+          fetchClients();
+        }
       } else {
         alert(result.message || "Failed to delete client");
       }
