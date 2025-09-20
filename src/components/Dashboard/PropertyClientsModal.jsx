@@ -91,29 +91,17 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
       // Check if any data has changed
       console.log('Editing Client:', editingClient);
       console.log('Client Data:', clientData);
-      const hasChanges = 
-        editingClient.name !== clientData.name ||
-        editingClient.phone !== clientData.phone ||
-        editingClient.note !== clientData.notes; // Handle both 'notes' and 'note' fields
-        console.log('Has Changes:', hasChanges);
+      
 
-      if (!hasChanges) {
-        alert('No changes detected. Nothing to update.');
-        setShowEditModal(false);
-        setEditingClient(null);
-        return;
-      }
-
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${editingClient.id}`, {
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${editingClient.id}/properties/${editingClient.properties[0].property_id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
-          name: clientData.name,
-          phone: clientData.phone,
-          notes: clientData.notes,
+          note: clientData.notes,
+          status: clientData.status
         }),
       });
       
@@ -222,7 +210,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                       {/* Status Column */}
                       <div className="col-span-3 !flex !items-center">
                         <select
-                          value={client.status || 'unmarked'}
+                          value={client?.properties?.[0]?.status || 'unmarked'}
                           onChange={async (e) => {
                             const newStatus = e.target.value;
                             try {
@@ -250,7 +238,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                             }
                           }}
                           className={`!px-3 !py-1 !rounded-lg !text-sm !font-semibold !border-0 !outline-none !transition-all !duration-200 !cursor-pointer ${
-                            client.status === 'marked'
+                            client?.properties?.[0]?.status === 'marked'
                               ? '!bg-red-500 !text-white hover:!bg-red-600'
                               : '!bg-green-500 !text-white hover:!bg-green-600'
                           }`}
@@ -326,7 +314,8 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
         initialData={editingClient ? {
           name: editingClient.name,
           phone: editingClient.phone,
-          notes: editingClient.notes
+          notes: editingClient?.properties?.[0]?.note,
+          status: editingClient?.properties?.[0]?.status
         } : null}
         title="Edit Client"
       />
@@ -423,11 +412,11 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                     <span className="!text-slate-300 !font-semibold !text-xs sm:!text-sm">Status</span>
                   </div>
                   <div className={`!inline-flex !items-center !px-2 sm:!px-3 !py-1 !rounded-full !text-xs sm:!text-sm !font-semibold ${
-                    viewingClient.status === 'marked' 
+                    viewingClient?.properties?.[0]?.status === 'marked' 
                       ? '!bg-red-500 !text-white' 
                       : '!bg-green-500 !text-white'
                   }`}>
-                    {viewingClient.status === 'marked' ? 'Marked' : 'Unmarked'}
+                    {viewingClient?.properties?.[0]?.status === 'marked' ? 'Marked' : 'Unmarked'}
                   </div>
                 </div>
               </div>
