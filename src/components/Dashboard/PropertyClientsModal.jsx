@@ -16,7 +16,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const [viewingClient, setViewingClient] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   const fetchPropertyClients = useCallback(async (page = 1) => {
     setIsLoading(true);
@@ -34,9 +34,9 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
       
       if (result.success) {
         // Check if there are more pages
-        const hasMorePages = result.data.length === 11;
+        const hasMorePages = result.data.length === itemsPerPage + 1;
         const actualClients = hasMorePages
-          ? result.data.slice(0, 10)  // Show only 10 if more exist
+          ? result.data.slice(0, itemsPerPage)  // Show only 10 if more exist
           : result.data;               // Show all if this is the last page
 
         // Update clients
