@@ -65,7 +65,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const handleDeleteClient = async (client) => {
     if (window.confirm(`Are you sure you want to delete ${client.name}?`)) {
       try {
-        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${client.id}`, {
+        const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${client.id}/properties/${client.properties[0].property_id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
