@@ -85,7 +85,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
     try {
       const token = localStorage.getItem("token");
       // Use cleaned phone number for API call
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${cleanedPhone}&properties_property_id_ne=${propertyId}`, {
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?phone=${cleanedPhone}&properties_property_id=${propertyId}&aggregation=true`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
