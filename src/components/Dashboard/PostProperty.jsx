@@ -272,7 +272,7 @@ const PostProperty = () => {
         };
         // Determine API endpoint and method based on edit mode
         const apiEndpoint = isEditMode 
-          ? `${API_ENDPOINTS.PROPERTIES_DEALER}${editPropertyData.id}`
+          ? `${API_ENDPOINTS.PROPERTIES_DEALER}/${editPropertyData.id}`
           : API_ENDPOINTS.PROPERTIES_DEALER;
         const method = isEditMode ? "PUT" : "POST";
 
@@ -329,7 +329,7 @@ const PostProperty = () => {
     }
   };
 
-  // Add this function before uploadFilesToCloudflare (around line 244)
+  
   const compressImage = (file, quality = 0.9, maxWidth = 1600) => {
     return new Promise((resolve) => {
       const canvas = document.createElement("canvas");
@@ -337,9 +337,9 @@ const PostProperty = () => {
       const img = new Image();
 
       img.onload = () => {
-        URL.revokeObjectURL(img.src); // Clean up
+        URL.revokeObjectURL(img.src); 
 
-        // Skip compression if image is small and already JPEG
+        
         if (
           img.width <= maxWidth &&
           img.height <= maxWidth &&
