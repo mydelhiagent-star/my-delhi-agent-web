@@ -529,16 +529,16 @@ export default function AllClientsPage() {
 
       {/* Pagination Controls */}
       {!isLoading && filteredClients.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          onPreviousPage={handlePreviousPage}
-          onNextPage={handleNextPage}
-          itemsPerPage={itemsPerPage}
-          totalItems={clients.length}
-          showItemsInfo={true}
-        />
+       <Pagination
+         currentPage={currentPage}
+         totalPages={totalPages}
+         onPageChange={handlePageChange}
+         onPreviousPage={handlePreviousPage}
+         onNextPage={handleNextPage}
+         itemsPerPage={itemsPerPage}
+         totalItems={clients.length}
+         showItemsInfo={false}
+       />
       )}
 
       {/* Modal */}

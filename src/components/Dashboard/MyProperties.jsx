@@ -31,6 +31,7 @@ const MyProperties = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [cardImageIndexById, setCardImageIndexById] = useState({});
+  const itemsPerPage = 12;
   
   // Add Client Modal State
   const [showAddClientModal, setShowAddClientModal] = useState(false);
@@ -47,7 +48,7 @@ const MyProperties = () => {
     try {
       // Request 13 items instead of 12 to check if there are more
       const response = await fetch(
-        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=12`,
+        `${API_ENDPOINTS.PROPERTIES}?page=${page}&limit=${itemsPerPage}`,
         {
           method: "GET",
           headers: {
@@ -725,9 +726,9 @@ const MyProperties = () => {
               onPageChange={handlePageChange}
               onPreviousPage={handlePreviousPage}
               onNextPage={handleNextPage}
-              itemsPerPage={12}
+              itemsPerPage={itemsPerPage}
               totalItems={properties.length}
-              showItemsInfo={true}
+              showItemsInfo={false}
             />
           </div>
         </div>
