@@ -109,8 +109,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
           setClientForm({
             name: client.name || "",
             phone: client.phone || "",
-            notes: client.note || client.notes || "",
-            status: client.status || "unmarked",
+            notes:   "",
+            status:  "unmarked",
             clientId: client.id
           });
           setSearchStep("found");
@@ -329,6 +329,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   <span className="!block !text-red-300 !text-sm !mt-2">{clientFormErrors.phone}</span>
                 )}
               </div>
+
 
               {/* Notes - Editable */}
               <div className="!mb-6">
