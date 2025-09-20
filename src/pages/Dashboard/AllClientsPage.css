@@ -533,6 +533,11 @@
 .info-item span {
   font-size: 0.875rem;
   color: #e2e8f0;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  line-height: 1.4;
 }
 
 .assigned-properties {
