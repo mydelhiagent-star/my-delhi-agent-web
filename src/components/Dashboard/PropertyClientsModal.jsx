@@ -206,7 +206,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
         {/* Header */}
         <div className="flex items-center justify-between !p-4 border-b border-slate-700">
           <div>
-            <h2 className="text-xl font-bold text-white">{property?.title} Clients</h2>
+            <h2 className="text-xl font-bold text-white">Clients</h2>
           </div>
           <button
             onClick={handleClose}
