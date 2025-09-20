@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { API_ENDPOINTS } from "../../config/api";
 import AddClientModal from "./AddClientModal";
+import Pagination from "../common/Pagination";
+import "../common/Pagination.css";
 
 const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const [clients, setClients] = useState([]);
@@ -12,12 +14,16 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
   const [editingClient, setEditingClient] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingClient, setViewingClient] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
 
-  const fetchPropertyClients = useCallback(async () => {
+  const fetchPropertyClients = useCallback(async (page = 1) => {
     setIsLoading(true);
     try {
       console.log(property.id)
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?properties_property_id=${property.id}&array_filters=properties_property_id&aggregation=true`, {
+      // Request 11 items instead of 10 to check if there are more
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?properties_property_id=${property.id}&array_filters=properties_property_id&aggregation=true&page=${page}&limit=${itemsPerPage}&sort=properties_created_at`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -27,7 +33,26 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
       const result = await response.json();
       
       if (result.success) {
-        setClients(result.data || []);
+        // Check if there are more pages
+        const hasMorePages = result.data.length === 11;
+        const actualClients = hasMorePages
+          ? result.data.slice(0, 10)  // Show only 10 if more exist
+          : result.data;               // Show all if this is the last page
+
+        // Update clients
+        setClients(actualClients);
+        setCurrentPage(page);
+
+        // Set pagination info
+        if (hasMorePages) {
+          // There are more pages
+          setTotalPages(Math.max(totalPages, page + 1));
+          console.log(`Page ${page}: ${actualClients.length} clients, hasMore: true, totalPages: ${Math.max(totalPages, page + 1)}`);
+        } else {
+          // This is the last page
+          setTotalPages(page);
+          console.log(`Page ${page}: ${actualClients.length} clients (last page), totalPages: ${page}`);
+        }
       } else {
         console.error("Failed to fetch clients:", result.message);
         setClients([]);
@@ -38,18 +63,39 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [property?.id]);
+  }, [property?.id, totalPages]);
 
-  // Fetch clients when modal opens
+  // Fetch clients when modal opens or page changes
   useEffect(() => {
     if (isOpen && property?.id) {
-      fetchPropertyClients();
+      fetchPropertyClients(currentPage);
     }
-  }, [isOpen, property?.id, fetchPropertyClients]);
+  }, [isOpen, property?.id, currentPage, fetchPropertyClients]);
 
   const handleClose = () => {
     setClients([]); // Reset clients when closing
+    setCurrentPage(1); // Reset to page 1
+    setTotalPages(1); // Reset total pages
     onClose();
+  };
+
+  // Pagination functions
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages && clients.length > 0) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   const handleViewClient = (client) => {
@@ -317,6 +363,20 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
               )
             )}
           </div>
+
+          {/* Pagination Controls */}
+          {!isLoading && clients.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              onPreviousPage={handlePreviousPage}
+              onNextPage={handleNextPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={clients.length}
+              showItemsInfo={false}
+            />
+          )}
         </div>
       </div>
 
