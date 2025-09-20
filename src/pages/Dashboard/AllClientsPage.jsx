@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import "./AllClientsPage.css";
 import { API_ENDPOINTS } from "../../config/api";
+import Pagination from "../../components/common/Pagination";
+import "../../components/common/Pagination.css";
 
 export default function AllClientsPage() {
   const [clients, setClients] = useState([]);
@@ -132,7 +134,7 @@ export default function AllClientsPage() {
     }
   };
 
-  // Pagination functions
+  // Pagination functions for the new Pagination component
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -149,22 +151,6 @@ export default function AllClientsPage() {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
-  };
-
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-    return pages;
   };
 
   const handleView = (client) => {
@@ -542,55 +528,17 @@ export default function AllClientsPage() {
       </div>
 
       {/* Pagination Controls */}
-      {!isLoading && filteredClients.length > 0 && totalPages > 1 && (
-        <div className="pagination-container">
-         
-
-          <div className="pagination-controls">
-            {/* Previous Button */}
-            <button
-              className={`pagination-btn prev-btn ${
-                currentPage === 1 ? "disabled" : ""
-              }`}
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="15,18 9,12 15,6" />
-              </svg>
-              Previous
-            </button>
-
-            {/* Page Numbers */}
-            <div className="page-numbers">
-              {getPageNumbers().map((pageNum) => (
-                <button
-                  key={pageNum}
-                  className={`pagination-btn page-btn ${
-                    currentPage === pageNum ? "active" : ""
-                  }`}
-                  onClick={() => handlePageChange(pageNum)}
-                >
-                  {pageNum}
-                </button>
-              ))}
-            </div>
-
-            {/* Next Button */}
-            <button
-              className={`pagination-btn next-btn ${
-                currentPage === totalPages ? "disabled" : ""
-              }`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="9,18 15,12 9,6" />
-              </svg>
-            </button>
-          </div>
-        </div>
+      {!isLoading && filteredClients.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onPreviousPage={handlePreviousPage}
+          onNextPage={handleNextPage}
+          itemsPerPage={itemsPerPage}
+          totalItems={clients.length}
+          showItemsInfo={true}
+        />
       )}
 
       {/* Modal */}
