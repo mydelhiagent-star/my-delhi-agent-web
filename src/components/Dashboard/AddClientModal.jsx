@@ -301,12 +301,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="name"
                   value={clientForm.name}
                   onChange={handleInputChange}
-                  readOnly={!initialData} // Lock when client is found by search (not in direct edit mode)
-                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
-                    clientFormErrors.name ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
-                  } ${
-                    !initialData ? "!border-slate-400/50 !cursor-not-allowed" : ""
-                  }`}
+                  readOnly={true} // Always frozen in edit mode
+                  className={`!w-full !px-4 !py-3 !bg-slate-600/40 !border !border-slate-500/30 !rounded-xl !text-slate-300 !text-base !cursor-not-allowed !transition-all !duration-200 !placeholder:text-slate-500`}
                   placeholder="Client name"
                 />
                 {clientFormErrors.name && (
@@ -325,12 +321,8 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   name="phone"
                   value={clientForm.phone}
                   onChange={handleInputChange}
-                  readOnly={!initialData} // Lock when client is found by search (not in direct edit mode)
-                  className={`!w-full !px-4 !py-3 !bg-slate-700/60 !border !rounded-xl !text-slate-100 !text-base !font-medium !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 ${
-                    clientFormErrors.phone ? "!border-red-500 !shadow-red-500/10" : "!border-slate-400/20"
-                  } ${
-                    !initialData ? "!border-slate-400/50 !cursor-not-allowed" : ""
-                  }`}
+                  readOnly={true} // Always frozen in edit mode
+                  className={`!w-full !px-4 !py-3 !bg-slate-600/40 !border !border-slate-500/30 !rounded-xl !text-slate-300 !text-base !cursor-not-allowed !transition-all !duration-200 !placeholder:text-slate-500`}
                   placeholder="Phone number"
                 />
                 {clientFormErrors.phone && (

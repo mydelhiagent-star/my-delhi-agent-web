@@ -104,7 +104,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
         return;
       }
 
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${editingClient.id}`, {
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${editingClient.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
