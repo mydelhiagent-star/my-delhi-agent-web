@@ -358,28 +358,11 @@ export default function AllClientsPage() {
           return;
         }
 
-        // Check if we're at the page limit
-        const currentClientsCount = clients.length;
-        const isAtPageLimit = currentClientsCount >= itemsPerPage;
-
-        if (isAtPageLimit) {
-         
-          
-          
-         
-            const newClientData = {
-              id: result.data.id,
-              name: newClient.name.trim(),
-              phone: newClient.phone.trim(),
-              note: newClient.notes.trim(),
-              created_at: new Date().toISOString()
-            };
-            
-            setClients(prev => [newClientData, ...prev]);
-            setTotalPages(prev => Math.max(prev, currentPage + 1));
-          
-        } else {
-          // Normal case - just add the client
+        // New client added successfully - always redirect to Page 1
+        alert("Client added successfully!");
+        
+        if (currentPage === 1) {
+          // If already on Page 1, add to current page
           const newClientData = {
             id: result.data.id,
             name: newClient.name.trim(),
@@ -389,7 +372,9 @@ export default function AllClientsPage() {
           };
           
           setClients(prev => [newClientData, ...prev]);
-          alert("Client added successfully!");
+        } else {
+          // If on any other page, redirect to Page 1 to show the new client
+          setCurrentPage(1);
         }
       }
       
