@@ -487,8 +487,12 @@ export default function ClientsList() {
                                 value={property.note || ""}
                                 onChange={(e) => setAdminNoteDraft(property, e.target.value)}
                                 rows={3}
+                                maxLength="500"
                                 style={{ width: "100%" }}
                               />
+                              <div style={{ textAlign: "right", fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
+                                {(property.note || "").length}/500 characters
+                              </div>
                               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                                 <button
                                   className="client-btn client-btn-edit"
@@ -567,7 +571,11 @@ export default function ClientsList() {
                     ...editingClient,
                     requirement: e.target.value
                   })}
+                  maxLength="500"
                 />
+                <div style={{ textAlign: "right", fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
+                  {(editingClient.requirement || "").length}/500 characters
+                </div>
                 <input
                   type="text"
                   placeholder="Aadhar Number"

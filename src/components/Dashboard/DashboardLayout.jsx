@@ -57,15 +57,7 @@ const DashboardLayout = ({ children }) => {
           >
             <span>My Properties</span>
           </Link>
-          <Link
-            to="/dashboard/clients"
-            className={`tab-button ${isActive("/dashboard/clients") ? "active" : ""}`}
-            role="tab"
-            aria-selected={isActive("/dashboard/clients")}
-            aria-controls="clients-panel"
-          >
-            <span>My Clients</span>
-          </Link>
+        
           <Link
             to="/dashboard/all-clients"
             className={`tab-button ${isActive("/dashboard/all-clients") ? "active" : ""}`}
@@ -74,6 +66,15 @@ const DashboardLayout = ({ children }) => {
             aria-controls="all-clients-panel"
           >
             <span>All Clients</span>
+          </Link>
+          <Link
+            to="/dashboard/clients"
+            className={`tab-button ${isActive("/dashboard/clients") ? "active" : ""}`}
+            role="tab"
+            aria-selected={isActive("/dashboard/clients")}
+            aria-controls="clients-panel"
+          >
+            <span>My Delhi Agent Clients</span>
           </Link>
           <Link
             to="/dashboard/inquiry"

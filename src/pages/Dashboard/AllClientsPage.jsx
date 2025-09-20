@@ -293,6 +293,16 @@ export default function AllClientsPage() {
       return;
     }
 
+    if (newClient.name.trim().length < 3) {
+      alert("Name must be at least 3 characters long");
+      return;
+    }
+
+    if (newClient.name.trim().length > 20) {
+      alert("Name must not exceed 20 characters");
+      return;
+    }
+
     if (!/^\d{10}$/.test(newClient.phone)) {
       alert("Please enter a valid 10-digit phone number");
       return;
@@ -434,7 +444,7 @@ export default function AllClientsPage() {
         <div className="header-content">
           <div className="header-text">
             <h2>All Clients</h2>
-            <p>Manage your client database and track their property requirements</p>
+            <p>Manage your client and track their property requirements</p>
           </div>
           <button className="add-client-btn" onClick={handleAddClient}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -707,52 +717,63 @@ export default function AllClientsPage() {
             
             <div className="modal-content">
               <form onSubmit={handleAddClientSubmit} className="add-client-form">
-                <div className="form-group">
-                  <label htmlFor="name">Name *</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={newClient.name}
-                    onChange={handleNewClientChange}
-                    placeholder="Enter client name"
-                    required
-                  />
-                </div>
+                <div className="form-content">
+                  <div className="form-group">
+                    <label htmlFor="name">Name *</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={newClient.name}
+                      onChange={handleNewClientChange}
+                      placeholder="Enter client name (3-20 characters)"
+                      minLength="3"
+                      maxLength="20"
+                      required
+                    />
+                    <div className="character-counter">
+                      {newClient.name.length}/20 characters
+                    </div>
+                  </div>
 
-                <div className="form-group">
-                  <label htmlFor="phone">Phone *</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={newClient.phone}
-                    onChange={handleNewClientChange}
-                    placeholder="Enter 10-digit phone number"
-                    maxLength="10"
-                    required
-                  />
-                </div>
+                  <div className="form-group">
+                    <label htmlFor="phone">Phone *</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={newClient.phone}
+                      onChange={handleNewClientChange}
+                      placeholder="Enter 10-digit phone number"
+                      maxLength="10"
+                      required
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <label htmlFor="notes">Notes <span className="optional-text">(Optional)</span></label>
-                  <textarea
-                    id="notes"
-                    name="notes"
-                    value={newClient.notes}
-                    onChange={handleNewClientChange}
-                    placeholder="Enter any additional notes about the client (optional)"
-                    rows="4"
-                  />
+                  <div className="form-group">
+                    <label htmlFor="notes">Notes <span className="optional-text">(Optional)</span></label>
+                    <textarea
+                      id="notes"
+                      name="notes"
+                      value={newClient.notes}
+                      onChange={handleNewClientChange}
+                      placeholder="Enter any additional notes about the client (optional)"
+                      rows="4"
+                      maxLength="500"
+                    />
+                    <div className="character-counter">
+                      {newClient.notes.length}/500 characters
+                    </div>
+                  </div>
                 </div>
 
                 <div className="form-actions">
                   <button type="button" className="btn-cancel" onClick={handleCloseAddModal}>
                     Cancel
                   </button>
-                <button type="submit" className="btn-submit">
-                  {isEditMode ? "Update Client" : "Add Client"}
-                </button>
+                  <button type="submit" className="btn-submit">
+                    {isEditMode ? "Update Client" : "Add Client"}
+                  </button>
                 </div>
               </form>
             </div>

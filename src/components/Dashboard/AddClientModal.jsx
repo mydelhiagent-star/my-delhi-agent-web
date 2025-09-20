@@ -341,9 +341,13 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   value={clientForm.notes}
                   onChange={handleInputChange}
                   rows="4"
+                  maxLength="500"
                   className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !resize-vertical"
                   placeholder="Add any additional notes about this client..."
                 />
+                <div className="!text-right !text-sm !text-slate-400 !mt-1">
+                  {clientForm.notes.length}/500 characters
+                </div>
               </div>
 
               {/* Status - Editable */}
@@ -477,9 +481,13 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
                   value={clientForm.notes}
                   onChange={handleInputChange}
                   rows="4"
+                  maxLength="500"
                   className="!w-full !px-4 !py-3 !bg-slate-700/60 !border !border-slate-400/20 !rounded-xl !text-slate-50 !text-base !transition-all !duration-200 !placeholder:text-slate-500 !focus:outline-none !focus:border-cyan-500 !focus:shadow-cyan-500/10 !focus:shadow-[0_0_0_3px] !focus:bg-slate-700/80 !resize-vertical"
                   placeholder="Add any additional notes about this client..."
                 />
+                <div className="!text-right !text-sm !text-slate-400 !mt-1">
+                  {clientForm.notes.length}/500 characters
+                </div>
               </div>
 
               {/* Status */}

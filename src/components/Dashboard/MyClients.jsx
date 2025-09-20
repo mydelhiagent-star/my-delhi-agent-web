@@ -101,8 +101,8 @@ const MyClients = () => {
     return (
       <div className="my-clients-container">
         <div className="clients-header">
-          <h2>My Clients</h2>
-          <p>Manage your client relationships</p>
+          <h2>My Delhi Agent Clients</h2>
+          <p>Manage My Delhi Agent client relationships</p>
         </div>
         <div className="loading-state">
           <div className="loading-spinner"></div>
@@ -116,8 +116,8 @@ const MyClients = () => {
     return (
       <div className="my-clients-container">
         <div className="clients-header">
-          <h2>My Clients</h2>
-          <p>Manage your client relationships</p>
+          <h2>My Delhi Agent Clients</h2>
+          <p>Manage My Delhi Agent client relationships</p>
         </div>
         <div className="error-state">
           <div className="error-icon">⚠️</div>
@@ -134,8 +134,8 @@ const MyClients = () => {
   return (
     <div className="my-clients-container">
       <div className="clients-header">
-        <h2>My Clients</h2>
-        <p>Manage your client relationships</p>
+          <h2>My Delhi Agent Clients</h2>
+          <p>Manage My Delhi Agent client relationships</p>
       </div>
 
       {clients.length === 0 ? (
