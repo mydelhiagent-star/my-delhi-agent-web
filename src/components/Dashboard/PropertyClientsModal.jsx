@@ -408,7 +408,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                   </div>
                   <div className="!bg-slate-800/50 !rounded-lg !p-2 sm:!p-3 !max-h-24 sm:!max-h-32 !overflow-y-auto">
                     <p className="!text-white !text-xs sm:!text-sm !leading-relaxed !break-words !whitespace-pre-wrap !word-wrap !overflow-wrap">
-                      {viewingClient.notes || viewingClient.note || 'No notes provided'}
+                      {viewingClient?.properties?.[0]?.note || 'No notes provided'}
                     </p>
                   </div>
                 </div>
