@@ -92,6 +92,16 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
       console.log('Editing Client:', editingClient);
       console.log('Client Data:', clientData);
       
+      const hasChanges = 
+        editingClient?.properties?.[0]?.note !== clientData.notes ||
+        editingClient?.properties?.[0]?.status !== clientData.status;
+
+      if (!hasChanges) {
+        alert('No changes detected. Nothing to update.');
+        setShowEditModal(false);
+        setEditingClient(null);
+        return;
+      }
 
       const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${editingClient.id}/properties/${editingClient.properties[0].property_id}`, {
         method: 'PUT',
@@ -108,11 +118,18 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
       const result = await response.json();
       
       if (result.success) {
-        // Update client in local state
+        // Update client in local state - CORRECTLY update the properties array
         setClients(prevClients => 
           prevClients.map(c => 
             c.id === editingClient.id 
-              ? { ...c, name: clientData.name, phone: clientData.phone, notes: clientData.notes }
+              ? { 
+                  ...c, 
+                  properties: c.properties.map(prop => 
+                    prop.property_id === editingClient.properties[0].property_id
+                      ? { ...prop, note: clientData.notes, status: clientData.status }
+                      : prop
+                  )
+                }
               : c
           )
         );
