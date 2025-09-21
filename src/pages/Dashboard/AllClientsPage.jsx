@@ -854,17 +854,6 @@ export default function AllClientsPage() {
             <div className="modal-content">
               {modalType === "view" && selectedClient && (
                 <div className="client-details">
-                  <div className="client-info-grid">
-                    <div className="info-item">
-                      <label>Name:</label>
-                      <span>{selectedClient.name}</span>
-                    </div>
-                    <div className="info-item">
-                      <label>Phone:</label>
-                      <span>{selectedClient.phone}</span>
-                    </div>
-                  </div>
-                  
                   {/* Properties List */}
                   <div className="properties-section">
                     <h4 className="properties-title">Properties:</h4>
