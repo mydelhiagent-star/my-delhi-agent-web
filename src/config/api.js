@@ -31,6 +31,6 @@ export const API_ENDPOINTS = {
 
   DEALER_CLIENTS: `${API_BASE_URL}/dealer-clients`,
 
-  // R2 Public Domain
-  R2_PUBLIC_DOMAIN: "https://pub-1a0c1e81896647d38b50db8319081047.r2.dev",
+  // Inquiry
+  INQUIRY: `${API_BASE_URL}/inquiries`,
 };

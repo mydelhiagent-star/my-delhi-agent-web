@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./InquiryForm.css";
+import { API_ENDPOINTS } from "../../config/api";
 
 export default function InquiryForm({ variant = "broker" }) {
   const [formData, setFormData] = useState({
@@ -61,24 +62,38 @@ export default function InquiryForm({ variant = "broker" }) {
     if (!validateForm()) {
       return;
     }
-
+  
     setIsSubmitting(true);
-
+  
     try {
-      // Here you would typically send the data to your backend
-      // For now, we'll simulate an API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulate successful submission
-      alert("Thank you for your inquiry! We'll get back to you soon.");
-      
-      // Reset form
-      setFormData({
-        name: "",
-        phone: "",
-        requirement: "",
+      const response = await fetch(API_ENDPOINTS.INQUIRY, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // If authentication is required
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+          requirement: formData.requirement.trim(),
+        })
       });
-      setErrors({});
+  
+      const result = await response.json();
+  
+      if (response.ok && result.success) {
+        alert("Thank you for your inquiry! We'll get back to you soon.");
+        
+        // Reset form
+        setFormData({
+          name: "",
+          phone: "",
+          requirement: "",
+        });
+        setErrors({});
+      } else {
+        throw new Error(result.message || 'Failed to submit inquiry');
+      }
       
     } catch (error) {
       console.error("Error submitting inquiry:", error);
