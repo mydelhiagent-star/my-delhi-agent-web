@@ -27,6 +27,7 @@ export default function AllClientsPage() {
   const [isDocDragOver, setIsDocDragOver] = useState(false);
   const [showDocModal, setShowDocModal] = useState(false);
   const [viewingDocs, setViewingDocs] = useState([]);
+  const [isUploadingDocs, setIsUploadingDocs] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 20;
@@ -345,7 +346,13 @@ export default function AllClientsPage() {
       // Upload new documents if any
       let uploadedDocs = [];
       if (newDocs.length > 0) {
-        uploadedDocs = await uploadDocsToCloudflare(newDocs);
+        setIsUploadingDocs(true); // Show loader
+        try {
+          uploadedDocs = await uploadDocsToCloudflare(newDocs);
+        } catch (error) {
+          setIsUploadingDocs(false); // Hide loader on error
+          throw error; // Re-throw to be caught by outer try-catch
+        }
       }
       
       // Combine existing docs (that weren't removed) with new uploaded docs
@@ -391,6 +398,7 @@ export default function AllClientsPage() {
         ));
         
         alert("Client updated successfully!");
+        setIsUploadingDocs(false); // Hide loader
       } else {
         // Add new client
         const response = await fetch(API_ENDPOINTS.DEALER_CLIENTS, {
@@ -416,6 +424,7 @@ export default function AllClientsPage() {
 
         // New client added successfully - always redirect to Page 1
         alert("Client added successfully!");
+        setIsUploadingDocs(false); // Hide loader
         
         if (currentPage === 1) {
           // If already on Page 1, add to current page
@@ -440,6 +449,7 @@ export default function AllClientsPage() {
       
     } catch (error) {
       console.error("Error saving client:", error);
+      setIsUploadingDocs(false); // Hide loader on error
       alert("Something went wrong. Please try again.");
     }
   };
@@ -450,6 +460,7 @@ export default function AllClientsPage() {
     setEditingClient(null);
     setNewClient({ name: "", phone: "", notes: "" });
     setDocFiles([]);
+    setIsUploadingDocs(false); // Reset upload state
   };
 
   // Document upload functions
@@ -838,8 +849,42 @@ export default function AllClientsPage() {
         document.body
       )}
 
+      {/* Document Upload Loader */}
+      {isUploadingDocs && createPortal(
+        <div 
+          className="modal-overlay" 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999
+          }}
+        >
+          <div className="modal-container" style={{ textAlign: 'center', padding: '2rem' }}>
+            <div className="loading-spinner" style={{
+              width: '50px',
+              height: '50px',
+              border: '4px solid #f3f3f3',
+              borderTop: '4px solid #06b6d4',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 1rem'
+            }}></div>
+            <h3 style={{ color: '#06b6d4', margin: '0' }}>Uploading Documents...</h3>
+            <p style={{ color: '#666', margin: '0.5rem 0 0' }}>Please wait while we upload your documents</p>
+                    </div>
+        </div>,
+        document.body
+      )}
+
       {/* Add Client Modal */}
-      {showAddModal && createPortal(
+      {showAddModal && !isUploadingDocs && createPortal(
         <div 
           className="modal-overlay" 
           onClick={handleCloseAddModal}
@@ -870,7 +915,7 @@ export default function AllClientsPage() {
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
-                    </div>
+                      </div>
             
             <div className="modal-content">
               <form onSubmit={handleAddClientSubmit} className="add-client-form">
@@ -905,7 +950,7 @@ export default function AllClientsPage() {
                       maxLength="10"
                       required
                     />
-                  </div>
+                </div>
 
                   <div className="form-group">
                     <label htmlFor="notes">Notes <span className="optional-text">(Optional)</span></label>
@@ -920,8 +965,8 @@ export default function AllClientsPage() {
                     />
                     <div className="character-counter">
                       {newClient.notes.length}/500 characters
-                    </div>
                   </div>
+                </div>
 
                   {/* Document Upload Section */}
                   <div className="form-group">
