@@ -548,8 +548,11 @@ export default function AllClientsPage() {
   };
 
   const handleViewDocs = (client) => {
+    console.log('handleViewDocs called with client:', client);
+    console.log('Client docs:', client.docs);
     setViewingDocs(client.docs || []);
     setShowDocModal(true);
+    console.log('Modal should be opening now');
   };
 
   const openDocInNewTab = (docUrl) => {
@@ -720,7 +723,10 @@ export default function AllClientsPage() {
                         {(client.docs && client.docs.length > 0) && (
                           <button
                             className="action-btn docs-btn"
-                            onClick={() => handleViewDocs(client)}
+                            onClick={() => {
+                              console.log('View Documents button clicked for client:', client);
+                              handleViewDocs(client);
+                            }}
                             title="View Documents"
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1014,15 +1020,15 @@ export default function AllClientsPage() {
                                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                   <polyline points="14,2 14,8 20,8" />
                                 </svg>
-                              </div>
+                      </div>
                               {/* Click indicator overlay */}
                               <div className="doc-click-overlay">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                   <circle cx="12" cy="12" r="3" />
                                 </svg>
-                              </div>
-                            </div>
+                    </div>
+                  </div>
                             <button
                               type="button"
                               className="remove-doc-btn"
@@ -1034,9 +1040,9 @@ export default function AllClientsPage() {
                                 <line x1="6" y1="6" x2="18" y2="18" />
                               </svg>
                             </button>
-                  </div>
+                </div>
                         ))}
-                      </div>
+                  </div>
                     ) : (
                       <div style={{ padding: '1rem', textAlign: 'center', color: '#94a3b8' }}>
                         No documents uploaded yet
@@ -1061,6 +1067,7 @@ export default function AllClientsPage() {
       )}
 
       {/* Document Viewing Modal */}
+      {console.log('showDocModal:', showDocModal, 'viewingDocs:', viewingDocs)}
       {showDocModal && createPortal(
         <div 
           className="modal-overlay" 
@@ -1118,48 +1125,32 @@ export default function AllClientsPage() {
                     const fileName = docUrl.split('/').pop();
                     const fileExtension = fileName.split('.').pop().toLowerCase();
                     
+                    // File type detection for debugging
+                    console.log('Document URL:', docUrl);
+                    console.log('File name:', fileName);
+                    
                     return (
                       <div key={index} className="doc-item" onClick={() => openDocInNewTab(docUrl)}>
                         <div className="doc-preview-large">
-                          {fileExtension === 'pdf' ? (
-                            <div className="doc-pdf-preview-large">
-                              <iframe
-                                src={`${docUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                                className="doc-pdf-iframe-large"
-                                title={`PDF Preview ${fileName}`}
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.nextElementSibling.style.display = 'flex';
-                                }}
-                              />
-                              <div className="doc-pdf-fallback-large" style={{ display: 'none' }}>
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                  <polyline points="14,2 14,8 20,8" />
-                                </svg>
-                                <span>PDF Document</span>
-                              </div>
-                            </div>
-                          ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension) ? (
-                            <img
-                              src={docUrl}
-                              alt={fileName}
-                              className="doc-image-large"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextElementSibling.style.display = 'flex';
-                              }}
-                            />
-                          ) : (
-                            <div className="doc-icon-large">
-                              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14,2 14,8 20,8" />
-                              </svg>
-                              <span>Document</span>
-                            </div>
-                          )}
-                          {/* Fallback icon for when image fails */}
+                          {/* Try to load as image first */}
+                          <img
+                            src={docUrl}
+                            alt={fileName}
+                            className="doc-image-large"
+                            onLoad={(e) => {
+                              console.log('✅ Image loaded successfully:', docUrl);
+                              // Hide fallback
+                              e.target.nextElementSibling.style.display = 'none';
+                            }}
+                            onError={(e) => {
+                              console.log('❌ Image failed to load, showing document icon:', docUrl);
+                              // Hide image, show document icon
+                              e.target.style.display = 'none';
+                              e.target.nextElementSibling.style.display = 'flex';
+                            }}
+                          />
+                          
+                          {/* Document Icon Fallback (hidden by default) */}
                           <div className="doc-icon-large" style={{ display: 'none' }}>
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
