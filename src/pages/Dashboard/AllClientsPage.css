@@ -84,7 +84,8 @@
 .clients-controls {
   margin-bottom: 2rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
 }
@@ -92,7 +93,7 @@
 .search-container {
   position: relative;
   max-width: 500px;
-  width: 100%;
+  flex: 1;
 }
 
 .filter-container {
@@ -100,6 +101,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .search-container svg {
@@ -548,6 +550,110 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Properties Section */
+.properties-section {
+  margin-top: 1.5rem;
+}
+
+.properties-title {
+  color: #06b6d4;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #06b6d4;
+  padding-bottom: 0.5rem;
+}
+
+.properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.property-item {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.property-item:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: #06b6d4;
+}
+
+.property-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.property-number {
+  font-weight: 600;
+  color: #f8fafc;
+  font-size: 1rem;
+}
+
+.property-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-marked {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-unmarked {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.status-interested {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-not_interested {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.property-note {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.note-label {
+  font-weight: 500;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin-right: 0.5rem;
+}
+
+.note-text {
+  color: #e2e8f0;
+  font-size: 0.875rem;
+}
+
+.no-properties {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-style: italic;
 }
 
 .info-item {
@@ -836,10 +942,17 @@
   
   .clients-controls {
     margin-bottom: 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
   }
   
   .search-container {
     max-width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .filter-container {
+    justify-content: center;
   }
   
   .clients-table th,

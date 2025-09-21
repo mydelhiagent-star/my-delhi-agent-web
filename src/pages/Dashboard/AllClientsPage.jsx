@@ -863,12 +863,37 @@ export default function AllClientsPage() {
                       <label>Phone:</label>
                       <span>{selectedClient.phone}</span>
                     </div>
-                    <div className="info-item full-width">
-                      <label>Notes:</label>
-                      <span>{selectedClient.note || selectedClient.notes || 'No notes'}</span>
-                    </div>
-                    </div>
-                    </div>
+                  </div>
+                  
+                  {/* Properties List */}
+                  <div className="properties-section">
+                    <h4 className="properties-title">Properties:</h4>
+                    {selectedClient.properties && selectedClient.properties.length > 0 ? (
+                      <div className="properties-list">
+                        {selectedClient.properties.map((property, index) => (
+                          <div key={index} className="property-item">
+                            <div className="property-info">
+                              <span className="property-number">{property.property_number || 'N/A'}</span>
+                              <span className={`property-status status-${property.status}`}>
+                                {property.status || 'unmarked'}
+                              </span>
+                            </div>
+                            {property.note && (
+                              <div className="property-note">
+                                <span className="note-label">Note:</span>
+                                <span className="note-text">{property.note}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="no-properties">
+                        <p>No properties assigned to this client.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
 
 
