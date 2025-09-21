@@ -547,7 +547,7 @@ export default function AllClientsPage() {
 
         // Return file data with type information
         return {
-          url: fileKey,
+          url: `https://assets.mydelhiagent.in/${fileKey}`,
           type: file.type,
           size: file.size
         };
@@ -1145,7 +1145,7 @@ export default function AllClientsPage() {
                                 className="doc-pdf-iframe-large"
                                 title={`PDF Preview ${fileName}`}
                               />
-                            </div>
+          </div>
                           ) : 
                           
                           /* Image Preview */
@@ -1165,7 +1165,7 @@ export default function AllClientsPage() {
                                 <polyline points="14,2 14,8 20,8" />
                               </svg>
                               <span>Document</span>
-                            </div>
+        </div>
                           )}
                         </div>
                         <div className="doc-actions">
