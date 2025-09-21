@@ -128,16 +128,7 @@ const AddClientModal = ({ isOpen, onClose, onSubmit, initialData = null, title =
     }
   };
 
-  const handleAddNewClient = () => {
-    setSearchStep("add");
-    setClientForm({
-      name: "",
-      phone: searchPhone,
-      notes: "",
-      status: "unmarked",
-      clientId: null
-    });
-  };
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
