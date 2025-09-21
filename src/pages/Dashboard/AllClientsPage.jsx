@@ -588,6 +588,12 @@ export default function AllClientsPage() {
     window.open(fullUrl, '_blank');
   };
 
+  const openPropertyPreview = (propertyId) => {
+    // Open property preview page in new tab
+    const previewUrl = `/preview/${propertyId}`;
+    window.open(previewUrl, '_blank');
+  };
+
   const handleStatusFilter = async (filter) => {
     console.log('Status filter changed to:', filter);
     setStatusFilter(filter);
@@ -884,7 +890,12 @@ export default function AllClientsPage() {
                     {selectedClient.properties && selectedClient.properties.length > 0 ? (
                       <div className="properties-list">
                         {selectedClient.properties.map((property, index) => (
-                          <div key={index} className="property-item">
+                          <div 
+                            key={index} 
+                            className="property-item"
+                            onClick={() => openPropertyPreview(property.property_id)}
+                            style={{ cursor: 'pointer' }}
+                          >
                             <div className="property-info">
                               <span className="property-number">{property.property_number || 'N/A'}</span>
                               <span className={`property-status status-${property.status}`}>
