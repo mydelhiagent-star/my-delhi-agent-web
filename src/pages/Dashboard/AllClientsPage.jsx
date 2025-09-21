@@ -173,14 +173,19 @@ export default function AllClientsPage() {
     
     // Populate existing documents if available (like PostProperty)
     if (client.docs && client.docs.length > 0) {
-      // Convert document URLs to File objects for display
-      const existingDocuments = client.docs.map((docUrl, index) => {
+      // Convert document objects/URLs to File objects for display
+      const existingDocuments = client.docs.map((doc, index) => {
+        // Handle both old format (string URLs) and new format (objects with type)
+        const docUrl = typeof doc === 'string' ? doc : doc.url;
+        const docType = typeof doc === 'string' ? 'unknown' : doc.type;
+        
         // Create a mock File object for existing documents
         const mockFile = new File([], `existing-doc-${index}`, {
-          type: 'application/octet-stream',
+          type: docType,
         });
-        // Add the URL as a property for display
+        // Add the URL and type as properties for display
         mockFile.existingUrl = docUrl;
+        mockFile.existingType = docType;
         return mockFile;
       });
       setDocFiles(existingDocuments);
@@ -338,13 +343,16 @@ export default function AllClientsPage() {
       const newDocs = docFiles.filter(file => !file.existingUrl);
       
       // Upload new documents if any
-      let uploadedDocUrls = [];
+      let uploadedDocs = [];
       if (newDocs.length > 0) {
-        uploadedDocUrls = await uploadDocsToCloudflare(newDocs);
+        uploadedDocs = await uploadDocsToCloudflare(newDocs);
       }
       
       // Combine existing docs (that weren't removed) with new uploaded docs
-      const finalDocs = [...existingDocs.map(file => file.existingUrl), ...uploadedDocUrls];
+      const finalDocs = [
+        ...existingDocs.map(file => ({ url: file.existingUrl, type: 'unknown' })), 
+        ...uploadedDocs
+      ];
       
       if (isEditMode && editingClient) {
         // Update existing client
@@ -535,12 +543,17 @@ export default function AllClientsPage() {
           throw new Error(`Failed to upload ${file.name}`);
         }
 
-        return fileKey;
+        // Return file data with type information
+        return {
+          url: fileKey,
+          type: file.type,
+          size: file.size
+        };
       });
 
       // Wait for all uploads to complete
-      const uploadedKeys = await Promise.all(uploadPromises);
-      return uploadedKeys;
+      const uploadedDocs = await Promise.all(uploadPromises);
+      return uploadedDocs;
     } catch (error) {
       console.error("Upload error:", error);
       throw error;
@@ -559,39 +572,6 @@ export default function AllClientsPage() {
     window.open(docUrl, '_blank');
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return "status-active";
-      case "pending":
-        return "status-pending";
-      case "inactive":
-        return "status-inactive";
-      default:
-        return "status-active";
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case "active":
-        return "Active";
-      case "pending":
-        return "Pending";
-      case "inactive":
-        return "Inactive";
-      default:
-        return "Active";
-    }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
 
   return (
     <div className="all-clients-container">
@@ -987,16 +967,29 @@ export default function AllClientsPage() {
                               title="Click to open document in new tab"
                             >
                               {file.existingUrl ? (
-                                // Show existing document - simplified logic
-                                <img
-                                  src={file.existingUrl}
-                                  alt={`Document ${index + 1}`}
-                                  className="doc-thumbnail"
-                                  onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    e.target.nextElementSibling.style.display = 'flex';
-                                  }}
-                                />
+                                // Show existing document with type-based preview
+                                file.existingType === 'application/pdf' ? (
+                                  <div className="doc-pdf-preview">
+                                    <iframe
+                                      src={`${file.existingUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                      className="doc-pdf-iframe"
+                                      title={`PDF Preview ${index + 1}`}
+                                    />
+                                  </div>
+                                ) : file.existingType.startsWith('image/') ? (
+                                  <img
+                                    src={file.existingUrl}
+                                    alt={`Document ${index + 1}`}
+                                    className="doc-thumbnail"
+                                  />
+                                ) : (
+                                  <div className="doc-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                      <polyline points="14,2 14,8 20,8" />
+                                    </svg>
+                                  </div>
+                                )
                               ) : (
                                 // Show new document
                                 file.type.startsWith('image/') ? (
@@ -1005,6 +998,14 @@ export default function AllClientsPage() {
                                     alt={`Document ${index + 1}`}
                                     className="doc-thumbnail"
                                   />
+                                ) : file.type === 'application/pdf' ? (
+                                  <div className="doc-pdf-preview">
+                                    <iframe
+                                      src={`${URL.createObjectURL(file)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                      className="doc-pdf-iframe"
+                                      title={`PDF Preview ${index + 1}`}
+                                    />
+                                  </div>
                                 ) : (
                                   <div className="doc-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1121,43 +1122,49 @@ export default function AllClientsPage() {
             <div className="modal-content">
               {viewingDocs.length > 0 ? (
                 <div className="docs-grid">
-                  {viewingDocs.map((docUrl, index) => {
+                  {viewingDocs.map((doc, index) => {
+                    // Handle both old format (string URLs) and new format (objects with type)
+                    const docUrl = typeof doc === 'string' ? doc : doc.url;
+                    const docType = typeof doc === 'string' ? 'unknown' : doc.type;
                     const fileName = docUrl.split('/').pop();
-                    const fileExtension = fileName.split('.').pop().toLowerCase();
                     
-                    // File type detection for debugging
-                    console.log('Document URL:', docUrl);
-                    console.log('File name:', fileName);
+                    console.log('Document:', doc);
+                    console.log('URL:', docUrl);
+                    console.log('Type:', docType);
                     
                     return (
                       <div key={index} className="doc-item" onClick={() => openDocInNewTab(docUrl)}>
                         <div className="doc-preview-large">
-                          {/* Try to load as image first */}
-                          <img
-                            src={docUrl}
-                            alt={fileName}
-                            className="doc-image-large"
-                            onLoad={(e) => {
-                              console.log('✅ Image loaded successfully:', docUrl);
-                              // Hide fallback
-                              e.target.nextElementSibling.style.display = 'none';
-                            }}
-                            onError={(e) => {
-                              console.log('❌ Image failed to load, showing document icon:', docUrl);
-                              // Hide image, show document icon
-                              e.target.style.display = 'none';
-                              e.target.nextElementSibling.style.display = 'flex';
-                            }}
-                          />
+                          {/* PDF Preview */}
+                          {docType === 'application/pdf' ? (
+                            <div className="doc-pdf-preview-large">
+                              <iframe
+                                src={`${docUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                className="doc-pdf-iframe-large"
+                                title={`PDF Preview ${fileName}`}
+                              />
+                            </div>
+                          ) : 
                           
-                          {/* Document Icon Fallback (hidden by default) */}
-                          <div className="doc-icon-large" style={{ display: 'none' }}>
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                              <polyline points="14,2 14,8 20,8" />
-                            </svg>
-                            <span>Document</span>
-                          </div>
+                          /* Image Preview */
+                          docType.startsWith('image/') ? (
+                            <img
+                              src={docUrl}
+                              alt={fileName}
+                              className="doc-image-large"
+                            />
+                          ) : 
+                          
+                          /* Document Icon for everything else */
+                          (
+                            <div className="doc-icon-large">
+                              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14,2 14,8 20,8" />
+                              </svg>
+                              <span>Document</span>
+                            </div>
+                          )}
                         </div>
                         <div className="doc-actions">
                           <button
