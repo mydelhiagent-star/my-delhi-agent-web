@@ -65,7 +65,7 @@ const DashboardLayout = ({ children }) => {
             aria-selected={isActive("/dashboard/all-clients")}
             aria-controls="all-clients-panel"
           >
-            <span>All Clients</span>
+            <span>My Clients</span>
           </Link>
           <Link
             to="/dashboard/clients"
