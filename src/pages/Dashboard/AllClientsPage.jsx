@@ -23,6 +23,10 @@ export default function AllClientsPage() {
     phone: "",
     notes: ""
   });
+  const [docFiles, setDocFiles] = useState([]);
+  const [isDocDragOver, setIsDocDragOver] = useState(false);
+  const [showDocModal, setShowDocModal] = useState(false);
+  const [viewingDocs, setViewingDocs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 20;
@@ -311,6 +315,12 @@ export default function AllClientsPage() {
     try {
       const token = localStorage.getItem("token");
       
+      // Upload documents if any
+      let uploadedDocUrls = [];
+      if (docFiles.length > 0) {
+        uploadedDocUrls = await uploadDocsToCloudflare(docFiles);
+      }
+      
       if (isEditMode && editingClient) {
         // Update existing client
         const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${editingClient.id}`, {
@@ -323,6 +333,7 @@ export default function AllClientsPage() {
             name: newClient.name.trim(),
             phone: newClient.phone.trim(),
             note: newClient.notes.trim(),
+            docs: uploadedDocUrls,
           }),
         });
 
@@ -358,6 +369,7 @@ export default function AllClientsPage() {
             name: newClient.name.trim(),
             phone: newClient.phone.trim(),
             note: newClient.notes.trim(),
+            docs: uploadedDocUrls,
           }),
         });
 
@@ -402,6 +414,121 @@ export default function AllClientsPage() {
     setIsEditMode(false);
     setEditingClient(null);
     setNewClient({ name: "", phone: "", notes: "" });
+    setDocFiles([]);
+  };
+
+  // Document upload functions
+  const validateFile = (file) => {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain', 'text/csv'
+    ];
+    
+    if (file.size > maxSize) {
+      alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+      return false;
+    }
+    
+    if (!allowedTypes.includes(file.type)) {
+      alert(`File ${file.name} has an unsupported format. Please upload images, PDFs, or documents.`);
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleDocUpload = (files) => {
+    const fileArray = Array.from(files);
+    const validFiles = fileArray.filter(validateFile);
+    
+    if (validFiles.length === 0) return;
+    
+    if (docFiles.length + validFiles.length > 5) {
+      alert("Maximum 5 documents allowed. Please remove some files first.");
+      return;
+    }
+    
+    setDocFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const handleDocDrop = (e) => {
+    e.preventDefault();
+    setIsDocDragOver(false);
+    const files = e.dataTransfer.files;
+    handleDocUpload(files);
+  };
+
+  const handleDocDragOver = (e) => {
+    e.preventDefault();
+    setIsDocDragOver(true);
+  };
+
+  const handleDocDragLeave = (e) => {
+    e.preventDefault();
+    setIsDocDragOver(false);
+  };
+
+  const removeDoc = (index) => {
+    setDocFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadDocsToCloudflare = async (files) => {
+    try {
+      // Step 1: Get presigned URLs
+      const response = await fetch(API_ENDPOINTS.PRESIGNED_URLS, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ count: files.length }),
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || "Failed to get upload URLs");
+      }
+
+      const { presignedUrls } = result.data;
+
+      // Step 2: Upload files to Cloudflare
+      const uploadPromises = files.map(async (file, index) => {
+        const { presignedUrl, fileKey } = presignedUrls[index];
+
+        const uploadResponse = await fetch(presignedUrl, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        return fileKey;
+      });
+
+      // Wait for all uploads to complete
+      const uploadedKeys = await Promise.all(uploadPromises);
+      return uploadedKeys;
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
+  };
+
+  const handleViewDocs = (client) => {
+    setViewingDocs(client.docs || []);
+    setShowDocModal(true);
+  };
+
+  const openDocInNewTab = (docUrl) => {
+    window.open(docUrl, '_blank');
   };
 
   const getStatusColor = (status) => {
@@ -565,6 +692,21 @@ export default function AllClientsPage() {
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                           </svg>
                         </button>
+                        {(client.docs && client.docs.length > 0) && (
+                          <button
+                            className="action-btn docs-btn"
+                            onClick={() => handleViewDocs(client)}
+                            title="View Documents"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                              <polyline points="14,2 14,8 20,8" />
+                              <line x1="16" y1="13" x2="8" y2="13" />
+                              <line x1="16" y1="17" x2="8" y2="17" />
+                              <polyline points="10,9 9,9 8,9" />
+                            </svg>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -765,6 +907,86 @@ export default function AllClientsPage() {
                       {newClient.notes.length}/500 characters
                     </div>
                   </div>
+
+                  {/* Document Upload Section */}
+                  <div className="form-group">
+                    <label>Documents <span className="optional-text">(Max 5 files, 10MB each)</span></label>
+                    <div 
+                      className={`doc-upload-area ${isDocDragOver ? 'drag-over' : ''}`}
+                      onDrop={handleDocDrop}
+                      onDragOver={handleDocDragOver}
+                      onDragLeave={handleDocDragLeave}
+                    >
+                      <div className="doc-upload-content">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="upload-icon">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14,2 14,8 20,8" />
+                          <line x1="16" y1="13" x2="8" y2="13" />
+                          <line x1="16" y1="17" x2="8" y2="17" />
+                          <polyline points="10,9 9,9 8,9" />
+                        </svg>
+                        <p className="upload-text">
+                          Drag & drop documents here or <span className="upload-link" onClick={() => document.querySelector('.file-input').click()}>browse files</span>
+                        </p>
+                        <p className="upload-subtext">
+                          Supports: Images, PDFs, Word docs, Excel files (Max 10MB each)
+                        </p>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+                          onChange={(e) => handleDocUpload(e.target.files)}
+                          className="file-input"
+                          style={{ display: 'none' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Document Preview */}
+                    {docFiles.length > 0 && (
+                      <div className="doc-preview-grid">
+                        {docFiles.map((file, index) => (
+                          <div key={index} className="doc-preview-item">
+                            <div className="doc-preview">
+                              {file.type.startsWith('image/') ? (
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={file.name}
+                                  className="doc-thumbnail"
+                                />
+                              ) : (
+                                <div className="doc-icon">
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14,2 14,8 20,8" />
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
+                            <div className="doc-info">
+                              <span className="doc-name" title={file.name}>
+                                {file.name.length > 15 ? `${file.name.substring(0, 15)}...` : file.name}
+                              </span>
+                              <span className="doc-size">
+                                {(file.size / 1024 / 1024).toFixed(1)}MB
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              className="remove-doc-btn"
+                              onClick={() => removeDoc(index)}
+                              title={`Remove ${file.name}`}
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="form-actions">
@@ -776,6 +998,124 @@ export default function AllClientsPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Document Viewing Modal */}
+      {showDocModal && createPortal(
+        <div 
+          className="modal-overlay" 
+          onClick={() => setShowDocModal(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <div 
+            className="modal-container" 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              backgroundColor: '#1e293b',
+              borderRadius: '1rem',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              width: '100%',
+              maxWidth: '48rem',
+              margin: '0 1rem',
+              animation: 'fadeIn 0.3s ease-in-out',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+          >
+            {/* Header */}
+            <div className="modal-header">
+              <h3>Client Documents</h3>
+              <button
+                className="modal-close"
+                onClick={() => setShowDocModal(false)}
+                aria-label="Close modal"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="modal-content">
+              {viewingDocs.length > 0 ? (
+                <div className="docs-grid">
+                  {viewingDocs.map((docUrl, index) => (
+                    <div key={index} className="doc-item">
+                      <div className="doc-preview-large">
+                        {docUrl.includes('.pdf') || docUrl.includes('pdf') ? (
+                          <div className="doc-icon-large">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                              <polyline points="14,2 14,8 20,8" />
+                            </svg>
+                            <span>PDF Document</span>
+                          </div>
+                        ) : docUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                          <img
+                            src={docUrl}
+                            alt={`Document ${index + 1}`}
+                            className="doc-image-large"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextElementSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : (
+                          <div className="doc-icon-large">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                              <polyline points="14,2 14,8 20,8" />
+                            </svg>
+                            <span>Document</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="doc-actions">
+                        <button
+                          className="btn-view-doc"
+                          onClick={() => openDocInNewTab(docUrl)}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                          View Document
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-docs">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="no-docs-icon">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14,2 14,8 20,8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10,9 9,9 8,9" />
+                  </svg>
+                  <p>No documents uploaded for this client</p>
+                </div>
+              )}
             </div>
           </div>
         </div>,
