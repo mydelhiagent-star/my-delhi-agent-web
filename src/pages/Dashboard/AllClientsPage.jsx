@@ -588,13 +588,31 @@ export default function AllClientsPage() {
     window.open(fullUrl, '_blank');
   };
 
-  const handleStatusFilter = (filter) => {
+  const handleStatusFilter = async (filter) => {
     console.log('Status filter changed to:', filter);
     setStatusFilter(filter);
     setCurrentPage(1); // Reset to first page when filter changes
     
     // TODO: Implement API call with filter
     // This will be implemented later
+    try{
+      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?properties_status=${filter}&array_filters=properties_status&aggregation=true`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const result = await response.json();
+      if (result.success) {
+        setClients(result.data);
+        setFilteredClients(result.data);
+      } else {
+        console.error("Error fetching clients:", result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
 
