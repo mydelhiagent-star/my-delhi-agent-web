@@ -8,7 +8,7 @@ const Dashboard = () => {
 
   // Redirect to the new route-based dashboard
   useEffect(() => {
-    navigate('/dashboard/post-property', { replace: true })
+    navigate('/dashboard/properties', { replace: true })
   }, [navigate])
 
   return null
