@@ -571,7 +571,9 @@ export default function AllClientsPage() {
   };
 
   const openDocInNewTab = (docUrl) => {
-    window.open(docUrl, '_blank');
+    // Ensure URL has proper prefix before opening
+    const fullUrl = docUrl.startsWith('http') ? docUrl : `https://assets.mydelhiagent.in/${docUrl}`;
+    window.open(fullUrl, '_blank');
   };
 
 
@@ -964,7 +966,9 @@ export default function AllClientsPage() {
                               className="doc-preview doc-preview-clickable"
                               onClick={() => {
                                 const url = file.existingUrl || URL.createObjectURL(file);
-                                window.open(url, '_blank');
+                                // Ensure URL has proper prefix before opening
+                                const fullUrl = url.startsWith('http') ? url : `https://assets.mydelhiagent.in/${url}`;
+                                window.open(fullUrl, '_blank');
                               }}
                               title="Click to open document in new tab"
                             >
@@ -973,14 +977,14 @@ export default function AllClientsPage() {
                                 file.existingType === 'application/pdf' ? (
                                   <div className="doc-pdf-preview">
                                     <iframe
-                                      src={`${file.existingUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                      src={`${file.existingUrl.startsWith('http') ? file.existingUrl : `https://assets.mydelhiagent.in/${file.existingUrl}`}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
                                       className="doc-pdf-iframe"
                                       title={`PDF Preview ${index + 1}`}
                                     />
                                   </div>
                                 ) : file.existingType.startsWith('image/') ? (
                                   <img
-                                    src={file.existingUrl}
+                                    src={file.existingUrl.startsWith('http') ? file.existingUrl : `https://assets.mydelhiagent.in/${file.existingUrl}`}
                                     alt={`Document ${index + 1}`}
                                     className="doc-thumbnail"
                                   />
@@ -1126,8 +1130,14 @@ export default function AllClientsPage() {
                 <div className="docs-grid">
                   {viewingDocs.map((doc, index) => {
                     // Handle both old format (string URLs) and new format (objects with type)
-                    const docUrl = typeof doc === 'string' ? doc : doc.url;
+                    let docUrl = typeof doc === 'string' ? doc : doc.url;
                     const docType = typeof doc === 'string' ? 'unknown' : doc.type;
+                    
+                    // Ensure URL has proper prefix (fix for old format URLs)
+                    if (docUrl && !docUrl.startsWith('http')) {
+                      docUrl = `https://assets.mydelhiagent.in/${docUrl}`;
+                    }
+                    
                     const fileName = docUrl.split('/').pop();
                     
                     console.log('Document:', doc);
