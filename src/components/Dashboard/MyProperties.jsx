@@ -322,6 +322,7 @@ const MyProperties = () => {
         },
         body: JSON.stringify({ 
           property_id: selectedProperty.id,
+          property_number: selectedProperty.property_number,
           note: clientData.notes,
           status: clientData.status,
         }),
