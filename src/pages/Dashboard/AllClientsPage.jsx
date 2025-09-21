@@ -377,12 +377,13 @@ export default function AllClientsPage() {
           return;
         }
 
-        // Update client in the list - create updated client object
+        // Update client in the list - create updated client object with docs
         const updatedClientData = {
           id: editingClient.id,
           name: newClient.name.trim(),
           phone: newClient.phone.trim(),
           note: newClient.notes.trim(),
+          docs: finalDocs, // Include updated documents
           created_at: editingClient.created_at || new Date().toISOString()
         };
         setClients(prev => prev.map(client => 
@@ -423,6 +424,7 @@ export default function AllClientsPage() {
             name: newClient.name.trim(),
             phone: newClient.phone.trim(),
             note: newClient.notes.trim(),
+            docs: finalDocs, // Include documents
             created_at: new Date().toISOString()
           };
           
