@@ -647,6 +647,9 @@
 .note-text {
   color: #e2e8f0;
   font-size: 0.875rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .no-properties {
