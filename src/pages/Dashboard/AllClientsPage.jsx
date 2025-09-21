@@ -972,7 +972,14 @@ export default function AllClientsPage() {
                       <div className="doc-preview-grid">
                         {docFiles.map((file, index) => (
                           <div key={index} className="doc-preview-item">
-                            <div className="doc-preview">
+                            <div 
+                              className="doc-preview doc-preview-clickable"
+                              onClick={() => {
+                                const url = file.existingUrl || URL.createObjectURL(file);
+                                window.open(url, '_blank');
+                              }}
+                              title="Click to open document in new tab"
+                            >
                               {file.existingUrl ? (
                                 // Show existing document - simplified logic
                                 <img
@@ -1007,8 +1014,15 @@ export default function AllClientsPage() {
                                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                   <polyline points="14,2 14,8 20,8" />
                                 </svg>
-                      </div>
-                    </div>
+                              </div>
+                              {/* Click indicator overlay */}
+                              <div className="doc-click-overlay">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                  <circle cx="12" cy="12" r="3" />
+                                </svg>
+                              </div>
+                            </div>
                             <button
                               type="button"
                               className="remove-doc-btn"
