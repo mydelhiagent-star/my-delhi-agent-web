@@ -40,15 +40,6 @@ const DashboardLayout = ({ children }) => {
         {/* Tab Navigation */}
         <nav className="tab-navigation" role="tablist">
           <Link
-            to="/dashboard/post-property"
-            className={`tab-button ${isActive("/dashboard/post-property") ? "active" : ""}`}
-            role="tab"
-            aria-selected={isActive("/dashboard/post-property")}
-            aria-controls="post-panel"
-          >
-            <span>Post Property</span>
-          </Link>
-          <Link
             to="/dashboard/properties"
             className={`tab-button ${isActive("/dashboard/properties") ? "active" : ""}`}
             role="tab"
@@ -56,6 +47,15 @@ const DashboardLayout = ({ children }) => {
             aria-controls="properties-panel"
           >
             <span>My Properties</span>
+          </Link>
+          <Link
+            to="/dashboard/post-property"
+            className={`tab-button ${isActive("/dashboard/post-property") ? "active" : ""}`}
+            role="tab"
+            aria-selected={isActive("/dashboard/post-property")}
+            aria-controls="post-panel"
+          >
+            <span>Post Property</span>
           </Link>
         
           <Link
