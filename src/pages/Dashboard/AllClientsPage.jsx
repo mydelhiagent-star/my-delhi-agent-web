@@ -593,17 +593,42 @@ export default function AllClientsPage() {
     setStatusFilter(filter);
     setCurrentPage(1); // Reset to first page when filter changes
     
-    // TODO: Implement API call with filter
-    // This will be implemented later
-    try{
-      const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}?properties_status=${filter}&array_filters=properties_status&aggregation=true`, {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      
+      let apiUrl;
+      if (filter === 'all') {
+        // Use the same API call as page rendering for "All Clients"
+        apiUrl = `${API_ENDPOINTS.DEALER_CLIENTS}?page=1&limit=${itemsPerPage}`;
+      } else {
+        // Use filtered API call for specific status
+        apiUrl = `${API_ENDPOINTS.DEALER_CLIENTS}?properties_status=${filter}&array_filters=properties_status&aggregation=true&page=1&limit=${itemsPerPage}`;
+      }
+      
+      const response = await fetch(apiUrl, {
         headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
+      
       const result = await response.json();
+      
       if (result.success) {
-        setClients(result.data);
+        if (filter === 'all') {
+          // Handle pagination for "all" filter
+          const hasMorePages = result.data.length === 21;
+          const actualClients = hasMorePages
+            ? result.data.slice(0, 20)
+            : result.data;
+          
+          setClients(actualClients);
+          setTotalPages(hasMorePages ? 2 : 1);
+        } else {
+          // Handle filtered results
+          setClients(result.data);
+          setTotalPages(1); // Reset pagination for filtered results
+        }
         setFilteredClients(result.data);
       } else {
         console.error("Error fetching clients:", result.message);
