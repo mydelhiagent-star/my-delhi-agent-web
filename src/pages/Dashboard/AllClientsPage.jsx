@@ -835,7 +835,7 @@ export default function AllClientsPage() {
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>
-                {modalType === "view" && "Client Details"}
+                {modalType === "view" && "Properties"}
                 {modalType === "edit" && "Edit Client"}
                 {modalType === "delete" && "Delete Client"}
               </h3>
@@ -856,7 +856,6 @@ export default function AllClientsPage() {
                 <div className="client-details">
                   {/* Properties List */}
                   <div className="properties-section">
-                    <h4 className="properties-title">Properties:</h4>
                     {selectedClient.properties && selectedClient.properties.length > 0 ? (
                       <div className="properties-list">
                         {selectedClient.properties.map((property, index) => (
@@ -865,22 +864,22 @@ export default function AllClientsPage() {
                               <span className="property-number">{property.property_number || 'N/A'}</span>
                               <span className={`property-status status-${property.status}`}>
                                 {property.status || 'unmarked'}
-                              </span>
-                            </div>
+                      </span>
+                    </div>
                             {property.note && (
                               <div className="property-note">
                                 <span className="note-label">Note:</span>
                                 <span className="note-text">{property.note}</span>
-                              </div>
+                    </div>
                             )}
-                          </div>
+                    </div>
                         ))}
-                      </div>
+                    </div>
                     ) : (
                       <div className="no-properties">
                         <p>No properties assigned to this client.</p>
-                      </div>
-                    )}
+                </div>
+              )}
                   </div>
                 </div>
               )}
@@ -897,11 +896,11 @@ export default function AllClientsPage() {
                     <button className="btn-delete" onClick={confirmDelete}>
                       Delete Client
                     </button>
-                    </div>
-                    </div>
+                  </div>
+                </div>
               )}
-                    </div>
-                    </div>
+            </div>
+          </div>
         </div>,
         document.body
       )}
@@ -935,7 +934,7 @@ export default function AllClientsPage() {
             }}></div>
             <h3 style={{ color: '#06b6d4', margin: '0' }}>Uploading Documents...</h3>
             <p style={{ color: '#666', margin: '0.5rem 0 0' }}>Please wait while we upload your documents</p>
-                    </div>
+        </div>
         </div>,
         document.body
       )}
