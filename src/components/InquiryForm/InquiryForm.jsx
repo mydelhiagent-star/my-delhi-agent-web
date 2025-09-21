@@ -31,21 +31,21 @@ export default function InquiryForm({ variant = "broker" }) {
   const validateForm = () => {
     const newErrors = {};
 
-    // Name validation (only required for home page variant)
+    
     if (variant === "home" && !formData.name.trim()) {
       newErrors.name = "Name is required";
     } else if (formData.name.trim() && formData.name.trim().length < 2) {
       newErrors.name = "Name must be at least 2 characters";
     }
 
-    // Phone validation (only required for home page variant)
+    
     if (variant === "home" && !formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
     } else if (formData.phone.trim() && !/^\d{10}$/.test(formData.phone.trim())) {
       newErrors.phone = "Phone number must be exactly 10 digits";
     }
 
-    // Requirement validation (always required)
+    
     if (!formData.requirement.trim()) {
       newErrors.requirement = "Requirement is required";
     } else if (formData.requirement.trim().length < 10) {
