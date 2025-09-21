@@ -35,7 +35,7 @@ export default function AllClientsPage() {
 
   useEffect(() => {
     const fetchClients = async () => {
-      setIsLoading(true);
+    setIsLoading(true);
       try {
         const token = localStorage.getItem("token");
         
@@ -81,7 +81,7 @@ export default function AllClientsPage() {
       } catch (error) {
         console.error("Error fetching clients:", error);
       } finally {
-        setIsLoading(false);
+      setIsLoading(false);
       }
     };
 
@@ -98,21 +98,21 @@ export default function AllClientsPage() {
 
     // Sort clients only if sortBy is set
     if (sortBy) {
-      filtered.sort((a, b) => {
-        let aValue = a[sortBy];
-        let bValue = b[sortBy];
+    filtered.sort((a, b) => {
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
 
         if (sortBy === "createdAt") {
-          aValue = new Date(aValue);
-          bValue = new Date(bValue);
-        }
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      }
 
-        if (sortOrder === "asc") {
-          return aValue > bValue ? 1 : -1;
-        } else {
-          return aValue < bValue ? 1 : -1;
-        }
-      });
+      if (sortOrder === "asc") {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
     }
 
     setFilteredClients(filtered);
@@ -170,6 +170,24 @@ export default function AllClientsPage() {
       phone: client.phone,
       notes: client.note || client.notes || ""
     });
+    
+    // Populate existing documents if available (like PostProperty)
+    if (client.docs && client.docs.length > 0) {
+      // Convert document URLs to File objects for display
+      const existingDocuments = client.docs.map((docUrl, index) => {
+        // Create a mock File object for existing documents
+        const mockFile = new File([], `existing-doc-${index}`, {
+          type: 'application/octet-stream',
+        });
+        // Add the URL as a property for display
+        mockFile.existingUrl = docUrl;
+        return mockFile;
+      });
+      setDocFiles(existingDocuments);
+    } else {
+      setDocFiles([]);
+    }
+    
     setIsEditMode(true);
     setShowAddModal(true);
   };
@@ -197,7 +215,7 @@ export default function AllClientsPage() {
         const wasLastItemOnPage = clients.length === 1;
         
         // Remove from local state only after successful API call
-        setClients(clients.filter(client => client.id !== selectedClient.id));
+    setClients(clients.filter(client => client.id !== selectedClient.id));
         alert("Client deleted successfully!");
         
         // Smart pagination adjustment
@@ -315,11 +333,18 @@ export default function AllClientsPage() {
     try {
       const token = localStorage.getItem("token");
       
-      // Upload documents if any
+      // Separate existing and new documents
+      const existingDocs = docFiles.filter(file => file.existingUrl);
+      const newDocs = docFiles.filter(file => !file.existingUrl);
+      
+      // Upload new documents if any
       let uploadedDocUrls = [];
-      if (docFiles.length > 0) {
-        uploadedDocUrls = await uploadDocsToCloudflare(docFiles);
+      if (newDocs.length > 0) {
+        uploadedDocUrls = await uploadDocsToCloudflare(newDocs);
       }
+      
+      // Combine existing docs (that weren't removed) with new uploaded docs
+      const finalDocs = [...existingDocs.map(file => file.existingUrl), ...uploadedDocUrls];
       
       if (isEditMode && editingClient) {
         // Update existing client
@@ -333,7 +358,7 @@ export default function AllClientsPage() {
             name: newClient.name.trim(),
             phone: newClient.phone.trim(),
             note: newClient.notes.trim(),
-            docs: uploadedDocUrls,
+            docs: finalDocs,
           }),
         });
 
@@ -369,7 +394,7 @@ export default function AllClientsPage() {
             name: newClient.name.trim(),
             phone: newClient.phone.trim(),
             note: newClient.notes.trim(),
-            docs: uploadedDocUrls,
+            docs: finalDocs,
           }),
         });
 
@@ -570,7 +595,7 @@ export default function AllClientsPage() {
       <div className="all-clients-header">
         <div className="header-content">
           <div className="header-text">
-            <h2>All Clients</h2>
+        <h2>All Clients</h2>
             <p>Manage your client and track their property requirements</p>
           </div>
           <button className="add-client-btn" onClick={handleAddClient}>
@@ -798,8 +823,8 @@ export default function AllClientsPage() {
                       <label>Notes:</label>
                       <span>{selectedClient.note || selectedClient.notes || 'No notes'}</span>
                     </div>
-                  </div>
-                </div>
+                    </div>
+                    </div>
               )}
 
 
@@ -814,11 +839,11 @@ export default function AllClientsPage() {
                     <button className="btn-delete" onClick={confirmDelete}>
                       Delete Client
                     </button>
-                  </div>
-                </div>
+                    </div>
+                    </div>
               )}
-            </div>
-          </div>
+                    </div>
+                    </div>
         </div>,
         document.body
       )}
@@ -855,7 +880,7 @@ export default function AllClientsPage() {
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
-            </div>
+                    </div>
             
             <div className="modal-content">
               <form onSubmit={handleAddClientSubmit} className="add-client-form">
@@ -943,34 +968,47 @@ export default function AllClientsPage() {
                     </div>
 
                     {/* Document Preview */}
-                    {docFiles.length > 0 && (
+                    {docFiles.length > 0 ? (
                       <div className="doc-preview-grid">
                         {docFiles.map((file, index) => (
                           <div key={index} className="doc-preview-item">
                             <div className="doc-preview">
-                              {file.type.startsWith('image/') ? (
+                              {file.existingUrl ? (
+                                // Show existing document - simplified logic
                                 <img
-                                  src={URL.createObjectURL(file)}
-                                  alt={file.name}
+                                  src={file.existingUrl}
+                                  alt={`Document ${index + 1}`}
                                   className="doc-thumbnail"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextElementSibling.style.display = 'flex';
+                                  }}
                                 />
                               ) : (
-                                <div className="doc-icon">
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                    <polyline points="14,2 14,8 20,8" />
-                                  </svg>
-                                </div>
+                                // Show new document
+                                file.type.startsWith('image/') ? (
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={`Document ${index + 1}`}
+                                    className="doc-thumbnail"
+                                  />
+                                ) : (
+                                  <div className="doc-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                      <polyline points="14,2 14,8 20,8" />
+                                    </svg>
+                                  </div>
+                                )
                               )}
-                            </div>
-                            <div className="doc-info">
-                              <span className="doc-name" title={file.name}>
-                                {file.name.length > 15 ? `${file.name.substring(0, 15)}...` : file.name}
-                              </span>
-                              <span className="doc-size">
-                                {(file.size / 1024 / 1024).toFixed(1)}MB
-                              </span>
-                            </div>
+                              {/* Fallback icon for when image fails */}
+                              <div className="doc-icon" style={{ display: 'none' }}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                  <polyline points="14,2 14,8 20,8" />
+                                </svg>
+                      </div>
+                    </div>
                             <button
                               type="button"
                               className="remove-doc-btn"
@@ -982,23 +1020,27 @@ export default function AllClientsPage() {
                                 <line x1="6" y1="6" x2="18" y2="18" />
                               </svg>
                             </button>
-                          </div>
+                  </div>
                         ))}
                       </div>
-                    )}
+                    ) : (
+                      <div style={{ padding: '1rem', textAlign: 'center', color: '#94a3b8' }}>
+                        No documents uploaded yet
+                </div>
+              )}
                   </div>
                 </div>
 
                 <div className="form-actions">
                   <button type="button" className="btn-cancel" onClick={handleCloseAddModal}>
-                    Cancel
-                  </button>
+                      Cancel
+                    </button>
                   <button type="submit" className="btn-submit">
                     {isEditMode ? "Update Client" : "Add Client"}
-                  </button>
-                </div>
+                    </button>
+                  </div>
               </form>
-            </div>
+                </div>
           </div>
         </div>,
         document.body
@@ -1058,51 +1100,78 @@ export default function AllClientsPage() {
             <div className="modal-content">
               {viewingDocs.length > 0 ? (
                 <div className="docs-grid">
-                  {viewingDocs.map((docUrl, index) => (
-                    <div key={index} className="doc-item">
-                      <div className="doc-preview-large">
-                        {docUrl.includes('.pdf') || docUrl.includes('pdf') ? (
-                          <div className="doc-icon-large">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                              <polyline points="14,2 14,8 20,8" />
-                            </svg>
-                            <span>PDF Document</span>
-                          </div>
-                        ) : docUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                          <img
-                            src={docUrl}
-                            alt={`Document ${index + 1}`}
-                            className="doc-image-large"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.nextElementSibling.style.display = 'flex';
+                  {viewingDocs.map((docUrl, index) => {
+                    const fileName = docUrl.split('/').pop();
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+                    
+                    return (
+                      <div key={index} className="doc-item" onClick={() => openDocInNewTab(docUrl)}>
+                        <div className="doc-preview-large">
+                          {fileExtension === 'pdf' ? (
+                            <div className="doc-pdf-preview-large">
+                              <iframe
+                                src={`${docUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                className="doc-pdf-iframe-large"
+                                title={`PDF Preview ${fileName}`}
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.nextElementSibling.style.display = 'flex';
+                                }}
+                              />
+                              <div className="doc-pdf-fallback-large" style={{ display: 'none' }}>
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                  <polyline points="14,2 14,8 20,8" />
+                                </svg>
+                                <span>PDF Document</span>
+          </div>
+        </div>
+                          ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension) ? (
+                            <img
+                              src={docUrl}
+                              alt={fileName}
+                              className="doc-image-large"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : (
+                            <div className="doc-icon-large">
+                              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14,2 14,8 20,8" />
+                              </svg>
+                              <span>Document</span>
+        </div>
+                          )}
+                        </div>
+                        <div className="doc-name-large">
+                          <span className="doc-filename" title={fileName}>
+                            {fileName.length > 20 ? `${fileName.substring(0, 20)}...` : fileName}
+                          </span>
+                          <span className="doc-extension">
+                            .{fileExtension.toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="doc-actions">
+                          <button
+                            className="btn-view-doc"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDocInNewTab(docUrl);
                             }}
-                          />
-                        ) : (
-                          <div className="doc-icon-large">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                              <polyline points="14,2 14,8 20,8" />
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
                             </svg>
-                            <span>Document</span>
-                          </div>
-                        )}
+                            View Document
+                          </button>
+                        </div>
                       </div>
-                      <div className="doc-actions">
-                        <button
-                          className="btn-view-doc"
-                          onClick={() => openDocInNewTab(docUrl)}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                          </svg>
-                          View Document
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="no-docs">
