@@ -30,6 +30,7 @@ export default function AllClientsPage() {
   const [isUploadingDocs, setIsUploadingDocs] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'marked', 'unmarked'
   const itemsPerPage = 20;
 
   
@@ -587,6 +588,15 @@ export default function AllClientsPage() {
     window.open(fullUrl, '_blank');
   };
 
+  const handleStatusFilter = (filter) => {
+    console.log('Status filter changed to:', filter);
+    setStatusFilter(filter);
+    setCurrentPage(1); // Reset to first page when filter changes
+    
+    // TODO: Implement API call with filter
+    // This will be implemented later
+  };
+
 
   return (
     <div className="all-clients-container">
@@ -620,6 +630,21 @@ export default function AllClientsPage() {
             onChange={handleSearch}
             className="search-input"
           />
+        </div>
+        
+        <div className="filter-container">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" />
+          </svg>
+          <select
+            value={statusFilter}
+            onChange={(e) => handleStatusFilter(e.target.value)}
+            className="filter-select"
+          >
+            <option value="all">All Clients</option>
+            <option value="marked">Marked</option>
+            <option value="unmarked">Unmarked</option>
+          </select>
         </div>
       </div>
 
@@ -1118,8 +1143,7 @@ export default function AllClientsPage() {
         document.body
       )}
 
-      {/* Document Viewing Modal */}
-      {console.log('showDocModal:', showDocModal, 'viewingDocs:', viewingDocs)}
+     
       {showDocModal && createPortal(
         <div 
           className="modal-overlay" 
