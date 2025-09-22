@@ -15,14 +15,14 @@ export default function LocationDropdown({ locations = [], onSelect }) {
     onSelect({ location, sub_location: e.target.value });
   };
 
-  // Convert API response (array) into a map for easy lookup
-  // Example API response:
-  // [
-  //   { location: "Noida", sub_location: ["Sector 62", "Sector 61"] },
-  //   { location: "Delhi", sub_location: ["Laxmi Nagar", "Preet Vihar"] }
-  // ]
+  // Handle both direct array and API response object
+  // API response structure: { success: true, data: [...], curTime: "..." }
+  // Direct array structure: [{ location: "Noida", sub_location: [...] }, ...]
+  const locationsArray = locations.data || locations;
+  
+  // Convert locations array into a map for easy lookup
   const locationMap = {};
-  locations.forEach((loc) => {
+  locationsArray.forEach((loc) => {
     locationMap[loc.location] = loc.sub_location;
   });
 
