@@ -726,7 +726,7 @@ export default function AllClientsPage() {
                     )}
                   </th>
                   <th onClick={() => handleSort("note")} className="sortable">
-                    Notes
+                    Requirement
                     {sortBy === "note" && (
                       <span className="sort-indicator">
                         {sortOrder === "asc" ? "↑" : "↓"}
