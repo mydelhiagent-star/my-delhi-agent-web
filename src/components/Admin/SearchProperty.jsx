@@ -218,7 +218,7 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${API_ENDPOINTS.LEADS_SEARCH}?phone=${phone}`,
+        `${API_ENDPOINTS.LEADS}?phone=${phone}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
