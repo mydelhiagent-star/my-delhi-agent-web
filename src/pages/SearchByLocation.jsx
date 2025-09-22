@@ -48,16 +48,17 @@ export default function SearchByLocation() {
           }
         );
 
-        if (!res.ok) {
+        const result = await res.json();
+
+        if (!result.success) {
           // Handle error response
-          const errData = await res.json();
-          console.error("Backend error:", errData.error || "Unknown error");
+          console.error(result.message);
           setDealers([]); // ensure dealers is always an array
           return;
         }
 
-        const dealersData = await res.json();
-
+        const dealersData = result.data;
+       
         if (Array.isArray(dealersData)) {
           setDealers(dealersData);
         } else {
