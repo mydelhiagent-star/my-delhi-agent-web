@@ -1045,7 +1045,7 @@ export default function AllClientsPage() {
                 </div>
 
                   <div className="form-group">
-                    <label htmlFor="notes">Notes <span className="optional-text">(Optional)</span></label>
+                    <label htmlFor="notes">Requirement <span className="optional-text">(Optional)</span></label>
                     <textarea
                       id="notes"
                       name="notes"
