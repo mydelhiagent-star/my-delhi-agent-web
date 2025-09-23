@@ -20,7 +20,7 @@ const MyClients = () => {
     setIsLoading(true)
     setError("")
     try {
-      const response = await fetch(API_ENDPOINTS.LEADS_DEALER, {
+      const response = await fetch(`${API_ENDPOINTS.LEADS}?array_filters=dealer_id`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
