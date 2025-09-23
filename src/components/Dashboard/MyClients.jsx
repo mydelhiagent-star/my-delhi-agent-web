@@ -52,6 +52,11 @@ const MyClients = () => {
     setSelectedClient(null)
   }
 
+  const openPropertyPreview = (propertyId) => {
+    const previewUrl = `/preview/${propertyId}`;
+    window.open(previewUrl, '_blank');
+  }
+
 
 
   const getStatusColor = (status) => {
@@ -226,7 +231,7 @@ const MyClients = () => {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Client Details</h3>
+              <h3>Interested Properties</h3>
               <button className="modal-close" onClick={closeModal} aria-label="Close modal">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -236,98 +241,32 @@ const MyClients = () => {
             </div>
             
             <div className="modal-content">
-              <div className="client-detail-header">
-                <div className="client-avatar large">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </div>
-                <div>
-                  <h4>{selectedClient.name}</h4>
-                  <div className={`client-status-badge ${getStatusColor('active')}`}>
-                    {getStatusIcon('active')}
-                    <span>Active</span>
-                  </div>
-                </div>
-            </div>
+              
 
-              <div className="client-detail-grid">
-                {/* <div className="detail-section"> */}
-                  {/* <h5>Contact Information</h5> */}
-                  {/* <div className="detail-list"> */}
-                    {/* <div className="detail-row">
-                      <span className="label">Phone:</span>
-                      <span className="value">{selectedClient.phone}</span>
-                    </div> */}
-                    {/* {selectedClient.aadhar_number && (
-                      <div className="detail-row">
-                        <span className="label">Aadhar Number:</span>
-                        <span className="value">{selectedClient.aadhar_number}</span>
-                      </div>
-                    )} */}
-                    {/* <div className="detail-row">
-                      <span className="label">Client ID:</span>
-                      <span className="value">{selectedClient.id}</span>
-                    </div> */}
-                  {/* </div> */}
-                {/* </div> */}
-
-                <div className="detail-section">
-                  <h5>Client Information</h5>
-                  <div className="detail-list">
-                    {selectedClient.requirement && (
-                      <div className="detail-row">
-                        <span className="label">Requirement:</span>
-                        <span className="value">{selectedClient.requirement}</span>
-                      </div>
-                    )}
-                    <div className="detail-row">
-                      <span className="label">Properties Count:</span>
-                      <span className="value">{selectedClient.properties?.length || 0}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+             
 
               <div className="detail-section full-width">
-                <h5>Interested Properties</h5>
-                <div className="properties-grid">
+                <div className="properties-list">
                   {selectedClient.properties && selectedClient.properties.length > 0 ? (
                     selectedClient.properties.map((property, index) => (
-                      <div key={index} className="property-card">
-                        <div className="property-image">
-                          {property.photos && property.photos.length > 0 ? (
-                            <img 
-                              src={property.photos[0]} 
-                              alt={property.title || 'Property'} 
-                              className="property-img"
-                            />
-                          ) : (
-                            <div className="no-image">
-                              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                <circle cx="8.5" cy="8.5" r="1.5"/>
-                                <polyline points="21,15 16,10 5,21"/>
-                              </svg>
-                            </div>
-                          )}
-                          <span className={`status-badge ${property.status} image-badge`}>
-                            {property.status}
+                      <div 
+                        key={index} 
+                        className="property-item"
+                        onClick={() => openPropertyPreview(property.property_id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="property-info">
+                          <span className="property-number">{property.property_number || 'N/A'}</span>
+                          <span className={`property-status status-${property.status}`}>
+                            {property.status || 'unmarked'}
                           </span>
                         </div>
-                        
-                        <div className="property-content">
-                          <h6 className="property-title">
-                            {property.title || 'Property'}
-                          </h6>
-                          
-                          {property.note && (
-                            <div className="property-note">
-                              <span>Note: {property.note}</span>
-                            </div>
-                          )}
-                        </div>
+                        {property.note && (
+                          <div className="property-note">
+                            <span className="note-label">Note:</span>
+                            <span className="note-text">{property.note}</span>
+                          </div>
+                        )}
                       </div>
                     ))
                   ) : (
