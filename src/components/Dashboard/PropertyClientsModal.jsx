@@ -202,7 +202,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
       />
       
       {/* Modal */}
-      <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 animate-in fade-in duration-300 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-2 sm:mx-4 animate-in fade-in duration-300 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between !p-4 border-b border-slate-700">
           <div>
@@ -220,7 +220,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
         </div>
 
         {/* Content */}
-        <div className="!p-6">
+        <div className="!p-4 sm:!p-6">
           {/* Clients List */}
           <div>
             {/* <h3 className="text-lg font-semibold text-slate-200 mb-4">
@@ -238,40 +238,40 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
               clients.length > 0 ? (
                 <div className="overflow-x-auto">
                               {/* Table Header */}
-                              <div className="!bg-slate-800/60 !border !border-slate-600/30 !rounded-t-xl !p-4 !grid !grid-cols-12 !gap-4 !text-slate-300 !font-semibold !text-sm">
-                                <div className="col-span-4">Name</div>
-                                <div className="col-span-3">Phone</div>
-                                <div className="col-span-3">Status</div>
-                                <div className="col-span-2">Actions</div>
+                              <div className="!bg-slate-800/60 !border !border-slate-600/30 !rounded-t-xl !p-3 sm:!p-4 !grid !grid-cols-12 !gap-2 sm:!gap-4 !text-slate-300 !font-semibold !text-xs sm:!text-sm">
+                                <div className="col-span-3 sm:col-span-4">Name</div>
+                                <div className="col-span-3 sm:col-span-3">Phone</div>
+                                <div className="col-span-3 sm:col-span-3">Status</div>
+                                <div className="col-span-3 sm:col-span-2">Actions</div>
                               </div>
                   
                   {/* Client Rows */}
                   {clients.map((client, index) => (
-                    <div key={index} className={`!border-l !border-r !border-b !border-slate-600/30 !p-4 !grid !grid-cols-12 !gap-4 !transition-all !duration-200 ${
+                    <div key={index} className={`!border-l !border-r !border-b !border-slate-600/30 !p-3 sm:!p-4 !grid !grid-cols-12 !gap-2 sm:!gap-4 !transition-all !duration-200 ${
                       client.status === 'marked' 
                         ? '!bg-red-900/40 !border-red-500/60 !shadow-red-500/20 hover:!bg-red-900/50' 
                         : '!bg-slate-700/20 hover:!bg-slate-700/30'
                     } ${index === clients.length - 1 ? '!rounded-b-xl' : ''}`}>
                       
                       {/* Name Column */}
-                      <div className="col-span-4 !flex !items-center">
-                        <div className="!w-8 !h-8 !bg-gradient-to-br !from-cyan-500 !to-cyan-600 !rounded-full !flex !items-center !justify-center !text-white !font-semibold !text-xs !mr-3">
+                      <div className="col-span-3 sm:col-span-4 !flex !items-center !min-w-0">
+                        <div className="!w-6 !h-6 sm:!w-8 sm:!h-8 !bg-gradient-to-br !from-cyan-500 !to-cyan-600 !rounded-full !flex !items-center !justify-center !text-white !font-semibold !text-xs !mr-2 sm:!mr-3 !flex-shrink-0">
                           {client.name ? client.name.charAt(0).toUpperCase() : 'C'}
                         </div>
-                        <span className="!text-white !font-medium !text-sm">
+                        <span className="!text-white !font-medium !text-xs sm:!text-sm !truncate !min-w-0">
                           {client.name || `Client ${index + 1}`}
                         </span>
                       </div>
                       
                       {/* Phone Column */}
-                      <div className="col-span-3 !flex !items-center">
-                        <span className="!text-slate-300 !text-sm">
+                      <div className="col-span-3 sm:col-span-3 !flex !items-center !min-w-0">
+                        <span className="!text-slate-300 !text-xs sm:!text-sm !truncate">
                           {client.phone || 'No phone'}
                         </span>
                       </div>
                       
                       {/* Status Column */}
-                      <div className="col-span-3 !flex !items-center">
+                      <div className="col-span-3 sm:col-span-3 !flex !items-center !min-w-0">
                         <select
                           value={client?.properties?.[0]?.status || 'unmarked'}
                           onChange={async (e) => {
@@ -300,7 +300,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                               alert('Failed to update status');
                             }
                           }}
-                          className={`!px-3 !py-1 !rounded-lg !text-sm !font-semibold !border-0 !outline-none !transition-all !duration-200 !cursor-pointer ${
+                          className={`!px-2 sm:!px-3 !py-1.5 sm:!py-1 !rounded-lg !text-xs sm:!text-sm !font-semibold !border-0 !outline-none !transition-all !duration-200 !cursor-pointer !w-full ${
                             client?.properties?.[0]?.status === 'marked'
                               ? '!bg-red-500 !text-white hover:!bg-red-600'
                               : '!bg-green-500 !text-white hover:!bg-green-600'
@@ -312,13 +312,13 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                       </div>
                       
                       {/* Actions Column */}
-                      <div className="col-span-2 !flex !items-center !justify-center !gap-2">
+                      <div className="col-span-3 sm:col-span-2 !flex !items-center !justify-center !gap-2 sm:!flex-row !flex-col">
                         <button
                           onClick={() => handleViewClient(client)}
-                          className="!p-2 !bg-green-500 hover:!bg-green-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105"
+                          className="!p-1.5 sm:!p-2 !bg-green-500 hover:!bg-green-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105 !min-w-0 !flex-shrink-0"
                           title="View client details"
                         >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="sm:w-4 sm:h-4">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                             <circle cx="12" cy="12" r="3" />
                           </svg>
@@ -326,20 +326,20 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                         
                         <button
                           onClick={() => handleEditClient(client)}
-                          className="!p-2 !bg-blue-500 hover:!bg-blue-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105"
+                          className="!p-1.5 sm:!p-2 !bg-blue-500 hover:!bg-blue-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105 !min-w-0 !flex-shrink-0"
                           title="Edit client"
                         >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="sm:w-4 sm:h-4">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                           </svg>
                         </button>
                         <button
                           onClick={() => handleDeleteClient(client)}
-                          className="!p-2 !bg-red-500 hover:!bg-red-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105"
+                          className="!p-1.5 sm:!p-2 !bg-red-500 hover:!bg-red-600 !text-white !rounded-lg !transition-all !duration-200 hover:!scale-105 !min-w-0 !flex-shrink-0"
                           title="Delete client"
                         >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="sm:w-4 sm:h-4">
                             <polyline points="3,6 5,6 21,6" />
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                             <line x1="10" y1="11" x2="10" y2="17" />

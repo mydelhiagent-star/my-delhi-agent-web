@@ -390,6 +390,35 @@
   .upload-content p {
     font-size: 0.75rem;
   }
+
+  /* YouTube Links Mobile Responsive */
+  .youtube-link-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .youtube-link-row .yt-link-input {
+    width: 100%;
+  }
+
+  .youtube-link-row .lock-btn,
+  .youtube-link-row .yt-remove-btn,
+  .youtube-link-row .yt-reset-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .youtube-link-row .lock-btn {
+    order: 1;
+  }
+
+  .youtube-link-row .yt-remove-btn {
+    order: 2;
+  }
+
+  .youtube-link-row .yt-reset-btn {
+    order: 3;
+  }
 }
 
 @media (max-width: 480px) {
@@ -408,6 +437,18 @@
   .submit-btn {
     padding: 0.75rem 1.5rem;
     font-size: 0.875rem;
+  }
+
+  /* YouTube Links Small Mobile */
+  .youtube-link-row .lock-btn,
+  .youtube-link-row .yt-remove-btn,
+  .youtube-link-row .yt-reset-btn {
+    height: 44px;
+    font-size: 0.875rem;
+  }
+
+  .youtube-link-row .yt-reset-btn {
+    padding: 0 12px;
   }
 }
 
