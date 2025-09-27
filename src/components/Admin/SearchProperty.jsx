@@ -153,6 +153,7 @@ export default function SearchProperty({ properties = [], onPropertyConverted })
       setInlineProcessing((prev) => ({ ...prev, [pid]: true }));
       const body = {
         property_id: property._id,
+        property_number: property.property_number,
         dealer_id: property.dealer_id,
       };
       const response = await fetch(
