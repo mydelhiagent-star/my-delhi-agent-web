@@ -244,6 +244,14 @@
   margin-bottom: 0.5rem;
 }
 
+.property-landmark-container {
+  padding: 0 1.5rem 1rem 1.5rem;
+}
+
+.property-card.list .property-landmark-container {
+  padding: 0 1rem 1rem 1.5rem;
+}
+
 .property-landmark {
   display: flex;
   align-items: center;

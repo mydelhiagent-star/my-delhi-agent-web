@@ -569,6 +569,9 @@ const MyProperties = () => {
             {/* Property Info */}
             <div className="property-info">
               <h3 className="property-title">{property.title}</h3>
+            </div>
+            
+            <div className="property-landmark-container">
               <p className="property-landmark">
                 <svg
                   width="16"

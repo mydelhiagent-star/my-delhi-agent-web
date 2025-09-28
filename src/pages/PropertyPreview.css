@@ -101,6 +101,7 @@
 
 .property-title-section h1 {
   margin: 0 0 0.5rem 0;
+  word-break: break-word;
   font-size: 2rem;
   font-weight: 700;
   color: #ffffff;
@@ -1025,6 +1026,7 @@
 @media (max-width: 480px) {
   .property-title-section h1 {
     font-size: 1.5rem;
+    word-break: break-word;
   }
 
   .price-value {
