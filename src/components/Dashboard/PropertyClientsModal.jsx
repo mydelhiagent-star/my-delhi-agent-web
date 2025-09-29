@@ -277,7 +277,7 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                           onChange={async (e) => {
                             const newStatus = e.target.value;
                             try {
-                              const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}${client.id}/status`, {
+                              const response = await fetch(`${API_ENDPOINTS.DEALER_CLIENTS}/${client.id}/properties/${client.properties[0].property_id}`, {
                                 method: 'PUT',
                                 headers: {
                                   'Content-Type': 'application/json',
