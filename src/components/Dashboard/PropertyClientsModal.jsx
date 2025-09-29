@@ -289,7 +289,16 @@ const PropertyClientsModal = ({ isOpen, onClose, property }) => {
                               if (response.ok) {
                                 setClients(prevClients => 
                                   prevClients.map(c => 
-                                    c.id === client.id ? { ...c, status: newStatus } : c
+                                    c.id === client.id 
+                                      ? { 
+                                          ...c, 
+                                          properties: c.properties.map(prop => 
+                                            prop.property_id === client.properties[0].property_id
+                                              ? { ...prop, status: newStatus }
+                                              : prop
+                                          )
+                                        }
+                                      : c
                                   )
                                 );
                               } else {
