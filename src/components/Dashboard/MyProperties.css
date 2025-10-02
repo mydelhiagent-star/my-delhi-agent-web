@@ -404,6 +404,11 @@
   font-size: 1rem;
 }
 
+/* Modal Body Scroll Lock */
+body.modal-open {
+  overflow: hidden;
+}
+
 /* Property Preview Modal */
 .preview-modal-overlay {
   position: fixed;

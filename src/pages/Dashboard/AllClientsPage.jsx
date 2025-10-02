@@ -90,6 +90,22 @@ export default function AllClientsPage() {
     fetchClients();
   }, [currentPage]);
 
+  // Block background scroll when any modal is open
+  useEffect(() => {
+    const isAnyModalOpen = showModal || showAddModal || showDocModal || isUploadingDocs;
+    
+    if (isAnyModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showModal, showAddModal, showDocModal, isUploadingDocs]);
+
   useEffect(() => {
     // For server-side pagination, we only filter the current page's data
     let filtered = clients.filter(client =>
@@ -897,7 +913,7 @@ export default function AllClientsPage() {
                             style={{ cursor: 'pointer' }}
                           >
                             <div className="property-info">
-                              <span className="property-number">{property.property_number || 'N/A'}</span>
+                              <span className="property-number">Property No. {property.property_number || 'N/A'}</span>
                               <span className={`property-status status-${property.status}`}>
                                 {property.status || 'unmarked'}
                       </span>
@@ -923,7 +939,7 @@ export default function AllClientsPage() {
 
               {modalType === "delete" && selectedClient && (
                 <div className="delete-confirmation">
-                  <p>Are you sure you want to delete <strong>{selectedClient.name}</strong>?</p>
+                  <p>Are you sure you want to delete ?</p>
                   <p className="warning-text">This action cannot be undone.</p>
                   <div className="modal-actions">
                     <button className="btn-cancel" onClick={() => setShowModal(false)}>

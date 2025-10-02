@@ -16,6 +16,20 @@ const MyClients = () => {
     fetchClients()
   }, [])
 
+  // Block background scroll when modal is open
+  useEffect(() => {
+    if (showModal) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showModal]);
+
   const fetchClients = async () => {
     setIsLoading(true)
     setError("")
@@ -256,7 +270,7 @@ const MyClients = () => {
                         style={{ cursor: 'pointer' }}
                       >
                         <div className="property-info">
-                          <span className="property-number">{property.property_number || 'N/A'}</span>
+                          <span className="property-number">Property No. {property.property_number || 'N/A'}</span>
                           <span className={`property-status status-${property.status}`}>
                             {property.status || 'unmarked'}
                           </span>

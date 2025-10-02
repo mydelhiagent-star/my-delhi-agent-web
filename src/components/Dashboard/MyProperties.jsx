@@ -43,6 +43,22 @@ const MyProperties = () => {
     fetchProperties(currentPage);
   }, [currentPage]);
 
+  // Block background scroll when any modal is open
+  useEffect(() => {
+    const isAnyModalOpen = showPreviewModal || showModal || showAddClientModal || showPropertyClientsModal;
+    
+    if (isAnyModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showPreviewModal, showModal, showAddClientModal, showPropertyClientsModal]);
+
   const fetchProperties = async (page = 1) => {
     setIsLoading(true);
     try {
@@ -1428,7 +1444,7 @@ const MyProperties = () => {
               {modalType === "delete" && (
                 <div className="delete-confirmation">
                   <p>
-                    Are you sure you want to delete "{selectedProperty?.title}"?
+                    Are you sure you want to delete ?
                   </p>
                   <p className="warning-text">This action cannot be undone.</p>
                   <div className="modal-actions">
