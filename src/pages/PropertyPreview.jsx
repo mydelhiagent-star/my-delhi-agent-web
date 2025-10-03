@@ -95,6 +95,7 @@ export default function PropertyPreview() {
     const videos = Array.isArray(raw.videos) ? raw.videos : [];
     return {
       id: raw.id,
+      property_number: raw.property_number || raw.propertyNumber || raw.id,
       title: raw.title || raw.name || 'Untitled Property',
       description: raw.description || '',
       address: raw.address || '',
@@ -221,6 +222,7 @@ export default function PropertyPreview() {
         <div className="header-content">
           <div className="header-left">
             <div className="property-title-section">
+              <div className="property-number">Property No. {property.property_number || property.id || 'N/A'}</div>
               <h1>{property.title}</h1>
               <div className="property-meta">
                 <span className="property-type">{property.property_type}</span>

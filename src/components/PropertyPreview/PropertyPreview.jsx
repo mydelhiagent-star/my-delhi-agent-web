@@ -81,17 +81,30 @@ export default function PropertyPreview({ property, onClose }) {
           >
             ← Back
           </button>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: 18,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {property?.title}
-          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: "#06b6d4",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              Property No. {property?.property_number || property?.id || 'N/A'}
+            </div>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: 18,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {property?.title}
+            </h2>
+          </div>
         </div>
 
         <div
