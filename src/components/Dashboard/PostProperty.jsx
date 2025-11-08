@@ -552,7 +552,7 @@ const PostProperty = () => {
                   <option value="apartment">Apartment</option>
                   <option value="house">House</option>
                   <option value="villa">Villa</option>
-                  <option value="condo">Condo</option>
+                  <option value="condo">Flat</option>
                   <option value="townhouse">Townhouse</option>
                   <option value="penthouse">Penthouse</option>
                   <option value="studio">Studio</option>
