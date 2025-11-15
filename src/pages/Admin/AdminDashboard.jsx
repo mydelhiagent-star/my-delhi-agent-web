@@ -3,8 +3,9 @@ import SearchProperty from "../../pages/SearchByLocation";
 import AddDealer from "../../components/SignupForm/SignupForm";
 import AddClient from "../../components/Admin/AddClient";
 import ClientsList from "../../components/Admin/ClientsList";
-import ConflictingProperties from "../../components/Dashboard/ConflictingProperties";
+
 import DealersList from "../../components/Admin/DealersList";
+import InquiryForm from "../../components/Admin/InquiryForm";
 import Statistics from "../../components/Admin/Statistics";
 import SoldProperties from "../../components/Admin/SoldProperties";
 import "./AdminDashboard.css";
@@ -60,11 +61,11 @@ export default function AdminDashboard() {
         </button>
         <button
           className={`admin-dashboard-menu-btn ${
-            activeTab === "conflicts" ? "active" : ""
+            activeTab === "inquiry" ? "active" : ""
           }`}
-          onClick={() => setActiveTab("conflicts")}
+          onClick={() => setActiveTab("inquiry")}
         >
-          Conflicting Properties
+          Inquiry Form
         </button>
         <button
           className={`admin-dashboard-menu-btn ${
@@ -91,7 +92,7 @@ export default function AdminDashboard() {
         {activeTab === "client" && <AddClient />}
         {activeTab === "clients" && <ClientsList />}
         {activeTab === "dealers_list" && <DealersList />}
-        {activeTab === "conflicts" && <ConflictingProperties />}
+        {activeTab === "inquiry" && <InquiryForm />}
         {activeTab === "stats" && <Statistics />}
         {activeTab === "sold" && <SoldProperties />}
       </div>

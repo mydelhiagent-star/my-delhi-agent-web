@@ -31,5 +31,5 @@ export const API_ENDPOINTS = {
   DEALER_CLIENTS: `${API_BASE_URL}/dealer-clients`,
 
   // Inquiry
-  INQUIRY: `${API_BASE_URL}/inquiries`,
+  INQUIRIES: `${API_BASE_URL}/inquiries`,
 };

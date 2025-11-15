@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./ClientsList.css";
 import { API_ENDPOINTS } from "../../config/api";
-import { dealers as dummyDealers } from "../../constants/dealers";
 import { locations } from "../../constants/locations";
 
 export default function DealersList() {
