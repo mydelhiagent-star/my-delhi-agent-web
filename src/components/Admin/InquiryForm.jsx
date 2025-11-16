@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "../../config/api";
 
 export default function InquiryForm() {
-  console.log("InquiryForm component rendered");
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,8 +16,7 @@ export default function InquiryForm() {
       const result = await response.json();
 
       if (result.success) {
-        const list = Array.isArray(result.data) ? result.data : [];
-        setInquiries(list);
+        setInquiries(Array.isArray(result.data) ? result.data : []);
       } else {
         setInquiries([]);
         alert(result.message || "Failed to fetch inquiries");
@@ -35,42 +33,66 @@ export default function InquiryForm() {
     fetchInquiries();
   }, []);
 
-  if (loading) return <p>Loading inquiries...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading)
+    return (
+      <p className="text-center text-gray-600 text-lg py-6">
+        Loading inquiries...
+      </p>
+    );
+
+  if (error)
+    return (
+      <p className="text-center text-red-500 text-lg py-6">
+        {error}
+      </p>
+    );
 
   return (
-    <div>
-      <h2>All Inquiries</h2>
+    <div className="p-6">
+      
 
-      <table border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Requirement</th>
-            <th>Source</th>
-            <th>Dealer ID</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {inquiries.map((item) => (
-            <tr key={item._id?.$oid}>
-              <td>{item.name}</td>
-              <td>{item.phone}</td>
-              <td>{item.requirement}</td>
-              <td>{item.source}</td>
-              <td>{item.dealer_id?.$oid}</td>
-              <td>
-                {item.created_at?.$date
-                  ? new Date(item.created_at.$date).toLocaleString()
-                  : "N/A"}
-              </td>
+      <div className="overflow-x-auto shadow-md rounded-lg">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead className="bg-gray-100 border-b">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                Name
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                Phone
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                Requirement
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                Created At
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {inquiries.map((item, index) => (
+              <tr
+                key={item.id || index}
+                className="border-b hover:bg-gray-50 transition"
+              >
+                <td className="px-4 py-3 text-sm text-gray-800">
+                  {item.name}
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-800">
+                  {item.phone}
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-800">
+                  {item.requirement}
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-600">
+                  {new Date(item.created_at).toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
