@@ -66,7 +66,7 @@ export default function InquiryForm({ variant = "broker" }) {
     setIsSubmitting(true);
   
     try {
-      const response = await fetch(API_ENDPOINTS.INQUIRY, {
+      const response = await fetch(API_ENDPOINTS.INQUIRIES, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
